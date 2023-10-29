@@ -1,0 +1,28 @@
+pyLocalizer/
+    ├── main.py                     -> main program script
+    ├── core/
+    │   ├── __init__.py
+    │   ├── study.py                -> Study class
+    │   ├── session.py              -> Session class
+    ├── models/
+    │   ├── __init__.py
+    │   ├── electrode.py            -> Electrode class
+    │   ├── headmodel.py            -> Headmodel class
+    │   ├── mri.py                  -> MRI class
+    │   ├── texture.py              -> Texture class
+    ├── processing/
+    │   ├── __init__.py
+    │   ├── texture_processing.py   -> texture processing functions (takes Texture instances as inputs)
+    │   ├── surface_alignment.py    -> surface alignment processing abstract base class and concrete classes (different surface alignment approaches, e.g. rigid, ICP, etc.)
+    │   ├── electrode_labeling.py   -> electrode labeling abstract base class and concrete classes (different labeling approaches)
+    │   ├── electrode_detector.py   -> electrode detector abstract base class and concrete classes (different detectors)
+    ├── utils/
+    │   ├── __init__.py
+    │   ├── utils.py                -> various utility functions
+    ├── interface/
+    │   ├── __init__.py
+    │   ├── main_window.py          -> main GUI files
+    ├── io/
+    │   ├── __init__.py
+    │   ├── io_module.py            -> IO functions
+    │   ├── qualitycontrol.py       -> QC functions

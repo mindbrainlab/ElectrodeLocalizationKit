@@ -76,7 +76,14 @@ QTableView {
     border-radius: 0px;
     border-style: outset;
     background-color: white;
+	margin: 0 0 0 0;
+    padding: 0 0 0 0;
     }
+
+QHeaderView:section {
+    color: white;
+    background-color: #11356B;
+}
 
 QLabel {
    color: #11356B;
@@ -569,6 +576,9 @@ QDoubleSpinBox {
                    <height>30</height>
                   </size>
                  </property>
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
                  <property name="value">
                   <number>35</number>
                  </property>
@@ -617,7 +627,7 @@ QDoubleSpinBox {
                   <double>0.500000000000000</double>
                  </property>
                  <property name="value">
-                  <double>8.000000000000000</double>
+                  <double>12.000000000000000</double>
                  </property>
                 </widget>
                </item>
@@ -702,76 +712,6 @@ QDoubleSpinBox {
                <string>Hough</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout">
-               <item row="0" column="0" colspan="2">
-                <widget class="QLabel" name="label_22">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>15</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>15</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Threshold</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" colspan="2">
-                <widget class="QDoubleSpinBox" name="threshold_spinbox">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0" colspan="2">
-                <widget class="QLabel" name="label_21">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>15</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>15</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Sensitivity</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0" colspan="2">
-                <widget class="QDoubleSpinBox" name="sensitivity_spinbox">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
                <item row="4" column="0" colspan="2">
                 <widget class="QLabel" name="label_20">
                  <property name="minimumSize">
@@ -805,6 +745,12 @@ QDoubleSpinBox {
                    <height>30</height>
                   </size>
                  </property>
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="value">
+                  <number>10</number>
+                 </property>
                 </widget>
                </item>
                <item row="5" column="1">
@@ -820,6 +766,12 @@ QDoubleSpinBox {
                    <width>16777215</width>
                    <height>30</height>
                   </size>
+                 </property>
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="value">
+                  <number>30</number>
                  </property>
                 </widget>
                </item>
@@ -874,6 +826,141 @@ QDoubleSpinBox {
                  </property>
                  <property name="text">
                   <string>Compute</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QDoubleSpinBox" name="param1_spinbox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="decimals">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.500000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>5.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="param2_spinbox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="decimals">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <double>1000.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.500000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>12.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_22">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>15</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>15</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Param1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_21">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>15</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>15</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Param2</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_2">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>15</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>15</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Min dist.</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QSpinBox" name="min_dist_spinbox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="maximum">
+                  <number>10000</number>
+                 </property>
+                 <property name="value">
+                  <number>1000</number>
                  </property>
                 </widget>
                </item>

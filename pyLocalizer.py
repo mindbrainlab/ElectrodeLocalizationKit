@@ -2,7 +2,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QFileDialog, QErrorMessage, QTableWidgetItem
 from PyQt6.QtGui import QFont, QFontDatabase
 
-from PyQt6.QtCore import Qt, pyqtSlot
+from PyQt6.QtCore import QModelIndex, Qt, pyqtSlot, QAbstractTableModel
 
 from ui.pyloc_main_window import Ui_MainWindow
 
@@ -17,6 +17,90 @@ import pandas as pd
 
 import cv2 as cv
 
+class PandasModel(QAbstractTableModel):
+    def __init__(self, data):
+        super().__init__()
+        self._data = data
+
+    def rowCount(self, parent=QModelIndex()):
+        return self._data.shape[0]
+
+    def columnCount(self, parent=QModelIndex()):
+        return self._data.shape[1]
+
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+        if index.isValid():
+            if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+                value = self._data.iloc[index.row(), index.column()]
+                return str(value)
+
+    def insert_point(self, row, parent=QModelIndex()):
+        self.beginInsertRows(parent, self.rowCount(), self.rowCount())
+        self._data = pd.concat([self._data, row])
+        self.endInsertRows()
+        
+        ic(self._data)
+        return True
+    
+    def remove_point(self, id, parent=QModelIndex()):
+        self.beginRemoveRows(parent, self.rowCount(), self.rowCount())
+        self._data = self._data[self._data.ID != id]
+        self.endRemoveRows()
+        
+        ic(self._data)
+        return True
+    
+    def remove_closest_point(self, point_to_remove):
+        dists = []
+        for point in self._data[['x', 'y', 'z']].values:
+            ic(point)
+            ic(point_to_remove)
+            dists.append(np.linalg.norm(point-point_to_remove))
+        
+        if len(dists) > 0:      
+            min_idx = np.argmin(dists)
+            id_to_remove = self._data.iloc[min_idx]['ID']
+            self.remove_point(id_to_remove)
+    
+    def get_next_id(self):
+        numeric_ids = [int(x) for x in self._data.ID.to_list() if x.isdigit()]
+        if len(numeric_ids) == 0:
+            return '0'
+        else:    
+            return str(np.max(numeric_ids) + 1)
+    
+    def render(self, plotter: vd.Plotter):
+        pts = []
+        ic(self._data.shape)
+        for row in self._data.iterrows():
+            ic(row)
+            pts.append([row[1]['x'], row[1]['y'], row[1]['z']])
+            
+        for actor in plotter.actors:
+            if isinstance(actor, vd.Spheres):
+                plotter.remove(actor)
+        
+        if len(pts) > 0:
+            spheres = vd.Spheres(pts, r=0.005, res=8, c='r5', alpha=1)
+            plotter.add(spheres).render()
+        else:
+            plotter.render()
+            
+        self.layoutChanged.emit()
+
+    def setData(self, index, value, role):
+        if role == Qt.ItemDataRole.EditRole:
+            self._data.iloc[index.row(), index.column()] = value
+            return True
+        return False
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+            return self._data.columns[col]
+
+    def flags(self, index):
+        return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable
+
 class StartQt6(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -28,6 +112,14 @@ class StartQt6(QtWidgets.QMainWindow):
         # self.connection_established = False
         # --> states should enable and disable widgets
         #         e.g. self.ui.slider.setDisabled(True)
+
+        # data = pd.DataFrame([[1, 9, 2], [1, 0, -1], [3, 5, 2], [3, 3, 2], [5, 8, 9],], columns=["A", "B", "C"])
+        # create an empyt dataframe with columns ID, x, y, z, modality
+        data = pd.DataFrame(columns=["ID", "x", "y", "z", "modality", "labeled"])
+        self.model = PandasModel(data)
+        self.ui.electrodes_table.setModel(self.model)
+        for column_hidden in (5,):
+            self.ui.electrodes_table.hideColumn(column_hidden)
 
         # prepare vedo canvas
         ic(self.ui.headmodel_frame)
@@ -43,13 +135,23 @@ class StartQt6(QtWidgets.QMainWindow):
         self.ui.display_head_button.clicked.connect(self.display_surface)
         
         self.ui.display_dog_button.clicked.connect(self.display_dog)
-        
         self.ui.kernel_size_spinbox.valueChanged.connect(self.display_dog)
         self.ui.sigma_spinbox.valueChanged.connect(self.display_dog)
         self.ui.diff_factor_spinbox.valueChanged.connect(self.display_dog)
         
+        self.ui.display_hough_button.clicked.connect(self.display_hough)
+        self.ui.param1_spinbox.valueChanged.connect(self.display_hough)
+        self.ui.param2_spinbox.valueChanged.connect(self.display_hough)
+        self.ui.min_dist_spinbox.valueChanged.connect(self.display_hough)
+        self.ui.min_radius_spinbox.valueChanged.connect(self.display_hough)
+        self.ui.max_radius_spinbox.valueChanged.connect(self.display_hough)
+        
+        self.ui.process_table_button.clicked.connect(self.process_table)
+        
         self.image = None
         self.dog = None
+        
+        self.circles = None
         
         # temporary
         self.surface_file = '/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj'
@@ -62,6 +164,12 @@ class StartQt6(QtWidgets.QMainWindow):
         # set status bar
         self.ui.statusbar.showMessage('Welcome!')
 
+    def process_table(self):
+        # append a new random row to the table
+        new_row = pd.DataFrame([[np.random.randint(0, 10), np.random.randint(0, 10), np.random.randint(0, 10)]], columns=["A", "B", "C"])
+        self.model._data = pd.concat([self.model._data, new_row])
+        self.model.layoutChanged.emit()
+        
     # define slots (functions)
     def load_surface(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open Surface File", "", "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)")
@@ -81,15 +189,20 @@ class StartQt6(QtWidgets.QMainWindow):
             self.vtkWidget_1.resize(frame_size.width(), frame_size.height())
             self.mesh= vd.Mesh(self.surface_file).texture(self.texture_file)
             
-
-            
-            vertex = self.get_vertex_from_pixels([840, 1115], self.mesh, [4096, 4096])
-            pts = vd.Spheres([vertex], r=0.005, res=8, c='r5', alpha=1)
+            pts = []
+            spheres = None
+            if self.circles is not None:
+                for circle in self.circles[0, :]:
+                    vtx = self.get_vertex_from_pixels((circle[0], circle[1]), self.mesh, [4096, 4096])
+                    pts.append(vtx)
+                spheres = vd.Spheres(pts, r=0.005, res=8, c='r5', alpha=1)
             
             msg = vd.Text2D(pos='bottom-left', font="VictorMono") # an empty text
             
             self.plt.show(self.mesh, msg, __doc__)
-            self.plt.add(pts).render() 
+            
+            if spheres is not None:
+                self.plt.add(spheres).render()
 
     def onMouseClick(self, evt):
         vd.printc("You have clicked your mouse button. Event info:\n", evt, c='y')
@@ -116,50 +229,85 @@ class StartQt6(QtWidgets.QMainWindow):
         uv_idx = np.argmin(np.linalg.norm(uv-uv_image, axis=1))
         
         return vertices[uv_idx]
-            
+      
     def on_left_click(self, evt):
         print("left click")
         pt = evt.picked3d
         
-        if pt is not None:
-            self.points.append(pt)
-            
-            pts = vd.Spheres(self.points, r=0.005, res=8, c='r5', alpha=1)
-            
-            if len(self.plt.actors) > 3:
-                self.plt.pop()
-            self.plt.add(pts).render() 
-            
-        ic(self.plt)
-        ic(self.points)
+        if pt is not None:  
+            new_row = pd.DataFrame([[self.model.get_next_id(),
+                                     pt[0], pt[1], pt[2],
+                                     "scan", False]],
+                                   columns=["ID", "x", "y", "z" , "modality", "labeled"])
+            self.model.insert_point(new_row)
+            self.model.render(self.plt)
 
     def on_right_click(self, evt):
         print("right click")
         pt = evt.picked3d
         
-        ic(self.points)
-        
         if pt is not None:
-            self.remove_closest_point(pt)
-                
-            pts = vd.Spheres(self.points, r=0.005, res=8, c='r5', alpha=1)
+            self.model.remove_closest_point(pt)
+            self.model.render(self.plt)
             
-            if len(self.plt.actors) > 3:
-                self.plt.pop()
-            self.plt.add(pts).render()
-            
-        ic(self.plt)
-        ic(self.points)
+    # def on_left_click(self, evt):
+    #     print("left click")
+    #     pt = evt.picked3d
         
-    def remove_closest_point(self, pt):
-        dists = []
-        for p in self.points:
-            dists.append(np.linalg.norm(p-pt))
-        min_dist = np.min(dists)
-        min_idx = np.argmin(dists)
-        print(min_dist)
-        print(min_idx)
-        self.points.pop(min_idx)
+    #     if pt is not None:
+    #         self.points.append(pt)
+            
+    #         pts = vd.Spheres(self.points, r=0.005, res=8, c='r5', alpha=1)
+            
+    #         if len(self.plt.actors) > 2:
+    #             self.plt.pop()
+    #         self.plt.add(pts).render() 
+            
+    #         n_points = len(self.points)
+    #         pt_id = n_points - 1
+            
+    #         new_row = pd.DataFrame([[pt_id, pt[0], pt[1], pt[2], "scan"]], columns=["ID", "x", "y", "z" , "modality"])
+    #         # self.model._data = pd.concat([self.model._data, new_row])
+    #         # self.model.layoutChanged.emit()
+    #         self.model.insert_point(new_row)
+            
+    #     ic(self.points)
+
+    # def on_right_click(self, evt):
+    #     print("right click")
+    #     pt = evt.picked3d
+        
+    #     ic(self.points)
+        
+    #     if pt is not None:
+    #         self.remove_closest_point(pt)
+            
+    #         ic(self.plt.actors)
+            
+    #         if len(self.plt.actors) > 2:
+    #             self.plt.pop()
+            
+    #         if len(self.points) > 0:
+    #             pts = vd.Spheres(self.points, r=0.005, res=8, c='r5', alpha=1)
+    #             self.plt.add(pts).render()
+    #         else:
+    #             self.plt.render()
+        
+    #     ic(self.points)
+        
+    # def remove_closest_point(self, pt):
+    #     dists = []
+    #     for p in self.points:
+    #         dists.append(np.linalg.norm(p-pt))
+            
+    #     ic(dists)
+            
+    #     min_dist = np.min(dists)
+    #     min_idx = np.argmin(dists)
+    #     print(min_dist)
+    #     print(min_idx)
+    #     self.points.pop(min_idx)
+        
 
     # @pyqtSlot()
     # def onClick(self):
@@ -183,8 +331,18 @@ class StartQt6(QtWidgets.QMainWindow):
         # self.ui.photo_label.resize(label_size)
         self.ui.photo_label.setPixmap(QtGui.QPixmap.fromImage(self.dog))
         
-    def get_dog(self, ksize = 35, sigma = 12, F = 1.1):
+    @QtCore.pyqtSlot()
+    def display_hough(self):
+        self.dog = self.get_dog(ksize=self.ui.kernel_size_spinbox.value(), sigma=self.ui.sigma_spinbox.value(), F=self.ui.diff_factor_spinbox.value())
+        self.circles = self.get_circles(self.dog, param1=self.ui.param1_spinbox.value(), param2=self.ui.param2_spinbox.value(), min_distance_between_circles=self.ui.min_dist_spinbox.value(), minRadius=self.ui.min_radius_spinbox.value(), maxRadius=self.ui.max_radius_spinbox.value())
+        self.image_circles = QtGui.QImage(self.image_circles.data, self.image_circles.shape[1], self.image_circles.shape[0], QtGui.QImage.Format.Format_RGB888).rgbSwapped()
         
+        label_size = self.ui.texture_frame.size()
+        self.image_circles = self.image_circles.scaled(label_size.width(), label_size.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.FastTransformation)
+
+        self.ui.photo_label.setPixmap(QtGui.QPixmap.fromImage(self.image_circles))
+        
+    def get_dog(self, ksize = 35, sigma = 12, F = 1.1):
         # convert image to grayscale
         gray = cv.cvtColor(self.image, cv.COLOR_BGR2GRAY)
         
@@ -207,6 +365,24 @@ class StartQt6(QtWidgets.QMainWindow):
         dog[dog > 1] = 255
         
         return dog
+    
+    def get_circles(self, dog, param1=5, param2=12, min_distance_between_circles=100, minRadius=10, maxRadius=30):
+        circles = cv.HoughCircles(dog, cv.HOUGH_GRADIENT, 1, minDist=min_distance_between_circles,
+                                  param1=param1, param2=param2,
+                                  minRadius=minRadius, maxRadius=maxRadius)
+
+        self.image_circles = self.image.copy()
+        if circles is not None:
+            circles = np.uint16(np.around(circles))
+            for i in circles[0, :]:
+                center = (i[0], i[1])
+                # circle center
+                # cv.circle(self.image_circles, center, 1, (0, 100, 100), 3)
+                # circle outline
+                radius = i[2]
+                cv.circle(self.image_circles, center, radius, (255, 0, 255), -1)
+                
+        return circles
 
     def onResize(self, _):
         frame_size = self.ui.headmodel_frame.size()

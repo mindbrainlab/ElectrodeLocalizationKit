@@ -14,7 +14,7 @@ class CapModel(QAbstractTableModel):
         self._labels = []
         
         # define Electrode class attributes to display in the table
-        self._display_keys = ('ID', 'label', 'modality')
+        self._display_keys = ('label', 'modality')
 
     def set_plotter(self, plotter: vd.Plotter) -> None:
         self._plotter = plotter

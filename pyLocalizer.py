@@ -17,6 +17,9 @@ import pandas as pd
 
 import cv2 as cv
 
+from core.capmodel import CapModel
+from core.electrode import Electrode
+
 class PandasModel(QAbstractTableModel):
     def __init__(self, data):
         super().__init__()
@@ -46,23 +49,17 @@ class PandasModel(QAbstractTableModel):
         self.beginInsertRows(parent, self.rowCount(), self.rowCount())
         self._data = pd.concat([self._data, row])
         self.endInsertRows()
-        
-        ic(self._data)
         return True
     
     def remove_point(self, id, parent=QModelIndex()):
         self.beginRemoveRows(parent, self.rowCount(), self.rowCount())
         self._data = self._data[self._data.ID != id]
         self.endRemoveRows()
-        
-        ic(self._data)
         return True
     
     def remove_closest_point(self, point_to_remove):
         dists = []
         for point in self._data[['x', 'y', 'z']].values:
-            ic(point)
-            ic(point_to_remove)
             dists.append(np.linalg.norm(point-point_to_remove))
         
         if len(dists) > 0:      
@@ -158,12 +155,16 @@ class StartQt6(QtWidgets.QMainWindow):
         # create an empyt dataframe with columns ID, x, y, z, modality
         data = pd.DataFrame(columns=["ID", "x", "y", "z", "modality", "label"])
         self.model = PandasModel(data)
+
+        data = [Electrode([0.1, 0.2, 0.3], modality="scan", ID=1, label="1"),
+                Electrode([0.4, 0.5, 0.6], modality="scan", ID=2, label="2")]
+        self.model = CapModel(data)
+
         self.ui.electrodes_table.setModel(self.model)
-        for column_hidden in (1, 2, 3):
-            self.ui.electrodes_table.hideColumn(column_hidden)
+        # for column_hidden in (1, 2, 3):
+        #     self.ui.electrodes_table.hideColumn(column_hidden)
 
         # prepare vedo canvas
-        ic(self.ui.headmodel_frame)
         self.vtkWidget_1 = QVTKRenderWindowInteractor(self.ui.headmodel_frame)
         
         self.plt = vd.Plotter(qt_widget=self.vtkWidget_1)
@@ -187,6 +188,8 @@ class StartQt6(QtWidgets.QMainWindow):
         self.ui.min_radius_spinbox.valueChanged.connect(self.display_hough)
         self.ui.max_radius_spinbox.valueChanged.connect(self.display_hough)
         
+        self.ui.compute_electrodes_button.clicked.connect(self.compute_electrodes)
+        
         self.ui.process_table_button.clicked.connect(self.process_table)
         
         # self.model.dataChanged.connect(self.model.render)
@@ -199,6 +202,9 @@ class StartQt6(QtWidgets.QMainWindow):
         # temporary
         self.surface_file = '/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj'
         self.texture_file = '/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.jpg'
+        
+        if self.surface_file and self.texture_file:
+            self.mesh= vd.Mesh(self.surface_file).texture(self.texture_file)
         
         self.ui.centralwidget.resizeEvent = self.onResize
         
@@ -224,28 +230,21 @@ class StartQt6(QtWidgets.QMainWindow):
             ic(self.texture_file)
 
     def display_surface(self):
-        if self.surface_file and self.texture_file:
-            frame_size = self.ui.headmodel_frame.size()
-            self.vtkWidget_1.resize(frame_size.width(), frame_size.height())
-            self.mesh= vd.Mesh(self.surface_file).texture(self.texture_file)
-            
-            pts = []
-            spheres = None
-            if self.circles is not None:
-                for circle in self.circles[0, :]:
-                    vtx = self.get_vertex_from_pixels((circle[0], circle[1]), self.mesh, [4096, 4096])
-                    pts.append(vtx)
-                spheres = vd.Spheres(pts, r=0.005, res=8, c='r5', alpha=1)
-            
-            msg = vd.Text2D(pos='bottom-left', font="VictorMono") # an empty text
-            
-            self.plt.show(self.mesh, msg, __doc__)
-            
-            self.model.set_plotter(self.plt)
-            self.model.set_labels(['2', '6', '8'])
-            
-            # if spheres is not None:
-            #     self.plt.add(spheres).render()
+        # if self.surface_file and self.texture_file:
+        frame_size = self.ui.headmodel_frame.size()
+        self.vtkWidget_1.resize(frame_size.width(), frame_size.height())
+        # self.mesh= vd.Mesh(self.surface_file).texture(self.texture_file)
+        
+        msg = vd.Text2D(pos='bottom-left', font="VictorMono") # an empty text
+        
+        self.plt.show(self.mesh, msg, __doc__)
+        
+        self.model.set_plotter(self.plt)
+        self.model.set_labels(['2', '6', '8'])
+        self.model.render()
+        
+        # if spheres is not None:
+        #     self.plt.add(spheres).render()
 
     def onMouseClick(self, evt):
         vd.printc("You have clicked your mouse button. Event info:\n", evt, c='y')
@@ -387,7 +386,7 @@ class StartQt6(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def display_hough(self):
         self.dog = self.get_dog(ksize=self.ui.kernel_size_spinbox.value(), sigma=self.ui.sigma_spinbox.value(), F=self.ui.diff_factor_spinbox.value())
-        self.circles = self.get_circles(self.dog, param1=self.ui.param1_spinbox.value(), param2=self.ui.param2_spinbox.value(), min_distance_between_circles=self.ui.min_dist_spinbox.value(), minRadius=self.ui.min_radius_spinbox.value(), maxRadius=self.ui.max_radius_spinbox.value())
+        self.get_circles(self.dog, param1=self.ui.param1_spinbox.value(), param2=self.ui.param2_spinbox.value(), min_distance_between_circles=self.ui.min_dist_spinbox.value(), minRadius=self.ui.min_radius_spinbox.value(), maxRadius=self.ui.max_radius_spinbox.value())
         self.image_circles = QtGui.QImage(self.image_circles.data, self.image_circles.shape[1], self.image_circles.shape[0], QtGui.QImage.Format.Format_RGB888).rgbSwapped()
         
         label_size = self.ui.texture_frame.size()
@@ -436,6 +435,28 @@ class StartQt6(QtWidgets.QMainWindow):
                 cv.circle(self.image_circles, center, radius, (255, 0, 255), -1)
                 
         return circles
+    
+    def compute_electrodes(self):
+        self.circles = self.get_circles(self.dog,
+                                        param1=self.ui.param1_spinbox.value(),
+                                        param2=self.ui.param2_spinbox.value(),
+                                        min_distance_between_circles=self.ui.min_dist_spinbox.value(),
+                                        minRadius=self.ui.min_radius_spinbox.value(),
+                                        maxRadius=self.ui.max_radius_spinbox.value())
+        
+        if self.mesh is not None:
+            for circle in self.circles[0, :]:
+                vertex = self.get_vertex_from_pixels((circle[0], circle[1]), self.mesh, [4096, 4096])
+                id = self.model.get_next_id()
+                new_row = pd.DataFrame({
+                    "ID": id,
+                    "x": vertex[0],
+                    "y": vertex[1],
+                    "z": vertex[2],
+                    "modality": "scan",
+                    "label": id
+                }, index=[0])
+                self.model.insert_point(new_row)
 
     def onResize(self, _):
         frame_size = self.ui.headmodel_frame.size()

@@ -20,6 +20,8 @@ class Electrode:
     @property
     def spherical_coordinates(self) -> Iterable[float]:
         """Returns the electrode's spherical coordinates."""
+        if self._theta is None or self._phi is None:
+            self.compute_unit_sphere_spherical_coordinates()
         return np.array([self._theta, self._phi])
     
     def compute_unit_sphere_spherical_coordinates(self, origin = (0, 0, 0)) -> None:
@@ -36,15 +38,21 @@ class Electrode:
         """Returns a DataFrame with the electrode's data."""
         df = pd.DataFrame({
                 "ID": self.ID,
-                "x": self.coordinates[0],
-                "y": self.coordinates[1],
-                "z": self.coordinates[2],
+                "x": self._coordinates[0],
+                "y": self._coordinates[1],
+                "z": self._coordinates[2],
                 "theta": self._theta,
                 "phi": self._phi,
                 "modality": self.modality,
                 "label": self.id if self.label is None else self.label,
             }, index=[0])
         return df
+    
+    def __getitem__(self, item):
+        return getattr(self, item)
+    
+    def __setitem__(self, item, value):
+        setattr(self, item, value)
     
 def compute_distance_between_electrodes(coordinates_1: Iterable[float], coordinates_2: Iterable[float]) -> float:
     """Returns the distance between two electrodes."""

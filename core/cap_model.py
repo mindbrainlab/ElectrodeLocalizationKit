@@ -27,7 +27,7 @@ class CapModel(QAbstractTableModel):
     def get_electrode(self, index: int) -> Electrode:
         return self._data[index]
 
-    def data(self, index, role=Qt.ItemDataRole.DisplayRole) -> str:
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if index.isValid():
             if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
                 value = self._data[index.row()][self._display_keys[index.column()]]

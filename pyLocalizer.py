@@ -1,24 +1,17 @@
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QApplication
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtGui import QImage, QPixmap
+from PyQt6.QtGui import QImage, QPixmap, QResizeEvent
 
 from ui.pyloc_main_window import Ui_MainWindow
 
 import vedo as vd
-from icecream import ic
 
 import sys
-from time import sleep
 import numpy as np
-import pandas as pd
-
-import cv2 as cv
 
 from core.cap_model import CapModel
-from core.electrode import Electrode
-
 from core.head_models import HeadScan
-
+from processing.electrode_detector import DogHoughElectrodeDetector
 from ui.surface_view import SurfaceView
         
 class StartQt6(QMainWindow):
@@ -54,9 +47,11 @@ class StartQt6(QMainWindow):
         self.ui.min_radius_spinbox.valueChanged.connect(self.display_hough)
         self.ui.max_radius_spinbox.valueChanged.connect(self.display_hough)
         
-        self.ui.compute_electrodes_button.clicked.connect(self.compute_electrodes)
+        self.ui.compute_electrodes_button.clicked.connect(
+            self.detect_electrodes)
                 
-        self.ui.centralwidget.resizeEvent = self.onResize
+        self.ui.centralwidget.resizeEvent = self.on_resize       # type: ignore
+        self.ui.centralwidget.closeEvent = self.on_close         # type: ignore
                 
         self.image = None
         self.dog = None
@@ -72,28 +67,42 @@ class StartQt6(QMainWindow):
             
         # ======================================================================
         
-        self.surface_view = SurfaceView(self.ui.headmodel_frame, self.head_scan.mesh, self.head_scan.modality)
+        self.surface_view = SurfaceView(self.ui.headmodel_frame,
+                                        self.head_scan.mesh,
+                                        self.head_scan.modality)
         self.surface_view.setModel(self.model)
+        
+        frame_size = self.ui.headmodel_frame.size()
+        self.surface_view.resize_view(frame_size.width(), frame_size.height())
+        
+        self.dog_hough_detector = DogHoughElectrodeDetector(self.texture_file)
         
         # set status bar
         self.ui.statusbar.showMessage('Welcome!')
         
     # define slots (functions)
     def load_surface(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open Surface File", "", "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Surface File",
+            "",
+            "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)"
+            )
         if file_path:
             self.surface_file = file_path
-            ic(self.surface_file)
 
     def load_texture(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open Texture File", "", "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Texture File",
+            "",
+            "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
+            )
         if file_path:
             self.texture_file = file_path
-            ic(self.texture_file)
 
     def display_surface(self):
-        # self.surface_view.mesh = self.head_scan.mesh
-        # self.surface_view.modality = self.head_scan.modality
+        self.surface_view.setModel(self.model)
         
         frame_size = self.ui.headmodel_frame.size()
         self.surface_view.resize_view(frame_size.width(), frame_size.height())
@@ -101,7 +110,9 @@ class StartQt6(QMainWindow):
         self.surface_view.show()
 
     def onMouseClick(self, evt):
-        vd.printc("You have clicked your mouse button. Event info:\n", evt, c='y')
+        vd.printc("You have clicked your mouse button. Event info:\n",
+                  evt,
+                  c='y')
 
     def onKeypress(self, evt):
         vd.printc("You have pressed key:", evt.keypress, c='b')
@@ -119,7 +130,8 @@ class StartQt6(QMainWindow):
         uv = mesh.pointdata['material_0']
         
         # convert pixels to uv coordinates
-        uv_image = [(pixels[0]+0.5)/image_size[0], 1-(pixels[1]+0.5)/image_size[1]]
+        uv_image = [(pixels[0]+0.5)/image_size[0],
+                    1-(pixels[1]+0.5)/image_size[1]]
         
         # find index of closest point in uv with uv_image
         uv_idx = np.argmin(np.linalg.norm(uv-uv_image, axis=1))
@@ -128,112 +140,76 @@ class StartQt6(QMainWindow):
 
     @pyqtSlot()
     def display_dog(self):
-        if self.image is None:
-            self.image = cv.imread(self.texture_file)
-            self.dog = self.get_dog(ksize=self.ui.kernel_size_spinbox.value(), sigma=self.ui.sigma_spinbox.value(), F=self.ui.diff_factor_spinbox.value())
-            self.dog = QImage(self.dog.data, self.dog.shape[1], self.dog.shape[0], QImage.Format.Format_Grayscale8).rgbSwapped()
-        else:
-            self.dog = self.get_dog(ksize=self.ui.kernel_size_spinbox.value(), sigma=self.ui.sigma_spinbox.value(), F=self.ui.diff_factor_spinbox.value())
-            self.dog = QImage(self.dog.data, self.dog.shape[1], self.dog.shape[0], QImage.Format.Format_Grayscale8).rgbSwapped()
+        self.dog = self.dog_hough_detector.get_difference_of_gaussians(
+            ksize=self.ui.kernel_size_spinbox.value(),
+            sigma=self.ui.sigma_spinbox.value(),
+            F=self.ui.diff_factor_spinbox.value())
+        
+        self.dog_qimage = QImage(
+            self.dog.data,
+            self.dog.shape[1], self.dog.shape[0],
+            QImage.Format.Format_Grayscale8).rgbSwapped()
         
         label_size = self.ui.texture_frame.size()
-        self.dog = self.dog.scaled(label_size.width(), label_size.height(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.FastTransformation)
+        self.dog_qimage = self.dog_qimage.scaled(
+            label_size.width(),label_size.height(),
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.FastTransformation)
 
-        # self.ui.photo_label.resize(label_size)
-        self.ui.photo_label.setPixmap(QPixmap.fromImage(self.dog))
+        self.ui.photo_label.setPixmap(QPixmap.fromImage(self.dog_qimage))
         
     @pyqtSlot()
     def display_hough(self):
-        self.dog = self.get_dog(ksize=self.ui.kernel_size_spinbox.value(), sigma=self.ui.sigma_spinbox.value(), F=self.ui.diff_factor_spinbox.value())
-        self.get_circles(self.dog, param1=self.ui.param1_spinbox.value(), param2=self.ui.param2_spinbox.value(), min_distance_between_circles=self.ui.min_dist_spinbox.value(), minRadius=self.ui.min_radius_spinbox.value(), maxRadius=self.ui.max_radius_spinbox.value())
-        self.image_circles = QImage(self.image_circles.data, self.image_circles.shape[1], self.image_circles.shape[0], QImage.Format.Format_RGB888).rgbSwapped()
+        self.hough = self.dog_hough_detector.get_hough_circles(
+            param1=self.ui.param1_spinbox.value(),
+            param2=self.ui.param2_spinbox.value(),
+            min_distance_between_circles=self.ui.min_dist_spinbox.value(),
+            min_radius=self.ui.min_radius_spinbox.value(),
+            max_radius=self.ui.max_radius_spinbox.value())
+        
+        self.hough_qimage = QImage(
+            self.hough.data,
+            self.hough.shape[1], self.hough.shape[0],
+            QImage.Format.Format_RGB888).rgbSwapped()
         
         label_size = self.ui.texture_frame.size()
-        self.image_circles = self.image_circles.scaled(label_size.width(), label_size.height(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.FastTransformation)
+        self.hough_qimage = self.hough_qimage.scaled(
+            label_size.width(), label_size.height(),
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.FastTransformation)
 
-        self.ui.photo_label.setPixmap(QPixmap.fromImage(self.image_circles))
+        self.ui.photo_label.setPixmap(QPixmap.fromImage(self.hough_qimage))
         
-    def get_dog(self, ksize = 35, sigma = 12, F = 1.1):
-        # convert image to grayscale
-        gray = cv.cvtColor(self.image, cv.COLOR_BGR2GRAY)
-        
-        # get gaussian kernel 1
-        k1_1d = cv.getGaussianKernel(ksize, sigma)
-        k1 = np.dot(k1_1d, k1_1d.T)
-        
-        # get gaussian kernel 2
-        k2_1d = cv.getGaussianKernel(ksize, sigma*F)
-        k2 = np.dot(k2_1d, k2_1d.T)
-        
-        # calculate difference of gaussians
-        k = k2 - k1
-        
-        # apply filter
-        dog = cv.filter2D(src=gray, ddepth=-1, kernel=k)
-        
-        # threshold
-        dog[dog < 1] = 0
-        dog[dog > 1] = 255
-        
-        return dog
-    
-    def get_circles(self, dog, param1=5, param2=12, min_distance_between_circles=100, minRadius=10, maxRadius=30):
-        circles = cv.HoughCircles(dog, cv.HOUGH_GRADIENT, 1, minDist=min_distance_between_circles,
-                                  param1=param1, param2=param2,
-                                  minRadius=minRadius, maxRadius=maxRadius)
+    @pyqtSlot()
+    def detect_electrodes(self):
+        self.electrodes = self.dog_hough_detector.detect_electrodes(
+            self.head_scan.mesh)
+        for electrode in self.electrodes:
+            self.model.insert_electrode(electrode)
 
-        self.image_circles = self.image.copy()
-        if circles is not None:
-            circles = np.uint16(np.around(circles))
-            for i in circles[0, :]:
-                center = (i[0], i[1])
-                # circle center
-                # cv.circle(self.image_circles, center, 1, (0, 100, 100), 3)
-                # circle outline
-                radius = i[2]
-                cv.circle(self.image_circles, center, radius, (255, 0, 255), -1)
-                
-        return circles
-    
-    def compute_electrodes(self):
-        self.circles = self.get_circles(self.dog,
-                                        param1=self.ui.param1_spinbox.value(),
-                                        param2=self.ui.param2_spinbox.value(),
-                                        min_distance_between_circles=self.ui.min_dist_spinbox.value(),
-                                        minRadius=self.ui.min_radius_spinbox.value(),
-                                        maxRadius=self.ui.max_radius_spinbox.value())
-        
-        if self.mesh is not None:
-            for circle in self.circles[0, :]:
-                vertex = self.get_vertex_from_pixels((circle[0], circle[1]), self.mesh, [4096, 4096])
-                id = self.model.get_next_id()
-                new_row = pd.DataFrame({
-                    "ID": id,
-                    "x": vertex[0],
-                    "y": vertex[1],
-                    "z": vertex[2],
-                    "modality": "scan",
-                    "label": id
-                }, index=[0])
-                self.model.insert_point(new_row)
-
-    def onResize(self, _):
+    def on_resize(self, event: QResizeEvent | None):
         frame_size = self.ui.headmodel_frame.size()
         
         if self.surface_view is not None:
-            self.surface_view.resize_view(frame_size.width(), frame_size.height())
+            self.surface_view.resize_view(frame_size.width(),
+                                          frame_size.height())
         
         if self.dog is not None:
              label_size = self.ui.texture_frame.size()
-             self.dog = self.dog.scaled(label_size.width(), label_size.height(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.FastTransformation)
-             # commented because it distorts the image
-             # self.ui.photo_label.setPixmap(QPixmap.fromImage(self.image))
+             self.dog_qimage = self.dog_qimage.scaled(
+                 label_size.width(),
+                 label_size.height(),
+                 Qt.AspectRatioMode.KeepAspectRatio,
+                 Qt.TransformationMode.FastTransformation)
+             
+             self.hough_qimage = self.hough_qimage.scaled(
+                 label_size.width(),
+                 label_size.height(),
+                 Qt.AspectRatioMode.KeepAspectRatio,
+                 Qt.TransformationMode.FastTransformation)
 
-    def onClose(self):
-        #Disable the interactor before closing to prevent it
-        #from trying to act on already deleted items
-        vd.printc("..calling onClose")
-        self.vtkWidget_1.close()
+    def on_close(self):
+        self.surface_view.close_vtk_widget()
         
 
 if __name__ == "__main__":

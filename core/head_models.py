@@ -44,10 +44,11 @@ import vedo as vd
 #     @abstractmethod
 #     def apply_transformation(self, transformation):
 #         pass
-    
 
 class HeadScan():
     def __init__(self, surface_file: str, texture_file: str = ""):
+        self.surface_file = surface_file
+        self.texture_file = texture_file
         self.mesh = vd.Mesh(surface_file)
         self.modality = 'scan'
         self.fiducials = []

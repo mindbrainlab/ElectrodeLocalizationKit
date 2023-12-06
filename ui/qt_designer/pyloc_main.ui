@@ -138,7 +138,7 @@ QDoubleSpinBox {
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>../../../../../Applications/Matlab_Toolboxes/qx_localizer/matlab/gui/logo.png</pixmap>
+          <pixmap>images/MainLogo.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -170,36 +170,33 @@ QDoubleSpinBox {
            <pointsize>12</pointsize>
           </font>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="process_table_button">
-         <property name="enabled">
+         <property name="autoScrollMargin">
+          <number>12</number>
+         </property>
+         <property name="showDropIndicator" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="dragDropOverwriteMode">
+          <bool>false</bool>
+         </property>
+         <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
+         <property name="wordWrap">
+          <bool>false</bool>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>30</height>
-          </size>
+         <property name="cornerButtonEnabled">
+          <bool>false</bool>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>Process Table</string>
-         </property>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>20</number>
+         </attribute>
+         <attribute name="verticalHeaderDefaultSectionSize">
+          <number>15</number>
+         </attribute>
+         <attribute name="verticalHeaderMinimumSectionSize">
+          <number>15</number>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -250,7 +247,7 @@ QDoubleSpinBox {
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_7">
        <attribute name="title">

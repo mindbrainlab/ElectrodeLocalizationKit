@@ -27,6 +27,8 @@ class StartQt6(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
+
         # main data model
         self.model = CapModel()
         
@@ -59,9 +61,6 @@ class StartQt6(QMainWindow):
         self.image = None
         self.dog = None
         
-        self.surface_view = SurfaceView(self.ui.headmodel_frame)
-        self.surface_view.setModel(self.model)
-        
         self.circles = None
         
         # temporary ===========================================================
@@ -72,6 +71,9 @@ class StartQt6(QMainWindow):
             self.head_scan = HeadScan(self.surface_file, self.texture_file)
             
         # ======================================================================
+        
+        self.surface_view = SurfaceView(self.ui.headmodel_frame, self.head_scan.mesh, self.head_scan.modality)
+        self.surface_view.setModel(self.model)
         
         # set status bar
         self.ui.statusbar.showMessage('Welcome!')
@@ -90,7 +92,8 @@ class StartQt6(QMainWindow):
             ic(self.texture_file)
 
     def display_surface(self):
-        self.surface_view.mesh = self.head_scan.mesh
+        # self.surface_view.mesh = self.head_scan.mesh
+        # self.surface_view.modality = self.head_scan.modality
         
         frame_size = self.ui.headmodel_frame.size()
         self.surface_view.resize_view(frame_size.width(), frame_size.height())

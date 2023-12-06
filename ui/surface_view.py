@@ -64,10 +64,8 @@ class SurfaceView(QAbstractItemView):
     def _on_left_click(self, evt):
         point = evt.picked3d
         if point is not None:
-            eID = self.model.get_next_id()
             electrode = Electrode(point,
                                 modality=self.modality,
-                                eID=eID,
                                 label="None")
             self.model.insert_electrode(electrode)
             
@@ -85,3 +83,6 @@ class SurfaceView(QAbstractItemView):
     def dataChanged(self, topLeft, bottomRight, roles):
         self._render_electrodes()
         return True
+    
+    def close_vtk_widget(self):
+        self._vtk_widget.close()

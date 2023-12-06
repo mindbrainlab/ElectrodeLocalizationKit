@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QAbstractItemView 
+from typing import Optional
 
 try:
     from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -12,7 +13,7 @@ from core.cap_model import CapModel
 
 class SurfaceView(QAbstractItemView):
     """SurfaceView class for displaying a 3D surface in a Qt application."""
-    def __init__(self, frame, mesh = None, parent=None):
+    def __init__(self, frame, mesh: Optional[vd.Mesh] = None, modality: str = "", parent=None):
         super().__init__(parent)
         self._vtk_widget = QVTKRenderWindowInteractor(frame)
         
@@ -22,7 +23,7 @@ class SurfaceView(QAbstractItemView):
         
         self.mesh = mesh
         
-        self.modality = None
+        self.modality = modality
         
     def resize_view(self, width, height):
         self._vtk_widget.resize(width, height)
@@ -45,7 +46,7 @@ class SurfaceView(QAbstractItemView):
         for i in range(self.model.rowCount()):
             point = self.model.get_electrode(i).coordinates
             label = self.model.get_electrode(i).label
-            if label is None:
+            if label is None or label == "" or label == "None":
                 points_unlabeled.append(point)
             else:
                 points_labeled.append(point)
@@ -67,19 +68,19 @@ class SurfaceView(QAbstractItemView):
             electrode = Electrode(point,
                                 modality=self.modality,
                                 eID=eID,
-                                label=None)
+                                label="None")
             self.model.insert_electrode(electrode)
             
-        self._render_electrodes()
-        self.model.layoutChanged.emit()
+            self._render_electrodes()
+            self.model.layoutChanged.emit()
         
     def _on_right_click(self, evt):
         point = evt.picked3d
         if point is not None:
             self.model.remove_closest_electrode(point)
             
-        self._render_electrodes()
-        self.model.layoutChanged.emit()
+            self._render_electrodes()
+            self.model.layoutChanged.emit()
         
     def dataChanged(self, topLeft, bottomRight, roles):
         self._render_electrodes()

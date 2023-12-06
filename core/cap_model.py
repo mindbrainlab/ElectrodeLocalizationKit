@@ -32,6 +32,7 @@ class CapModel(QAbstractTableModel):
             if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
                 value = self._data[index.row()][self._display_keys[index.column()]]
                 return str(value)
+        return ""
             
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
@@ -68,7 +69,7 @@ class CapModel(QAbstractTableModel):
     
     def get_next_id(self) -> str:
         """Returns the next available ID for a new point."""
-        numeric_ids = [int(x['ID']) for x in self._data if x['ID'].isdigit()]
+        numeric_ids = [int(x['eID']) for x in self._data if x['eID'].isdigit()]
         if len(numeric_ids) == 0:
             return '0'
         else:    

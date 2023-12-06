@@ -1,24 +1,25 @@
 import pandas as pd
-from collections.abc import Iterable
 import numpy as np
+
+from typing import Union, List, Tuple, Optional
 
 from dataclasses import dataclass
 
 @dataclass
 class Electrode:
-    coordinates: Iterable[float]
-    modality: str = None
-    ID: int = None
-    label: str = None
-    _theta: float = None
-    _phi: float = None
+    coordinates: Union[np.ndarray, List[float], Tuple[float, ...]]
+    modality: Optional[str] = None
+    eID: Union[int, str, None] = None
+    label: Optional[str] = None
+    _theta: Optional[float] = None
+    _phi: Optional[float] = None
 
     @property
     def keys(self):
-        return ('ID', 'coordinates', 'modality', 'label')
+        return ('eID', 'coordinates', 'modality', 'label')
     
     @property
-    def spherical_coordinates(self) -> Iterable[float]:
+    def spherical_coordinates(self) -> np.ndarray:
         """Returns the electrode's spherical coordinates."""
         if self._theta is None or self._phi is None:
             self.compute_unit_sphere_spherical_coordinates()
@@ -37,14 +38,14 @@ class Electrode:
     def df(self) -> pd.DataFrame:
         """Returns a DataFrame with the electrode's data."""
         df = pd.DataFrame({
-                "ID": self.ID,
-                "x": self._coordinates[0],
-                "y": self._coordinates[1],
-                "z": self._coordinates[2],
+                "eID": self.eID,
+                "x": self.coordinates[0],
+                "y": self.coordinates[1],
+                "z": self.coordinates[2],
                 "theta": self._theta,
                 "phi": self._phi,
                 "modality": self.modality,
-                "label": self.id if self.label is None else self.label,
+                "label": self.eID if self.label is None else self.label,
             }, index=[0])
         return df
     
@@ -54,6 +55,6 @@ class Electrode:
     def __setitem__(self, item, value):
         setattr(self, item, value)
     
-def compute_distance_between_electrodes(coordinates_1: Iterable[float], coordinates_2: Iterable[float]) -> float:
+def compute_distance_between_electrodes(coordinates_1: np.ndarray, coordinates_2: np.ndarray) -> float:
     """Returns the distance between two electrodes."""
     return np.linalg.norm(coordinates_1-coordinates_2)

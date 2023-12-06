@@ -1,9 +1,14 @@
-from PyQt6.QtWidgets import QAbstractItemView
+from PyQt6.QtWidgets import QAbstractItemView 
 
-from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+try:
+    from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+except ImportError:
+    raise ImportError('Cannot find the VTK Qt bindings, make sure you have installed them')
+
 import vedo as vd
 
 from core.electrode import Electrode
+from core.cap_model import CapModel
 
 class SurfaceView(QAbstractItemView):
     """SurfaceView class for displaying a 3D surface in a Qt application."""
@@ -22,8 +27,8 @@ class SurfaceView(QAbstractItemView):
     def resize_view(self, width, height):
         self._vtk_widget.resize(width, height)
         
-    def setModel(self, model):
-        self.model = model
+    def setModel(self, model: CapModel):
+        self.model: CapModel = model
         self.model.dataChanged.connect(self.dataChanged)
         
     def show(self):
@@ -61,7 +66,7 @@ class SurfaceView(QAbstractItemView):
             eID = self.model.get_next_id()
             electrode = Electrode(point,
                                 modality=self.modality,
-                                ID=eID,
+                                eID=eID,
                                 label=None)
             self.model.insert_electrode(electrode)
             

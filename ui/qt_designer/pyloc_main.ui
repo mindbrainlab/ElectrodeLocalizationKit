@@ -101,6 +101,10 @@ QSpinBox {
 QDoubleSpinBox {
     background-color: white;
     color: #11356B;
+}
+
+QCheckBox {
+    color: #11356B;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -533,7 +537,7 @@ QDoubleSpinBox {
               </font>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_9">
               <attribute name="title">
@@ -957,7 +961,7 @@ QDoubleSpinBox {
                   <number>10000</number>
                  </property>
                  <property name="value">
-                  <number>1000</number>
+                  <number>100</number>
                  </property>
                 </widget>
                </item>
@@ -1105,58 +1109,138 @@ QDoubleSpinBox {
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="head_select_electrodes_button">
+            <widget class="QLabel" name="label_3">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>60</height>
+               <width>0</width>
+               <height>15</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>60</height>
+               <width>16777215</width>
+               <height>15</height>
               </size>
              </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton {
-    margin-top: 30px;
-    }</string>
-             </property>
              <property name="text">
-              <string>Select Electrodes</string>
+              <string>Sphere Size</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="head_extract_electrodes_button">
+            <widget class="QDoubleSpinBox" name="sphere_size_spinbox">
              <property name="minimumSize">
               <size>
-               <width>150</width>
+               <width>0</width>
                <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
+               <width>16777215</width>
                <height>30</height>
               </size>
              </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
+             <property name="decimals">
+              <number>3</number>
              </property>
-             <property name="styleSheet">
-              <string notr="true"/>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.004000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="flagposts_checkbox">
+             <property name="text">
+              <string>Flagposts</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>15</height>
+              </size>
              </property>
              <property name="text">
-              <string>Extract Electrodes</string>
+              <string>Flagposts Size</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="flagpost_size_spinbox">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.500000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Flagposts height</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="flagpost_height_spinbox">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
@@ -1165,35 +1249,6 @@ QDoubleSpinBox {
              <property name="minimumSize">
               <size>
                <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton {
-    margin-top: 30px;
-    }</string>
-             </property>
-             <property name="text">
-              <string>Select Fiducials</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="head_extract_fiducials_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
                <height>30</height>
               </size>
              </property>
@@ -1212,7 +1267,7 @@ QDoubleSpinBox {
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>Extract Fiducials</string>
+              <string>Select Fiducials</string>
              </property>
             </widget>
            </item>
@@ -1331,62 +1386,6 @@ QDoubleSpinBox {
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="mri_select_electrodes_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton {
-    margin-top: 30px;
-    }</string>
-             </property>
-             <property name="text">
-              <string>Select Electrodes</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="mri_extract_fiducials_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Extract Fiducials</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QPushButton" name="mri_select_fiducials_button">
              <property name="minimumSize">
               <size>
@@ -1412,33 +1411,6 @@ QDoubleSpinBox {
              </property>
              <property name="text">
               <string>Select Fiducials</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="mri_extract_electrodes_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Extract Electrodes</string>
              </property>
             </widget>
            </item>

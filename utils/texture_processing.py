@@ -16,7 +16,7 @@ def compute_hough_circles(color_image, dog_image,
 
     circles_image = color_image.copy()
     if circles is not None:
-        circles = np.uint16(np.around(circles))
+        circles = np.uint16(np.around(circles))                                  # type: ignore
         for i in circles[0, :]:                                                  # type: ignore
             center = (i[0], i[1])
             radius = i[2]

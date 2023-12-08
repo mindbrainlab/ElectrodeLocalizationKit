@@ -63,7 +63,7 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
     
     
     def detect_electrodes(self, mesh: vd.Mesh) -> list[Electrode]:
-        for circle in self.circles[0, :]:
+        for circle in self.circles[0, :]: # type: ignore
             vertex = self._get_vertex_from_pixels((circle[0], circle[1]), mesh, self.texture.shape[0:2])
             self.electrodes.append(Electrode(vertex,
                                              modality=self.modality,
@@ -86,8 +86,8 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
             uv_image = [(pixels[0]+0.5)/image_size[0], 1-(pixels[1]+0.5)/image_size[1]]
             
             # find index of closest point in uv with uv_image
-            uv_idx = np.argmin(np.linalg.norm(uv-uv_image, axis=1))
+            uv_idx = np.argmin(np.linalg.norm(uv-uv_image, axis=1)) # type: ignore
             
-            vertex = vertices[uv_idx]
+            vertex = vertices[uv_idx] # type: ignore
             
             return vertex

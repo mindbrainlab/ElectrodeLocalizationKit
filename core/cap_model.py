@@ -66,13 +66,13 @@ class CapModel(QAbstractTableModel):
             # id_to_remove = self._data[min_index]['ID']
             self.remove_electrode(min_index)
     
-    def get_next_id(self) -> str:
-        """Returns the next available ID for a new point."""
-        numeric_ids = [int(x['eID']) for x in self._data if x['eID'].isdigit()]
-        if len(numeric_ids) == 0:
-            return '0'
-        else:    
-            return str(np.max(numeric_ids) + 1)
+    # def get_next_id(self) -> str:
+    #     """Returns the next available ID for a new point."""
+    #     numeric_ids = [int(x['eID']) for x in self._data if x['eID'].isdigit()]
+    #     if len(numeric_ids) == 0:
+    #         return '0'
+    #     else:    
+    #         return str(np.max(numeric_ids) + 1)
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:

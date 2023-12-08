@@ -7,16 +7,15 @@ from dataclasses import dataclass
 
 @dataclass
 class Electrode:
-    coordinates: Union[np.ndarray, List[float], Tuple[float, ...]]
+    coordinates: np.ndarray | List[float] | Tuple[float, ...]
     modality: Optional[str] = None
-    eID: Union[int, str, None] = None
     label: Optional[str] = None
     _theta: Optional[float] = None
     _phi: Optional[float] = None
 
     @property
     def keys(self):
-        return ('eID', 'coordinates', 'modality', 'label')
+        return ('coordinates', 'modality', 'label')
     
     @property
     def spherical_coordinates(self) -> np.ndarray:
@@ -38,14 +37,13 @@ class Electrode:
     def df(self) -> pd.DataFrame:
         """Returns a DataFrame with the electrode's data."""
         df = pd.DataFrame({
-                "eID": self.eID,
                 "x": self.coordinates[0],
                 "y": self.coordinates[1],
                 "z": self.coordinates[2],
                 "theta": self._theta,
                 "phi": self._phi,
                 "modality": self.modality,
-                "label": self.eID if self.label is None else self.label,
+                "label": self.label,
             }, index=[0])
         return df
     

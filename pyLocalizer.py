@@ -46,6 +46,12 @@ class StartQt6(QMainWindow):
         self.ui.min_dist_spinbox.valueChanged.connect(self.display_hough)
         self.ui.min_radius_spinbox.valueChanged.connect(self.display_hough)
         self.ui.max_radius_spinbox.valueChanged.connect(self.display_hough)
+        self.ui.sphere_size_spinbox.valueChanged.connect(self.update_surf_config)
+        self.ui.flagposts_checkbox.stateChanged.connect(self.update_surf_config)
+        self.ui.flagpost_height_spinbox.valueChanged.connect(self.update_surf_config)
+        self.ui.flagpost_size_spinbox.valueChanged.connect(self.update_surf_config)
+        
+        self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
         
         self.ui.compute_electrodes_button.clicked.connect(
             self.detect_electrodes)
@@ -74,6 +80,8 @@ class StartQt6(QMainWindow):
         
         frame_size = self.ui.headmodel_frame.size()
         self.surface_view.resize_view(frame_size.width(), frame_size.height())
+        
+        self.surface_view_config = {}
         
         self.dog_hough_detector = DogHoughElectrodeDetector(self.texture_file)
         
@@ -207,11 +215,21 @@ class StartQt6(QMainWindow):
                  label_size.height(),
                  Qt.AspectRatioMode.KeepAspectRatio,
                  Qt.TransformationMode.FastTransformation)
+             
+    def set_head_surf_alpha(self):
+        self.surface_view.update_surf_alpha(self.ui.head_alpha_slider.value()/100)
+             
+    def update_surf_config(self):
+        if self.surface_view is not None:
+            self.surface_view_config["sphere_size"] = self.ui.sphere_size_spinbox.value()
+            self.surface_view_config["draw_flagposts"] = self.ui.flagposts_checkbox.isChecked()
+            self.surface_view_config["flagpost_height"] = self.ui.flagpost_height_spinbox.value()
+            self.surface_view_config["flagpost_size"] = self.ui.flagpost_size_spinbox.value()
+            self.surface_view.update_config(self.surface_view_config)
 
     def on_close(self):
         self.surface_view.close_vtk_widget()
         
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myapp = StartQt6()

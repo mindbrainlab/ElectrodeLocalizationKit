@@ -5,6 +5,8 @@ from collections.abc import Iterable
 
 from .electrode import Electrode
 
+from icecream import ic
+
 class CapModel(QAbstractTableModel):
     """CapModel class for displaying a list of electrodes in a Qt application."""
     def __init__(self, data: list = []):
@@ -48,23 +50,30 @@ class CapModel(QAbstractTableModel):
         self._data.pop(electrode_index)
         self.endRemoveRows()
     
-    def _calculate_distances(self, target_coordinates: Iterable[float]) -> list[float]:
+    def _calculate_distances(self, target_coordinates: Iterable[float], modality) -> list[tuple[int, float]]:
         """Calculates the distances between the given point and all points in the electrode cap."""
         distances = []
-        for electrode in self._data:
+        for idx, electrode in enumerate(self._data):
             point = np.array(electrode.coordinates)
-            distances.append(np.linalg.norm(point-target_coordinates))
+            dist =  np.linalg.norm(point-target_coordinates)
+            distances.append((idx, dist))
         return distances    
 
-    def remove_closest_electrode(self, target_coordinates: Iterable[float]) -> None:
+    def remove_closest_electrode(self, target_coordinates: Iterable[float], modality: str) -> None:
         """Removes the point in the electrode cap closest to the given point."""
-        distances = self._calculate_distances(target_coordinates)
+        distances = self._calculate_distances(target_coordinates, modality)
         
         # remove the point with the smallest distance
         if len(distances) > 0:
-            min_index= np.argmin(distances)
+            min_distance = min(distances, key=lambda x: x[1])
+            # min_index= np.argmin(distances) 
             # id_to_remove = self._data[min_index]['ID']
-            self.remove_electrode(min_index)
+            self.remove_electrode(min_distance[0])
+            
+        # if electrode.modality != modality:
+        #         continue
+        #     ic(electrode.modality)
+        #     ic(modality)
     
     # def get_next_id(self) -> str:
     #     """Returns the next available ID for a new point."""

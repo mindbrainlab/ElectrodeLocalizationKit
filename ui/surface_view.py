@@ -57,6 +57,8 @@ class SurfaceView(QAbstractItemView):
         points_unlabeled = []
         points_labeled = []
         for i in range(self.model.rowCount()):
+            if self.model.get_electrode(i).modality != self.modality:
+                continue
             point = self.model.get_electrode(i).coordinates
             label = self.model.get_electrode(i).label
             if label is None or label == "" or label == "None":
@@ -115,7 +117,7 @@ class SurfaceView(QAbstractItemView):
     def _on_right_click(self, evt):
         point = evt.picked3d
         if point is not None:
-            self.model.remove_closest_electrode(point)
+            self.model.remove_closest_electrode(point, self.modality)
             
             self.render_electrodes()
             self.model.layoutChanged.emit()
@@ -133,10 +135,10 @@ class SurfaceView(QAbstractItemView):
         self._plotter.render()
         
     def _set_config_defaults(self):
-        self.config.setdefault("sphere_size", 0.004)
+        self.config.setdefault("sphere_size", 0.02)
         self.config.setdefault("draw_flagposts", False)
-        self.config.setdefault("flagpost_size", 0.5)
-        self.config.setdefault("flagpost_height", 0.01)
+        self.config.setdefault("flagpost_size", 0.6)
+        self.config.setdefault("flagpost_height", 0.05)
     
     def close_vtk_widget(self):
         self._vtk_widget.close()

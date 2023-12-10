@@ -1145,10 +1145,10 @@ QCheckBox {
               <number>3</number>
              </property>
              <property name="singleStep">
-              <double>0.001000000000000</double>
+              <double>0.005000000000000</double>
              </property>
              <property name="value">
-              <double>0.004000000000000</double>
+              <double>0.020000000000000</double>
              </property>
             </widget>
            </item>
@@ -1199,7 +1199,7 @@ QCheckBox {
               <double>0.100000000000000</double>
              </property>
              <property name="value">
-              <double>0.500000000000000</double>
+              <double>0.600000000000000</double>
              </property>
             </widget>
            </item>
@@ -1240,7 +1240,7 @@ QCheckBox {
               <double>0.010000000000000</double>
              </property>
              <property name="value">
-              <double>0.010000000000000</double>
+              <double>0.050000000000000</double>
              </property>
             </widget>
            </item>
@@ -1406,11 +1406,147 @@ QCheckBox {
              </property>
              <property name="styleSheet">
               <string notr="true">QPushButton {
-    margin-top: 30px;
+    margin-bottom: 30px;
     }</string>
              </property>
              <property name="text">
               <string>Select Fiducials</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_8">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Sphere Size</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="mri_sphere_size_spinbox">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="singleStep">
+              <double>0.005000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.020000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="mri_flagposts_checkbox">
+             <property name="text">
+              <string>Flagposts</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_9">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Flagposts Size</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="mri_flagpost_size_spinbox">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.600000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Flagposts height</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="mri_flagpost_height_spinbox">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.050000000000000</double>
              </property>
             </widget>
            </item>

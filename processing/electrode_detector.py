@@ -69,7 +69,27 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
                                              modality=self.modality,
                                              label="None"))
             
+        electrodes_to_remove = self._get_electrodes_too_close_together()
+               
+        self.electrodes = [electrode
+                           for i, electrode in enumerate(self.electrodes)
+                           if i not in electrodes_to_remove]
+            
         return self.electrodes
+    
+    def _get_electrodes_too_close_together(self, min_distance: float = 0.075) -> list:
+        electrodes_to_remove = []
+        dist_matrix = np.zeros((len(self.electrodes), len(self.electrodes)))
+        for i, electrode_a in enumerate(self.electrodes):
+            for j, electrode_b in enumerate(self.electrodes):
+                if i != j:
+                    dist = np.linalg.norm(
+                        electrode_a.coordinates - electrode_b.coordinates)
+                    if dist < min_distance:
+                        electrodes_to_remove.append(i)
+                        electrodes_to_remove.append(j)
+                    
+        return electrodes_to_remove
                                                
     def _get_vertex_from_pixels(self, pixels: tuple[float, float], mesh: vd.Mesh, image_size) -> np.ndarray:
             # Helper function to get the vertex from the mesh that corresponds to

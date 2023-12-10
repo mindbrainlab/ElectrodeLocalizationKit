@@ -1,3 +1,4 @@
+from random import sample
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QApplication
 from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QImage, QPixmap, QResizeEvent
@@ -10,7 +11,7 @@ import sys
 import numpy as np
 
 from core.cap_model import CapModel
-from core.head_models import HeadScan
+from core.head_models import HeadScan, MRIScan
 from processing.electrode_detector import DogHoughElectrodeDetector
 from ui.surface_view import SurfaceView
         
@@ -33,6 +34,8 @@ class StartQt6(QMainWindow):
         self.ui.load_texture_button.clicked.connect(self.load_texture)
         self.ui.display_head_button.clicked.connect(self.display_surface)
         
+        self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
+        
         self.ui.display_dog_button.clicked.connect(self.display_dog)
         self.ui.kernel_size_spinbox.valueChanged.connect(self.display_dog)
         self.ui.sigma_spinbox.valueChanged.connect(self.display_dog)
@@ -46,12 +49,19 @@ class StartQt6(QMainWindow):
         self.ui.min_dist_spinbox.valueChanged.connect(self.display_hough)
         self.ui.min_radius_spinbox.valueChanged.connect(self.display_hough)
         self.ui.max_radius_spinbox.valueChanged.connect(self.display_hough)
+        
         self.ui.sphere_size_spinbox.valueChanged.connect(self.update_surf_config)
         self.ui.flagposts_checkbox.stateChanged.connect(self.update_surf_config)
         self.ui.flagpost_height_spinbox.valueChanged.connect(self.update_surf_config)
         self.ui.flagpost_size_spinbox.valueChanged.connect(self.update_surf_config)
         
+        self.ui.mri_sphere_size_spinbox.valueChanged.connect(self.update_mri_config)
+        self.ui.mri_flagposts_checkbox.stateChanged.connect(self.update_mri_config)
+        self.ui.mri_flagpost_height_spinbox.valueChanged.connect(self.update_mri_config)
+        self.ui.mri_flagpost_size_spinbox.valueChanged.connect(self.update_mri_config)
+        
         self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
+        self.ui.mri_alpha_slider.valueChanged.connect(self.set_mri_surf_alpha)
         
         self.ui.compute_electrodes_button.clicked.connect(
             self.detect_electrodes)
@@ -71,7 +81,16 @@ class StartQt6(QMainWindow):
         if self.surface_file and self.texture_file:
             self.head_scan = HeadScan(self.surface_file, self.texture_file)
             
+        self.mri_file = 'sample_data/bem_outer_skin_surface.gii'
+        
+        if self.mri_file:
+            self.mri_scan = MRIScan(self.mri_file)
+        
+            
         # ======================================================================
+        
+        
+        
         
         self.surface_view = SurfaceView(self.ui.headmodel_frame,
                                         self.head_scan.mesh,
@@ -83,7 +102,23 @@ class StartQt6(QMainWindow):
         
         self.surface_view_config = {}
         
+        
+        
+        
+        self.mri_surface_view = SurfaceView(self.ui.mri_frame,
+                                            self.mri_scan.mesh,
+                                            self.mri_scan.modality)
+        self.mri_surface_view.setModel(self.model)
+        frame_size = self.ui.mri_frame.size()
+        self.mri_surface_view.resize_view(frame_size.width(), frame_size.height())
+        
+        self.mri_surface_view_config = {}
+        
+        
+        
         self.dog_hough_detector = DogHoughElectrodeDetector(self.texture_file)
+        
+        
         
         # set status bar
         self.ui.statusbar.showMessage('Welcome!')
@@ -116,6 +151,12 @@ class StartQt6(QMainWindow):
         self.surface_view.resize_view(frame_size.width(), frame_size.height())
         
         self.surface_view.show()
+        
+    def display_mri_surface(self):
+        frame_size = self.ui.mri_frame.size()
+        self.mri_surface_view.resize_view(frame_size.width(), frame_size.height())
+        
+        self.mri_surface_view.show()
 
     def onMouseClick(self, evt):
         vd.printc("You have clicked your mouse button. Event info:\n",
@@ -218,7 +259,10 @@ class StartQt6(QMainWindow):
              
     def set_head_surf_alpha(self):
         self.surface_view.update_surf_alpha(self.ui.head_alpha_slider.value()/100)
-             
+        
+    def set_mri_surf_alpha(self):
+        self.mri_surface_view.update_surf_alpha(self.ui.mri_alpha_slider.value()/100)
+    
     def update_surf_config(self):
         if self.surface_view is not None:
             self.surface_view_config["sphere_size"] = self.ui.sphere_size_spinbox.value()
@@ -226,6 +270,14 @@ class StartQt6(QMainWindow):
             self.surface_view_config["flagpost_height"] = self.ui.flagpost_height_spinbox.value()
             self.surface_view_config["flagpost_size"] = self.ui.flagpost_size_spinbox.value()
             self.surface_view.update_config(self.surface_view_config)
+            
+    def update_mri_config(self):
+        if self.mri_surface_view is not None:
+            self.mri_surface_view_config["sphere_size"] = self.ui.mri_sphere_size_spinbox.value()
+            self.mri_surface_view_config["draw_flagposts"] = self.ui.mri_flagposts_checkbox.isChecked()
+            self.mri_surface_view_config["flagpost_height"] = self.ui.mri_flagpost_height_spinbox.value()
+            self.mri_surface_view_config["flagpost_size"] = self.ui.mri_flagpost_size_spinbox.value()
+            self.mri_surface_view.update_config(self.mri_surface_view_config)
 
     def on_close(self):
         self.surface_view.close_vtk_widget()

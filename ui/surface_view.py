@@ -28,6 +28,10 @@ class SurfaceView(QAbstractItemView):
         
         self.mesh = mesh
         
+        self._plotter.add(self.mesh)
+        
+        self.secondary_mesh = None
+        
         if self.mesh is not None:
             self.mesh_centroid = np.mean(self.mesh.points(), 0) # type: ignore
         else:
@@ -46,18 +50,23 @@ class SurfaceView(QAbstractItemView):
         self.model.dataChanged.connect(self.dataChanged)
         
     def show(self):
-        msg = vd.Text2D(pos='bottom-left', font="VictorMono") # an empty text
-        self._plotter.show(self.mesh, msg, __doc__)
+        # msg = vd.Text2D(pos='bottom-left', font="VictorMono") # an empty text
+        # self._plotter.show(self.mesh, msg, __doc__)
+        self._plotter.show()
         self.render_electrodes()
         
     def render_electrodes(self):
-        if len(self._plotter.actors) > 2:
-            self._plotter.remove(self._plotter.actors[2:])
+        start_electrodes_idx = 1
+        if self.secondary_mesh is not None:
+            start_electrodes_idx = 2
+        
+        if len(self._plotter.actors) > start_electrodes_idx:
+            self._plotter.remove(self._plotter.actors[start_electrodes_idx:])
         
         points_unlabeled = []
         points_labeled = []
         for i in range(self.model.rowCount()):
-            if self.model.get_electrode(i).modality != self.modality:
+            if self.model.get_electrode(i).modality != self.modality or self.modality == "both":
                 continue
             point = self.model.get_electrode(i).coordinates
             label = self.model.get_electrode(i).label
@@ -133,6 +142,21 @@ class SurfaceView(QAbstractItemView):
     def update_surf_alpha(self, alpha: float):
         self._plotter.actors[0].alpha(alpha)
         self._plotter.render()
+        
+    def update_secondary_surf_alpha(self, alpha: float):
+        self._plotter.actors[1].alpha(alpha)
+        self._plotter.render()
+        
+    def add_secondary_mesh(self, mesh: vd.Mesh):
+        self.secondary_mesh = mesh
+        self._plotter.add(mesh)
+        self._plotter.render()
+        
+    def remove_secondary_mesh(self):
+        if self.secondary_mesh is not None:
+            self._plotter.remove(self.secondary_mesh)
+            self.secondary_mesh = None
+            self._plotter.render()
         
     def _set_config_defaults(self):
         self.config.setdefault("sphere_size", 0.02)

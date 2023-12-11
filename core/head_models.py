@@ -53,7 +53,7 @@ except ImportError:
 #         pass
 
 class HeadScan():
-    def __init__(self, surface_file: str, texture_file: str = ""):
+    def __init__(self, surface_file: str, texture_file: str | None = None):
         self.surface_file = surface_file
         self.texture_file = texture_file
         self.mesh = vd.Mesh(surface_file)
@@ -64,7 +64,7 @@ class HeadScan():
         
         self.normalize()
         
-        if texture_file != "":
+        if texture_file:
             self.apply_texture(texture_file)
             
     def normalize(self):

@@ -250,8 +250,14 @@ QCheckBox {
         <height>280</height>
        </size>
       </property>
+      <property name="baseSize">
+       <size>
+        <width>1013</width>
+        <height>798</height>
+       </size>
+      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_7">
        <attribute name="title">
@@ -1282,6 +1288,12 @@ QCheckBox {
             <height>0</height>
            </size>
           </property>
+          <property name="baseSize">
+           <size>
+            <width>1013</width>
+            <height>798</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -1296,404 +1308,414 @@ QCheckBox {
        <attribute name="title">
         <string>MRI</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item alignment="Qt::AlignTop">
-         <widget class="QWidget" name="widget_6" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>170</width>
-            <height>600</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>170</width>
-            <height>600</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QPushButton" name="display_mri_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Display</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_12">
-             <property name="minimumSize">
-              <size>
-               <width>111</width>
-               <height>16</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>111</width>
-               <height>16</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Alpha: </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSlider" name="mri_alpha_slider">
-             <property name="minimumSize">
-              <size>
-               <width>121</width>
-               <height>22</height>
-              </size>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="value">
-              <number>100</number>
-             </property>
-             <property name="sliderPosition">
-              <number>100</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="mri_select_fiducials_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton {
+       <widget class="QWidget" name="widget_6" native="true">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>12</y>
+          <width>170</width>
+          <height>600</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>170</width>
+          <height>600</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>170</width>
+          <height>600</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QPushButton" name="display_mri_button">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Display</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="minimumSize">
+            <size>
+             <width>111</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>111</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Alpha: </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="mri_alpha_slider">
+           <property name="minimumSize">
+            <size>
+             <width>121</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+           <property name="sliderPosition">
+            <number>100</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="mri_select_fiducials_button">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
     margin-bottom: 30px;
     }</string>
-             </property>
-             <property name="text">
-              <string>Select Fiducials</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_8">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>15</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>15</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Sphere Size</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="mri_sphere_size_spinbox">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="singleStep">
-              <double>0.005000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.020000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="mri_flagposts_checkbox">
-             <property name="text">
-              <string>Flagposts</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_9">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>15</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>15</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Flagposts Size</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="mri_flagpost_size_spinbox">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="decimals">
-              <number>1</number>
-             </property>
-             <property name="singleStep">
-              <double>0.100000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_10">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>15</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>15</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Flagposts height</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="mri_flagpost_height_spinbox">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="singleStep">
-              <double>0.010000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.050000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="align_scan_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton {
+           </property>
+           <property name="text">
+            <string>Select Fiducials</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>15</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Sphere Size</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="mri_sphere_size_spinbox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="singleStep">
+            <double>0.005000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.020000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="mri_flagposts_checkbox">
+           <property name="text">
+            <string>Flagposts</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>15</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Flagposts Size</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="mri_flagpost_size_spinbox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.600000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>15</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Flagposts height</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="mri_flagpost_height_spinbox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.050000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="align_scan_button">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
     margin-top: 30px;
     }</string>
-             </property>
-             <property name="text">
-              <string>Align Scan</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="revert_alignment_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Revert Alignment</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="display_alignment_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Display with Scan</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="minimumSize">
-              <size>
-               <width>111</width>
-               <height>16</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>111</width>
-               <height>16</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Headmodel Alpha: </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSlider" name="mri_head_alpha_slider">
-             <property name="minimumSize">
-              <size>
-               <width>121</width>
-               <height>22</height>
-              </size>
-             </property>
-             <property name="maximum">
-              <number>100</number>
-             </property>
-             <property name="value">
-              <number>100</number>
-             </property>
-             <property name="sliderPosition">
-              <number>100</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QFrame" name="mri_frame">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
+           </property>
+           <property name="text">
+            <string>Align Scan</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="revert_alignment_button">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Revert Alignment</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="display_alignment_button">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Display with Scan</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_13">
+           <property name="minimumSize">
+            <size>
+             <width>111</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>111</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Headmodel Alpha: </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="mri_head_alpha_slider">
+           <property name="minimumSize">
+            <size>
+             <width>121</width>
+             <height>22</height>
+            </size>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+           <property name="sliderPosition">
+            <number>100</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QFrame" name="mri_frame">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>12</y>
+          <width>1013</width>
+          <height>798</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_6">
        <attribute name="title">

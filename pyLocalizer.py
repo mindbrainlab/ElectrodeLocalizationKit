@@ -10,6 +10,8 @@ import vedo as vd
 import sys
 import numpy as np
 
+from icecream import ic
+
 from core.cap_model import CapModel
 from core.head_models import HeadScan, MRIScan
 from processing.electrode_detector import DogHoughElectrodeDetector
@@ -32,9 +34,12 @@ class StartQt6(QMainWindow):
         # connect signals and slots
         self.ui.load_surface_button.clicked.connect(self.load_surface)
         self.ui.load_texture_button.clicked.connect(self.load_texture)
+        self.ui.load_mri_button.clicked.connect(self.load_mri)
         self.ui.display_head_button.clicked.connect(self.display_surface)
         
         self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
+        
+        self.ui.display_alignment_button.clicked.connect(self.display_alignment)
         
         self.ui.display_dog_button.clicked.connect(self.display_dog)
         self.ui.kernel_size_spinbox.valueChanged.connect(self.display_dog)
@@ -62,6 +67,7 @@ class StartQt6(QMainWindow):
         
         self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
         self.ui.mri_alpha_slider.valueChanged.connect(self.set_mri_surf_alpha)
+        self.ui.mri_head_alpha_slider.valueChanged.connect(self.set_alignment_surf_alpha)
         
         self.ui.compute_electrodes_button.clicked.connect(
             self.detect_electrodes)
@@ -69,102 +75,108 @@ class StartQt6(QMainWindow):
         self.ui.centralwidget.resizeEvent = self.on_resize       # type: ignore
         self.ui.centralwidget.closeEvent = self.on_close         # type: ignore
                 
+        self.surface_file = None
+        self.texture_file = None
+        self.mri_file = None
+        self.surface_view = None
+        self.mri_surface_view = None
         self.image = None
         self.dog = None
-        
         self.circles = None
         
-        # temporary ===========================================================
-        self.surface_file = '/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj'
-        self.texture_file = '/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.jpg'
-        
-        if self.surface_file and self.texture_file:
-            self.head_scan = HeadScan(self.surface_file, self.texture_file)
-            
-        self.mri_file = 'sample_data/bem_outer_skin_surface.gii'
-        
-        if self.mri_file:
-            self.mri_scan = MRIScan(self.mri_file)
-        
-            
-        # ======================================================================
-        
-        
-        
-        
-        self.surface_view = SurfaceView(self.ui.headmodel_frame,
-                                        self.head_scan.mesh,
-                                        self.head_scan.modality)
-        self.surface_view.setModel(self.model)
-        
-        frame_size = self.ui.headmodel_frame.size()
-        self.surface_view.resize_view(frame_size.width(), frame_size.height())
-        
-        self.surface_view_config = {}
-        
-        
-        
-        
-        self.mri_surface_view = SurfaceView(self.ui.mri_frame,
-                                            self.mri_scan.mesh,
-                                            self.mri_scan.modality)
-        self.mri_surface_view.setModel(self.model)
-        frame_size = self.ui.mri_frame.size()
-        self.mri_surface_view.resize_view(frame_size.width(), frame_size.height())
-        
-        self.mri_surface_view_config = {}
-        
-        
-        
-        self.dog_hough_detector = DogHoughElectrodeDetector(self.texture_file)
-        
-        
+        self.load_texture()
+        self.load_surface()
+        self.load_mri()
         
         # set status bar
         self.ui.statusbar.showMessage('Welcome!')
         
     # define slots (functions)
     def load_surface(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Open Surface File",
-            "",
-            "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)"
-            )
-        if file_path:
-            self.surface_file = file_path
+        # file_path, _ = QFileDialog.getOpenFileName(
+        #     self,
+        #     "Open Surface File",
+        #     "",
+        #     "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)"
+        #     )
+        # if file_path:
+        #     self.surface_file = file_path
+        
+        self.surface_file = '/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj'
+        
+        self.ui.statusbar.showMessage("Loaded surface file.")
+        
+        self.prepare_surface()
 
     def load_texture(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Open Texture File",
-            "",
-            "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
-            )
-        if file_path:
-            self.texture_file = file_path
+        # file_path, _ = QFileDialog.getOpenFileName(
+        #     self,
+        #     "Open Texture File",
+        #     "",
+        #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
+        #     )
+        # if file_path:
+        #     self.texture_file = file_path
+        
+        self.texture_file = '/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.jpg'
+        self.dog_hough_detector = DogHoughElectrodeDetector(self.texture_file)
+        
+        self.ui.statusbar.showMessage("Loaded texture file.")
+        
+        self.prepare_surface()
 
+    def load_mri(self):
+        # file_path, _ = QFileDialog.getOpenFileName(
+        #     self,
+        #     "Open MRI File",
+        #     "",
+        #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
+        #     )
+        # if file_path:
+        #     self.mri_file = file_path
+
+        self.mri_file = 'sample_data/bem_outer_skin_surface.gii'
+        
+        if self.mri_file:
+            self.mri_scan = MRIScan(self.mri_file)
+            
+            self.mri_surface_view = SurfaceView(self.ui.mri_frame,
+                                            self.mri_scan.mesh,
+                                            self.mri_scan.modality)
+            self.mri_surface_view.setModel(self.model)
+            self.mri_surface_view_config = {}
+            
+            self.ui.statusbar.showMessage("Loaded MRI file.")
+            
+    def prepare_surface(self):
+        if self.surface_file:
+            self.head_scan = HeadScan(self.surface_file, self.texture_file)
+            
+            self.surface_view = SurfaceView(self.ui.headmodel_frame,
+                                    self.head_scan.mesh,
+                                    self.head_scan.modality)
+            self.surface_view.setModel(self.model)
+            self.surface_view_config = {}
+            
+            self.ui.statusbar.showMessage("Prepared headscan.")
+            
     def display_surface(self):
-        self.surface_view.setModel(self.model)
-        
-        frame_size = self.ui.headmodel_frame.size()
-        self.surface_view.resize_view(frame_size.width(), frame_size.height())
-        
-        self.surface_view.show()
+        if self.surface_view is not None:
+            frame_size = self.ui.headmodel_frame.size()
+            self.surface_view.resize_view(frame_size.width(), frame_size.height())
+            
+            self.surface_view.show()
         
     def display_mri_surface(self):
-        frame_size = self.ui.mri_frame.size()
-        self.mri_surface_view.resize_view(frame_size.width(), frame_size.height())
+        if self.mri_surface_view is not None:
+            frame_size = self.ui.mri_frame.size()
+            self.mri_surface_view.resize_view(frame_size.width(), frame_size.height())
         
-        self.mri_surface_view.show()
-
-    def onMouseClick(self, evt):
-        vd.printc("You have clicked your mouse button. Event info:\n",
-                  evt,
-                  c='y')
-
-    def onKeypress(self, evt):
-        vd.printc("You have pressed key:", evt.keypress, c='b')
+            self.mri_surface_view.show()
+            
+    def display_alignment(self):
+        if self.head_scan is not None and self.mri_surface_view is not None:
+            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh)
         
     def get_vertex_from_pixels(self, pixels, mesh, image_size):
         # Helper function to get the vertex from the mesh that corresponds to
@@ -187,7 +199,7 @@ class StartQt6(QMainWindow):
         
         return vertices[uv_idx]
 
-    @pyqtSlot()
+    # @pyqtSlot()
     def display_dog(self):
         self.dog = self.dog_hough_detector.get_difference_of_gaussians(
             ksize=self.ui.kernel_size_spinbox.value(),
@@ -207,7 +219,7 @@ class StartQt6(QMainWindow):
 
         self.ui.photo_label.setPixmap(QPixmap.fromImage(self.dog_qimage))
         
-    @pyqtSlot()
+    # @pyqtSlot()
     def display_hough(self):
         self.hough = self.dog_hough_detector.get_hough_circles(
             param1=self.ui.param1_spinbox.value(),
@@ -229,7 +241,7 @@ class StartQt6(QMainWindow):
 
         self.ui.photo_label.setPixmap(QPixmap.fromImage(self.hough_qimage))
         
-    @pyqtSlot()
+    # @pyqtSlot()
     def detect_electrodes(self):
         self.electrodes = self.dog_hough_detector.detect_electrodes(
             self.head_scan.mesh)
@@ -237,11 +249,16 @@ class StartQt6(QMainWindow):
             self.model.insert_electrode(electrode)
 
     def on_resize(self, event: QResizeEvent | None):
-        frame_size = self.ui.headmodel_frame.size()
+        scan_frame_size = self.ui.headmodel_frame.size()
+        mri_frame_size = self.ui.mri_frame.size()
         
         if self.surface_view is not None:
-            self.surface_view.resize_view(frame_size.width(),
-                                          frame_size.height())
+            self.surface_view.resize_view(scan_frame_size.width(),
+                                          scan_frame_size.height())
+            
+        if self.mri_surface_view is not None:
+            self.mri_surface_view.resize_view(mri_frame_size.width(),
+                                              mri_frame_size.height())
         
         if self.dog is not None:
              label_size = self.ui.texture_frame.size()
@@ -258,10 +275,16 @@ class StartQt6(QMainWindow):
                  Qt.TransformationMode.FastTransformation)
              
     def set_head_surf_alpha(self):
-        self.surface_view.update_surf_alpha(self.ui.head_alpha_slider.value()/100)
+        if self.surface_view is not None:
+            self.surface_view.update_surf_alpha(self.ui.head_alpha_slider.value()/100)
         
     def set_mri_surf_alpha(self):
-        self.mri_surface_view.update_surf_alpha(self.ui.mri_alpha_slider.value()/100)
+        if self.mri_surface_view is not None:
+            self.mri_surface_view.update_surf_alpha(self.ui.mri_alpha_slider.value()/100)
+            
+    def set_alignment_surf_alpha(self):
+        if self.mri_surface_view is not None:
+            self.mri_surface_view.update_secondary_surf_alpha(self.ui.mri_head_alpha_slider.value()/100)
     
     def update_surf_config(self):
         if self.surface_view is not None:
@@ -280,7 +303,11 @@ class StartQt6(QMainWindow):
             self.mri_surface_view.update_config(self.mri_surface_view_config)
 
     def on_close(self):
-        self.surface_view.close_vtk_widget()
+        if self.surface_view is not None:
+            self.surface_view.close_vtk_widget()
+            
+        if self.mri_surface_view is not None:
+            self.mri_surface_view.close_vtk_widget()
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)

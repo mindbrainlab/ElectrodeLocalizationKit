@@ -1,11 +1,7 @@
-from re import T
 import vedo as vd
 
 from abc import ABC, abstractmethod
-from typing import Union, List
 import numpy as np
-
-from .electrode import Electrode
 
 import vedo as vd
 
@@ -16,43 +12,19 @@ try:
 except ImportError:
     import vtkmodules.all as vtk
 
-# class BaseHeadModel(ABC):
+class BaseHeadModel(ABC):
     
-#     @property
-#     @abstractmethod
-#     def mesh(self):
-#         pass
-    
-#     @mesh.setter
-#     @abstractmethod
-#     def mesh(self, mesh: vd.Mesh):
-#         pass
-    
-#     @property
-#     @abstractmethod
-#     def fiducials(self):
-#         pass
-    
-#     @fiducials.setter
-#     @abstractmethod
-#     def fiducials(self, fiducials: Union[List[float], np.ndarray]):
-#         pass
-    
-#     @property
-#     @abstractmethod
-#     def modality(self):
-#         pass
-    
-#     @modality.setter
-#     @abstractmethod
-#     def modality(self, modality: str):
-#         pass
-    
-#     @abstractmethod
-#     def apply_transformation(self, transformation):
-#         pass
+    @abstractmethod
+    def normalize(self):
+        pass
+        
+    def rescale_to_original_size(self):
+        pass
+            
+    def apply_transformation(self, transformation):
+        pass
 
-class HeadScan():
+class HeadScan(BaseHeadModel):
     def __init__(self, surface_file: str, texture_file: str | None = None):
         self.surface_file = surface_file
         self.texture_file = texture_file
@@ -80,7 +52,7 @@ class HeadScan():
         self.mesh = self.mesh.texture(texture_file)
     
 # not implemented yet
-class MRIScan():
+class MRIScan(BaseHeadModel):
     def __init__(self, mri_file: str):
         
         img = nib.load(mri_file)                                                 # type: ignore

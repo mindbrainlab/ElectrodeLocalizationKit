@@ -16,6 +16,7 @@ from core.cap_model import CapModel
 from core.head_models import HeadScan, MRIScan
 from processing.electrode_detector import DogHoughElectrodeDetector
 from ui.surface_view import SurfaceView
+from processing.surface_registrator import LandmarkSurfaceRegistrator
         
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
@@ -38,6 +39,8 @@ class StartQt6(QMainWindow):
         self.ui.display_head_button.clicked.connect(self.display_surface)
         
         self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
+        
+        self.ui.align_scan_button.clicked.connect(self.align_scan_to_mri)
         
         self.ui.display_alignment_button.clicked.connect(self.display_alignment)
         
@@ -69,8 +72,7 @@ class StartQt6(QMainWindow):
         self.ui.mri_alpha_slider.valueChanged.connect(self.set_mri_surf_alpha)
         self.ui.mri_head_alpha_slider.valueChanged.connect(self.set_alignment_surf_alpha)
         
-        self.ui.compute_electrodes_button.clicked.connect(
-            self.detect_electrodes)
+        self.ui.compute_electrodes_button.clicked.connect(self.detect_electrodes)
                 
         self.ui.centralwidget.resizeEvent = self.on_resize       # type: ignore
         self.ui.centralwidget.closeEvent = self.on_close         # type: ignore
@@ -153,7 +155,7 @@ class StartQt6(QMainWindow):
             self.head_scan = HeadScan(self.surface_file, self.texture_file)
             
             self.surface_view = SurfaceView(self.ui.headmodel_frame,
-                                    self.head_scan.mesh,
+                                    self.head_scan.mesh, # type: ignore
                                     self.head_scan.modality)
             self.surface_view.setModel(self.model)
             self.surface_view_config = {}
@@ -176,7 +178,7 @@ class StartQt6(QMainWindow):
             
     def display_alignment(self):
         if self.head_scan is not None and self.mri_surface_view is not None:
-            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh)
+            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
         
     def get_vertex_from_pixels(self, pixels, mesh, image_size):
         # Helper function to get the vertex from the mesh that corresponds to
@@ -244,7 +246,7 @@ class StartQt6(QMainWindow):
     # @pyqtSlot()
     def detect_electrodes(self):
         self.electrodes = self.dog_hough_detector.detect_electrodes(
-            self.head_scan.mesh)
+            self.head_scan.mesh) # type: ignore
         for electrode in self.electrodes:
             self.model.insert_electrode(electrode)
 
@@ -301,6 +303,33 @@ class StartQt6(QMainWindow):
             self.mri_surface_view_config["flagpost_height"] = self.ui.mri_flagpost_height_spinbox.value()
             self.mri_surface_view_config["flagpost_size"] = self.ui.mri_flagpost_size_spinbox.value()
             self.mri_surface_view.update_config(self.mri_surface_view_config)
+
+    def align_scan_to_mri(self):
+        scan_labeled_electrodes = self.model.get_labeled_electrodes('scan')
+        mri_labeled_electrodes = self.model.get_labeled_electrodes('mri')
+        
+        scan_landmarks = []
+        mri_landmarks = []
+        for electrode_i in scan_labeled_electrodes:
+            for electrode_j in mri_labeled_electrodes:
+                if electrode_i.label == electrode_j.label:
+                    scan_landmarks.append(electrode_i.coordinates)
+                    mri_landmarks.append(electrode_j.coordinates)
+        
+        self.surface_registrator = LandmarkSurfaceRegistrator(
+            source_landmarks=scan_landmarks,
+            target_landmarks=mri_landmarks)
+        
+        # add the necessary checks
+        
+        transformation_matrix = self.head_scan.register_mesh(self.surface_registrator)
+        if transformation_matrix is not None:
+            self.model.transform_electrodes('scan', transformation_matrix)
+        
+        if self.mri_surface_view is not None:
+            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
+            self.mri_surface_view.modality = "both"
+            self.mri_surface_view.show()
 
     def on_close(self):
         if self.surface_view is not None:

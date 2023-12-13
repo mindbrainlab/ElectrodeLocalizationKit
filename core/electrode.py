@@ -1,17 +1,16 @@
 import pandas as pd
 import numpy as np
 
-from typing import Union, List, Tuple, Optional
-
 from dataclasses import dataclass
 
 @dataclass
 class Electrode:
-    coordinates: np.ndarray | List[float] | Tuple[float, ...]
-    modality: Optional[str] = None
-    label: Optional[str] = None
-    _theta: Optional[float] = None
-    _phi: Optional[float] = None
+    coordinates: np.ndarray | list[float] | tuple[float, ...]
+    modality: str | None = None
+    label: str | None = None
+    labeled: bool = False
+    _theta: float | None = None
+    _phi: float | None = None
 
     @property
     def keys(self):
@@ -32,6 +31,17 @@ class Electrode:
         r = 1
         self.theta = np.arccos(z/r)
         self.phi = np.arctan2(y, x)
+        
+    def apply_transformation(self, A: np.matrix):
+        x = np.array([self.coordinates[0],
+                        self.coordinates[1],
+                        self.coordinates[2],
+                        1])
+        
+        x.shape = (4, 1)
+        y4d = A @ x
+        y = np.array(y4d[0:3])
+        self.coordinates = y
     
     @property 
     def df(self) -> pd.DataFrame:
@@ -52,7 +62,3 @@ class Electrode:
     
     def __setitem__(self, item, value):
         setattr(self, item, value)
-    
-def compute_distance_between_electrodes(coordinates_1: np.ndarray, coordinates_2: np.ndarray) -> float:
-    """Returns the distance between two electrodes."""
-    return np.linalg.norm(coordinates_1-coordinates_2)

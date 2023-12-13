@@ -5,8 +5,6 @@ from collections.abc import Iterable
 
 from .electrode import Electrode
 
-from icecream import ic
-
 class CapModel(QAbstractTableModel):
     """CapModel class for displaying a list of electrodes in a Qt application."""
     def __init__(self, data: list = []):
@@ -28,6 +26,13 @@ class CapModel(QAbstractTableModel):
     
     def get_electrode(self, index: int) -> Electrode:
         return self._data[index]
+    
+    def set_electrode_labeled_flag(self, index: int, labeled: bool) -> None:
+        self._data[index].labeled = labeled
+        
+    def get_labeled_electrodes(self, modality: str) -> list[Electrode]:
+        return [electrode for electrode in self._data
+                if electrode.labeled and electrode.modality == modality]
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if index.isValid():
@@ -70,18 +75,11 @@ class CapModel(QAbstractTableModel):
             # id_to_remove = self._data[min_index]['ID']
             self.remove_electrode(min_distance[0])
             
-        # if electrode.modality != modality:
-        #         continue
-        #     ic(electrode.modality)
-        #     ic(modality)
-    
-    # def get_next_id(self) -> str:
-    #     """Returns the next available ID for a new point."""
-    #     numeric_ids = [int(x['eID']) for x in self._data if x['eID'].isdigit()]
-    #     if len(numeric_ids) == 0:
-    #         return '0'
-    #     else:    
-    #         return str(np.max(numeric_ids) + 1)
+    def transform_electrodes(self, modality: str, A: np.matrix) -> None:
+        """Applies a transformation to all electrodes in the cap."""
+        for electrode in self._data:
+            if electrode.modality == modality:
+                electrode.apply_transformation(A)
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:

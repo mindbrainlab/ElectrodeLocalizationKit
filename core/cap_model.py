@@ -1,6 +1,6 @@
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractTableModel
-
 import numpy as np
+import vedo as vd
 from collections.abc import Iterable
 
 from .electrode import Electrode
@@ -11,6 +11,8 @@ class CapModel(QAbstractTableModel):
         super().__init__()
         self._data = data
         self._labels = []
+        
+        self._undo_data = None
         
         # define Electrode class attributes to display in the table
         self._display_keys = ('label', 'modality')
@@ -71,15 +73,27 @@ class CapModel(QAbstractTableModel):
         # remove the point with the smallest distance
         if len(distances) > 0:
             min_distance = min(distances, key=lambda x: x[1])
-            # min_index= np.argmin(distances) 
-            # id_to_remove = self._data[min_index]['ID']
             self.remove_electrode(min_distance[0])
             
     def transform_electrodes(self, modality: str, A: np.matrix) -> None:
         """Applies a transformation to all electrodes in the cap."""
+        self._undo_data = self._data.copy()
         for electrode in self._data:
             if electrode.modality == modality:
                 electrode.apply_transformation(A)
+                
+    def project_electrodes_to_mesh(self, mesh: vd.Mesh, modality: str) -> None:
+        """Projects all electrodes in the cap to the given mesh."""
+        self._undo_data = self._data.copy()
+        for electrode in self._data:
+            if electrode.modality == modality:
+                electrode.project_to_mesh(mesh)
+                
+    def undo_transformation(self) -> None:
+        """Undoes the last transformation step."""
+        if self._undo_data is not None:
+            self._data = self._undo_data.copy()
+            self._undo_data = None
 
     def setData(self, index, value, role):
         if role == Qt.ItemDataRole.EditRole:

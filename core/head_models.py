@@ -56,7 +56,7 @@ class HeadScan(BaseHeadModel):
         self.apply_texture()
         return lmt
     
-    def revert_registration(self):
+    def undo_registration(self):
         if self.original_mesh is not None:
             self.mesh = self.original_mesh.clone()
             self.original_mesh = None

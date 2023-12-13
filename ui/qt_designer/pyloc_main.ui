@@ -1060,7 +1060,7 @@ QCheckBox {
               <string notr="true"/>
              </property>
              <property name="text">
-              <string>Display</string>
+              <string>Display / Refresh</string>
              </property>
             </widget>
            </item>
@@ -1250,33 +1250,6 @@ QCheckBox {
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="head_select_fiducials_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Select Fiducials</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -1358,7 +1331,7 @@ QCheckBox {
             <string notr="true"/>
            </property>
            <property name="text">
-            <string>Display</string>
+            <string>Display / Refresh</string>
            </property>
           </widget>
          </item>
@@ -1400,35 +1373,6 @@ QCheckBox {
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="mri_select_fiducials_button">
-           <property name="minimumSize">
-            <size>
-             <width>150</width>
-             <height>60</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>60</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton {
-    margin-bottom: 30px;
-    }</string>
-           </property>
-           <property name="text">
-            <string>Select Fiducials</string>
            </property>
           </widget>
          </item>
@@ -1598,6 +1542,33 @@ QCheckBox {
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="project_electrodes_button">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>150</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Project Electrodes</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="revert_alignment_button">
            <property name="minimumSize">
             <size>
@@ -1620,34 +1591,7 @@ QCheckBox {
             <string notr="true"/>
            </property>
            <property name="text">
-            <string>Revert Alignment</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="display_alignment_button">
-           <property name="minimumSize">
-            <size>
-             <width>150</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Display with Scan</string>
+            <string>Undo Last Transform</string>
            </property>
           </widget>
          </item>

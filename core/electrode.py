@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import vedo as vd
 
 from dataclasses import dataclass
 
@@ -42,6 +43,13 @@ class Electrode:
         y4d = A @ x
         y = np.array(y4d[0:3])
         self.coordinates = y
+        
+    def project_to_mesh(self, mesh: vd.Mesh):
+        """Projects the electrode to the mesh."""
+        closest_point = mesh.closest_point(self.coordinates)
+        if isinstance(closest_point, np.ndarray):
+            self.coordinates = closest_point
+        
     
     @property 
     def df(self) -> pd.DataFrame:

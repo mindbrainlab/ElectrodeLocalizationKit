@@ -1,16 +1,11 @@
-from random import sample
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QApplication
-from PyQt6.QtCore import Qt, pyqtSlot
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap, QResizeEvent
 
 from ui.pyloc_main_window import Ui_MainWindow
 
-import vedo as vd
-
 import sys
 import numpy as np
-
-from icecream import ic
 
 from core.cap_model import CapModel
 from core.head_models import HeadScan, MRIScan
@@ -42,7 +37,7 @@ class StartQt6(QMainWindow):
         
         self.ui.align_scan_button.clicked.connect(self.align_scan_to_mri)
         
-        self.ui.display_alignment_button.clicked.connect(self.display_alignment)
+        self.ui.project_electrodes_button.clicked.connect(self.project_electrodes_to_mri)
         
         self.ui.display_dog_button.clicked.connect(self.display_dog)
         self.ui.kernel_size_spinbox.valueChanged.connect(self.display_dog)
@@ -50,6 +45,8 @@ class StartQt6(QMainWindow):
         self.ui.diff_factor_spinbox.valueChanged.connect(self.display_dog)
         
         self.ui.display_hough_button.clicked.connect(self.display_hough)
+        
+        self.ui.revert_alignment_button.clicked.connect(self.undo_last_transformation)
         
         # spinboxes
         self.ui.param1_spinbox.valueChanged.connect(self.display_hough)
@@ -176,9 +173,12 @@ class StartQt6(QMainWindow):
         
             self.mri_surface_view.show()
             
-    def display_alignment(self):
-        if self.head_scan is not None and self.mri_surface_view is not None:
-            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
+    def project_electrodes_to_mri(self):
+        if self.mri_surface_view is not None:
+            self.model.project_electrodes_to_mesh(self.mri_scan.mesh, 'scan')
+            self.mri_surface_view.show()
+        # if self.head_scan is not None and self.mri_surface_view is not None:
+        #     self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
         
     def get_vertex_from_pixels(self, pixels, mesh, image_size):
         # Helper function to get the vertex from the mesh that corresponds to
@@ -201,7 +201,6 @@ class StartQt6(QMainWindow):
         
         return vertices[uv_idx]
 
-    # @pyqtSlot()
     def display_dog(self):
         self.dog = self.dog_hough_detector.get_difference_of_gaussians(
             ksize=self.ui.kernel_size_spinbox.value(),
@@ -221,7 +220,6 @@ class StartQt6(QMainWindow):
 
         self.ui.photo_label.setPixmap(QPixmap.fromImage(self.dog_qimage))
         
-    # @pyqtSlot()
     def display_hough(self):
         self.hough = self.dog_hough_detector.get_hough_circles(
             param1=self.ui.param1_spinbox.value(),
@@ -243,7 +241,6 @@ class StartQt6(QMainWindow):
 
         self.ui.photo_label.setPixmap(QPixmap.fromImage(self.hough_qimage))
         
-    # @pyqtSlot()
     def detect_electrodes(self):
         self.electrodes = self.dog_hough_detector.detect_electrodes(
             self.head_scan.mesh) # type: ignore
@@ -330,6 +327,10 @@ class StartQt6(QMainWindow):
             self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
             self.mri_surface_view.modality = "both"
             self.mri_surface_view.show()
+            
+    def undo_last_transformation(self):
+        self.model.undo_transformation()
+        self.head_scan.undo_registration()
 
     def on_close(self):
         if self.surface_view is not None:

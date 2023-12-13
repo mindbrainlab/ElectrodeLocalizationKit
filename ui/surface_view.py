@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QAbstractItemView 
 from typing import Optional
-from fsspec import FSTimeoutError
 
 try:
     from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -56,51 +55,69 @@ class SurfaceView(QAbstractItemView):
         self.render_electrodes()
         
     def render_electrodes(self):
-        start_electrodes_idx = 1
-        if self.secondary_mesh is not None:
-            start_electrodes_idx = 2
+        # start_electrodes_idx = 1
+        # if self.secondary_mesh is not None:
+        #     start_electrodes_idx = 2
         
-        if len(self._plotter.actors) > start_electrodes_idx:
-            self._plotter.remove(self._plotter.actors[start_electrodes_idx:])
+        # if len(self._plotter.actors) > start_electrodes_idx:
+        #     self._plotter.remove(self._plotter.actors[start_electrodes_idx:])
+        
+        self._plotter.clear()
+        self._plotter.add(self.mesh)
+        if self.secondary_mesh is not None:
+            self._plotter.add(self.secondary_mesh)
         
         points_unlabeled = []
         points_labeled = []
         for i in range(self.model.rowCount()):
-            if self.model.get_electrode(i).modality != self.modality or self.modality == "both":
+            electrode_modality = self.model.get_electrode(i).modality
+            
+            if electrode_modality != self.modality and self.modality != "both":
                 continue
+            
             point = self.model.get_electrode(i).coordinates
             label = self.model.get_electrode(i).label
-            if label is None or label == "" or label == "None":
-                label = str(i+1)
-                points_unlabeled.append((point, label))
-            else:
-                points_labeled.append((point, label))
             
-        for point, label in points_unlabeled:
+            if electrode_modality == "mri":
+                unlabeled_color = "r8"
+                labeled_color = "b8"
+            else:
+                unlabeled_color = "r5"
+                labeled_color = "b5"
+            
+            if label is None or label == "" or label == "None":
+                self.model.set_electrode_labeled_flag(i, False)
+                label = str(i+1)
+                points_unlabeled.append((point, label, unlabeled_color))
+            else:
+                self.model.set_electrode_labeled_flag(i, True)
+                points_labeled.append((point, label, labeled_color))
+            
+        for point, label, color in points_unlabeled:
             sphere = vd.Sphere(
                 point,
                 r=self.config["sphere_size"],
-                res=8, c='r5', alpha=1)
+                res=8, c=color, alpha=1) # type: ignore
             self._plotter.add(sphere)
             if self.config["draw_flagposts"]:
                 fs = self.get_flagpost(
                     label, point, height=self.config["flagpost_height"],
                     size=self.config["flagpost_size"],
-                    color='r5')
+                    color=color) # type: ignore
                 self._plotter.add(fs)
         
-        for point, label in points_labeled:
+        for point, label, color in points_labeled:
             sphere = vd.Sphere(
                 point,
                 r=self.config["sphere_size"],
-                res=8, c='b5', alpha=1)
+                res=8, c=color, alpha=1) # type: ignore
             self._plotter.add(sphere)
             if self.config["draw_flagposts"]:
                 fs = self.get_flagpost(
                     label, point,
                     height=self.config["flagpost_height"],
                     size=self.config["flagpost_size"],
-                    color='b5')
+                    color=color) # type: ignore
                 self._plotter.add(fs)
             
         self._plotter.render()

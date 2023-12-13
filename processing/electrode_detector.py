@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Union, List
 import numpy as np
 import cv2 as cv
 import vedo as vd
@@ -11,7 +10,7 @@ from utils.texture_processing import compute_difference_of_gaussians, compute_ho
 class BaseElectrodeDetector(ABC):
     
     @abstractmethod
-    def detect_electrodes(self) -> List[Electrode]:
+    def detect_electrodes(self) -> list[Electrode]:
         pass
     
 

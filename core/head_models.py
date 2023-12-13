@@ -1,11 +1,11 @@
 import vedo as vd
-
 from abc import ABC, abstractmethod
 import numpy as np
-
 import vedo as vd
-
 import nibabel as nib
+
+from processing.surface_registrator import BaseSurfaceRegistrator
+from utils.spatial_processing import normalize_mesh, rescale_to_original_size
 
 try:
     import vedo.vtkclasses as vtk
@@ -21,7 +21,7 @@ class BaseHeadModel(ABC):
     def rescale_to_original_size(self):
         pass
             
-    def apply_transformation(self, transformation):
+    def register_mesh(self, transformation):
         pass
 
 class HeadScan(BaseHeadModel):
@@ -36,20 +36,31 @@ class HeadScan(BaseHeadModel):
         
         self.normalize()
         
-        if texture_file:
-            self.apply_texture(texture_file)
+        self.original_mesh = None
+        
+        self.apply_texture()
             
     def normalize(self):
-        self.mesh, self.normalization_scale = normalize_mesh(self.mesh)
+        self.normalization_scale = normalize_mesh(self.mesh) # type: ignore
         
     def rescale_to_original_size(self):
-        self.mesh, self.normalization_scale = rescale_to_original_size(self.mesh, self.normalization_scale)
-        
-    def apply_transformation(self, transformation):
-        pass
+        self.normalization_scale = rescale_to_original_size(self.mesh, self.normalization_scale) # type: ignore
     
-    def apply_texture(self, texture_file: str):
-        self.mesh = self.mesh.texture(texture_file)
+    def apply_texture(self):
+        if self.texture_file is not None:
+            self.mesh = self.mesh.texture(self.texture_file) # type: ignore
+            
+    def register_mesh(self, surface_registrator: BaseSurfaceRegistrator):
+        self.original_mesh = self.mesh.clone()
+        lmt = surface_registrator.register(self.mesh) # type: ignore
+        self.apply_texture()
+        return lmt
+    
+    def revert_registration(self):
+        if self.original_mesh is not None:
+            self.mesh = self.original_mesh.clone()
+            self.original_mesh = None
+        
     
 # not implemented yet
 class MRIScan(BaseHeadModel):
@@ -71,45 +82,10 @@ class MRIScan(BaseHeadModel):
         self.fiducials = []
         
     def normalize(self):
-        self.mesh, self.normalization_scale = normalize_mesh(self.mesh)
+        self.normalization_scale = normalize_mesh(self.mesh)
         
     def rescale_to_original_size(self):
-        self.mesh, self.normalization_scale = rescale_to_original_size(self.mesh, self.normalization_scale)
+        self.normalization_scale = rescale_to_original_size(self.mesh, self.normalization_scale)
         
-    def apply_transformation(self, transformation):
+    def register_mesh(self, transformation):
         pass
-    
-    
-def normalize_mesh(mesh: vd.Mesh) -> tuple[vd.Mesh, float]:
-    """Scale Mesh average size to unit."""
-    coords = mesh.points()
-    coords = np.array(mesh.points())
-    if not coords.shape[0]:
-        return mesh, 1.0
-    cm = np.mean(coords, axis=0)
-    pts = coords - cm
-    xyz2 = np.sum(pts * pts, axis=0)
-    scale = 1 / np.sqrt(np.sum(xyz2) / len(pts))
-    t = vtk.vtkTransform()
-    t.PostMultiply()
-    t.Scale(scale, scale, scale)
-    tf = vtk.vtkTransformPolyDataFilter()
-    tf.SetInputData(mesh.inputdata())
-    tf.SetTransform(t)
-    tf.Update()
-    mesh.point_locator = None
-    mesh.cell_locator = None
-    return mesh._update(tf.GetOutput()), scale
-
-def rescale_to_original_size(mesh: vd.Mesh, scale: float) -> tuple[vd.Mesh, float]:
-    """Rescale Mesh to original size."""
-    t = vtk.vtkTransform()
-    t.PostMultiply()
-    t.Scale(1/scale, 1/scale, 1/scale)
-    tf = vtk.vtkTransformPolyDataFilter()
-    tf.SetInputData(mesh.inputdata())
-    tf.SetTransform(t)
-    tf.Update()
-    mesh.point_locator = None
-    mesh.cell_locator = None
-    return mesh._update(tf.GetOutput()), 1.0

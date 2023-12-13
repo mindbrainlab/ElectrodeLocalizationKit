@@ -24,7 +24,6 @@ def compute_hough_circles(color_image, dog_image,
             
     return (circles_image, circles)                                              # type: ignore
 
-
 # Difference of Gaussians (DoG) texture processing functions
 def compute_difference_of_gaussians(image: np.ndarray,
                                     ksize: int, sigma: float, F: float,

@@ -150,7 +150,6 @@ class SurfaceView(QAbstractItemView):
         
     def dataChanged(self, topLeft, bottomRight, roles):
         self.render_electrodes()
-        return True
     
     def update_config(self, config: dict):
         self.config = config
@@ -167,6 +166,11 @@ class SurfaceView(QAbstractItemView):
     def add_secondary_mesh(self, mesh: vd.Mesh):
         self.secondary_mesh = mesh
         self._plotter.add(mesh)
+        self._plotter.render()
+        
+    def reset_secondary_mesh(self, modality: str = ""):
+        self.secondary_mesh = None
+        self.modality = modality
         self._plotter.render()
         
     def remove_secondary_mesh(self):

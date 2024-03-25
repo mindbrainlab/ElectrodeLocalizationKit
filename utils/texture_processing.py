@@ -62,3 +62,24 @@ def gray2binary(image: np.ndarray, level: int) -> np.ndarray:
     image[image < level] = 0
     image[image > level] = 255
     return image
+
+def get_vertex_from_pixels(self, pixels, mesh, image_size):
+    # Helper function to get the vertex from the mesh that corresponds to
+    # the pixel coordinates
+    #
+    # Written by: Aleksij Kraljic, October 29, 2023
+    
+    # extract the vertices from the mesh
+    vertices = mesh.points()
+    
+    # extract the uv coordinates from the mesh
+    uv = mesh.pointdata['material_0']
+    
+    # convert pixels to uv coordinates
+    uv_image = [(pixels[0]+0.5)/image_size[0],
+                1-(pixels[1]+0.5)/image_size[1]]
+    
+    # find index of closest point in uv with uv_image
+    uv_idx = np.argmin(np.linalg.norm(uv-uv_image, axis=1))
+    
+    return vertices[uv_idx]

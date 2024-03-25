@@ -12,7 +12,7 @@ from core.head_models import HeadScan, MRIScan
 from processing.electrode_detector import DogHoughElectrodeDetector
 from ui.surface_view import SurfaceView
 from processing.surface_registrator import LandmarkSurfaceRegistrator
-        
+
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -24,56 +24,72 @@ class StartQt6(QMainWindow):
         # main data model
         self.model = CapModel()
         
+        # disable tabs
+        self.ui.tabWidget.setTabEnabled(1, False)
+        self.ui.tabWidget.setTabEnabled(2, False)
+        self.ui.tabWidget.setTabEnabled(3, False)
+        self.ui.tabWidget.setTabEnabled(4, False)
+        
         # table view
         self.ui.electrodes_table.setModel(self.model)
 
-        # connect signals and slots
+        # load buttons slot connections
         self.ui.load_surface_button.clicked.connect(self.load_surface)
         self.ui.load_texture_button.clicked.connect(self.load_texture)
         self.ui.load_mri_button.clicked.connect(self.load_mri)
-        self.ui.display_head_button.clicked.connect(self.display_surface)
         
+        # display texture buttons slot connections
+        self.ui.display_dog_button.clicked.connect(self.display_dog)
+        self.ui.display_hough_button.clicked.connect(self.display_hough)
+        
+        # display surface buttons slot connections
+        self.ui.display_head_button.clicked.connect(self.display_surface)
         self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
         
+        # surface to mri alignment buttons slot connections
         self.ui.align_scan_button.clicked.connect(self.align_scan_to_mri)
-        
         self.ui.project_electrodes_button.clicked.connect(self.project_electrodes_to_mri)
+        self.ui.revert_alignment_button.clicked.connect(self.undo_last_transformation)
         
-        self.ui.display_dog_button.clicked.connect(self.display_dog)
+        # texture detect electrodes button slot connection
+        self.ui.compute_electrodes_button.clicked.connect(self.detect_electrodes)
+        
+        # texture DoG spinbox slot connections
         self.ui.kernel_size_spinbox.valueChanged.connect(self.display_dog)
         self.ui.sigma_spinbox.valueChanged.connect(self.display_dog)
         self.ui.diff_factor_spinbox.valueChanged.connect(self.display_dog)
         
-        self.ui.display_hough_button.clicked.connect(self.display_hough)
-        
-        self.ui.revert_alignment_button.clicked.connect(self.undo_last_transformation)
-        
-        # spinboxes
+        # texture Hough spinbox slot connections
         self.ui.param1_spinbox.valueChanged.connect(self.display_hough)
         self.ui.param2_spinbox.valueChanged.connect(self.display_hough)
         self.ui.min_dist_spinbox.valueChanged.connect(self.display_hough)
         self.ui.min_radius_spinbox.valueChanged.connect(self.display_hough)
         self.ui.max_radius_spinbox.valueChanged.connect(self.display_hough)
         
+        # surface configuration slot connections
         self.ui.sphere_size_spinbox.valueChanged.connect(self.update_surf_config)
         self.ui.flagposts_checkbox.stateChanged.connect(self.update_surf_config)
         self.ui.flagpost_height_spinbox.valueChanged.connect(self.update_surf_config)
         self.ui.flagpost_size_spinbox.valueChanged.connect(self.update_surf_config)
         
+        # mri configuration slot connections
         self.ui.mri_sphere_size_spinbox.valueChanged.connect(self.update_mri_config)
         self.ui.mri_flagposts_checkbox.stateChanged.connect(self.update_mri_config)
         self.ui.mri_flagpost_height_spinbox.valueChanged.connect(self.update_mri_config)
         self.ui.mri_flagpost_size_spinbox.valueChanged.connect(self.update_mri_config)
         
+        # alpha slider slot connections
         self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
         self.ui.mri_alpha_slider.valueChanged.connect(self.set_mri_surf_alpha)
         self.ui.mri_head_alpha_slider.valueChanged.connect(self.set_alignment_surf_alpha)
-        
-        self.ui.compute_electrodes_button.clicked.connect(self.detect_electrodes)
                 
+        self.ui.tabWidget.currentChanged.connect(self.refresh_views)
+                
+        # resize and close event slot connections
         self.ui.centralwidget.resizeEvent = self.on_resize       # type: ignore
         self.ui.centralwidget.closeEvent = self.on_close         # type: ignore
                 
+        # initialize variables
         self.surface_file = None
         self.texture_file = None
         self.mri_file = None
@@ -81,6 +97,7 @@ class StartQt6(QMainWindow):
         self.mri_surface_view = None
         self.image = None
         self.dog = None
+        self.hough = None
         self.circles = None
         
         self.load_texture()
@@ -106,6 +123,7 @@ class StartQt6(QMainWindow):
         self.ui.statusbar.showMessage("Loaded surface file.")
         
         self.prepare_surface()
+        self.ui.tabWidget.setTabEnabled(1, True)
 
     def load_texture(self):
         # file_path, _ = QFileDialog.getOpenFileName(
@@ -123,6 +141,7 @@ class StartQt6(QMainWindow):
         self.ui.statusbar.showMessage("Loaded texture file.")
         
         self.prepare_surface()
+        self.ui.tabWidget.setTabEnabled(2, True)
 
     def load_mri(self):
         # file_path, _ = QFileDialog.getOpenFileName(
@@ -146,6 +165,7 @@ class StartQt6(QMainWindow):
             self.mri_surface_view_config = {}
             
             self.ui.statusbar.showMessage("Loaded MRI file.")
+            self.ui.tabWidget.setTabEnabled(3, True)
             
     def prepare_surface(self):
         if self.surface_file:
@@ -158,6 +178,14 @@ class StartQt6(QMainWindow):
             self.surface_view_config = {}
             
             self.ui.statusbar.showMessage("Prepared headscan.")
+            
+    def refresh_views(self):
+        t = self.ui.tabWidget.currentIndex()
+        
+        if t == 2:
+            self.display_surface()
+        elif t == 3:
+            self.display_mri_surface()
             
     def display_surface(self):
         if self.surface_view is not None:
@@ -179,27 +207,6 @@ class StartQt6(QMainWindow):
             self.mri_surface_view.show()
         # if self.head_scan is not None and self.mri_surface_view is not None:
         #     self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
-        
-    def get_vertex_from_pixels(self, pixels, mesh, image_size):
-        # Helper function to get the vertex from the mesh that corresponds to
-        # the pixel coordinates
-        #
-        # Written by: Aleksij Kraljic, October 29, 2023
-        
-        # extract the vertices from the mesh
-        vertices = mesh.points()
-        
-        # extract the uv coordinates from the mesh
-        uv = mesh.pointdata['material_0']
-        
-        # convert pixels to uv coordinates
-        uv_image = [(pixels[0]+0.5)/image_size[0],
-                    1-(pixels[1]+0.5)/image_size[1]]
-        
-        # find index of closest point in uv with uv_image
-        uv_idx = np.argmin(np.linalg.norm(uv-uv_image, axis=1))
-        
-        return vertices[uv_idx]
 
     def display_dog(self):
         self.dog = self.dog_hough_detector.get_difference_of_gaussians(
@@ -260,14 +267,16 @@ class StartQt6(QMainWindow):
                                               mri_frame_size.height())
         
         if self.dog is not None:
-             label_size = self.ui.texture_frame.size()
-             self.dog_qimage = self.dog_qimage.scaled(
-                 label_size.width(),
-                 label_size.height(),
-                 Qt.AspectRatioMode.KeepAspectRatio,
-                 Qt.TransformationMode.FastTransformation)
+            label_size = self.ui.texture_frame.size()
+            self.dog_qimage = self.dog_qimage.scaled(
+                label_size.width(),
+                label_size.height(),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.FastTransformation)
              
-             self.hough_qimage = self.hough_qimage.scaled(
+        if self.hough is not None:
+            label_size = self.ui.texture_frame.size()
+            self.hough_qimage = self.hough_qimage.scaled(
                  label_size.width(),
                  label_size.height(),
                  Qt.AspectRatioMode.KeepAspectRatio,
@@ -331,6 +340,8 @@ class StartQt6(QMainWindow):
     def undo_last_transformation(self):
         self.model.undo_transformation()
         self.head_scan.undo_registration()
+        if self.mri_surface_view is not None:
+            self.mri_surface_view.reset_secondary_mesh('mri')
 
     def on_close(self):
         if self.surface_view is not None:

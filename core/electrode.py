@@ -21,10 +21,10 @@ class Electrode:
     def spherical_coordinates(self) -> np.ndarray:
         """Returns the electrode's spherical coordinates."""
         if self._theta is None or self._phi is None:
-            self.compute_unit_sphere_spherical_coordinates()
+            self._compute_unit_sphere_spherical_coordinates()
         return np.array([self._theta, self._phi])
     
-    def compute_unit_sphere_spherical_coordinates(self, origin = (0, 0, 0)) -> None:
+    def _compute_unit_sphere_spherical_coordinates(self, origin = (0, 0, 0)) -> None:
         """Computes the spherical coordinates of the electrode."""
         x = self.coordinates[0] - origin[0]
         y = self.coordinates[1] - origin[1]

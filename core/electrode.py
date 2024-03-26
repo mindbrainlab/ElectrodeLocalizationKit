@@ -30,8 +30,8 @@ class Electrode:
         y = self.coordinates[1] - origin[1]
         z = self.coordinates[2] - origin[2]
         r = 1
-        self.theta = np.arccos(z/r)
-        self.phi = np.arctan2(y, x)
+        self._theta = np.arccos(z/r)
+        self._phi = np.arctan2(y, x)
         
     def apply_transformation(self, A: np.matrix):
         x = np.array([self.coordinates[0],

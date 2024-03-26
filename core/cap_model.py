@@ -20,10 +20,10 @@ class CapModel(QAbstractTableModel):
     def set_labels(self, labels: list) -> None: 
         self._labels = labels
 
-    def rowCount(self, parent=QModelIndex()):
+    def rowCount(self, parent=QModelIndex()) -> int:
         return len(self._data)
 
-    def columnCount(self, parent=QModelIndex()):
+    def columnCount(self, parent=QModelIndex()) -> int:
         return len(self._display_keys)
     
     def get_electrode(self, index: int) -> Electrode:
@@ -36,13 +36,13 @@ class CapModel(QAbstractTableModel):
         return [electrode for electrode in self._data
                 if electrode.labeled and electrode.modality == modality]
 
-    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole) -> str | None:
         if index.isValid():
             if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
                 value = self._data[index.row()][self._display_keys[index.column()]]
                 return str(value)
             
-    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole) -> str | None:
         if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return str(self._display_keys[section])
         return super().headerData(section, orientation, role)
@@ -95,12 +95,12 @@ class CapModel(QAbstractTableModel):
             self._data = self._undo_data.copy()
             self._undo_data = None
 
-    def setData(self, index, value, role):
+    def setData(self, index, value, role) -> bool:
         if role == Qt.ItemDataRole.EditRole:
             self._data[index.row()][self._display_keys[index.column()]] = value
             self.dataChanged.emit(index, index)
             return True
         return False
 
-    def flags(self, index):
+    def flags(self, index) -> Qt.ItemFlag:
         return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable

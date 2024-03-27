@@ -4,14 +4,15 @@ import vedo as vd
 
 from dataclasses import dataclass
 
+from utils.spatial_processing import (compute_unit_spherical_coordinates_from_cartesian,
+                                      compute_cartesian_coordinates_from_unit_spherical)
+
 @dataclass
 class Electrode:
     coordinates: np.ndarray | list[float] | tuple[float, ...]
     modality: str | None = None
     label: str | None = None
     labeled: bool = False
-    _theta: float | None = None
-    _phi: float | None = None
 
     @property
     def keys(self):
@@ -20,18 +21,26 @@ class Electrode:
     @property
     def spherical_coordinates(self) -> np.ndarray:
         """Returns the electrode's spherical coordinates."""
-        if self._theta is None or self._phi is None:
-            self._compute_unit_sphere_spherical_coordinates()
-        return np.array([self._theta, self._phi])
+        theta, phi = self._compute_unit_sphere_spherical_coordinates()
+        return np.array([theta, phi])
     
-    def _compute_unit_sphere_spherical_coordinates(self, origin = (0, 0, 0)) -> None:
+    @property
+    def unit_sphere_cartesian_coordinates(self) -> np.ndarray:
+        """Returns the electrode's cartesian coordinates in the unit sphere."""
+        theta, phi = self._compute_unit_sphere_spherical_coordinates()
+        unit_sphere_coordinates = self._compute_unit_sphere_cartesian_coordinates(theta, phi)
+        return unit_sphere_coordinates
+    
+    def _compute_unit_sphere_spherical_coordinates(self) -> tuple[float, float]:
         """Computes the spherical coordinates of the electrode."""
-        x = self.coordinates[0] - origin[0]
-        y = self.coordinates[1] - origin[1]
-        z = self.coordinates[2] - origin[2]
-        r = 1
-        self._theta = np.arccos(z/r)
-        self._phi = np.arctan2(y, x)
+        (theta, phi) = compute_unit_spherical_coordinates_from_cartesian(list(self.coordinates),
+                                                                         origin = (0, 0, 0))
+        return (theta, phi)
+        
+    def _compute_unit_sphere_cartesian_coordinates(self, theta: float, phi: float) -> np.ndarray:
+        """Computes the cartesian coordinates of the electrode."""
+        (x, y, z) = compute_cartesian_coordinates_from_unit_spherical((theta, phi))
+        return np.array([x, y, z])
         
     def apply_transformation(self, A: np.matrix):
         x = np.array([self.coordinates[0],
@@ -58,8 +67,6 @@ class Electrode:
                 "x": self.coordinates[0],
                 "y": self.coordinates[1],
                 "z": self.coordinates[2],
-                "theta": self._theta,
-                "phi": self._phi,
                 "modality": self.modality,
                 "label": self.label,
             }, index=[0])

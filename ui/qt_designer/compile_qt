@@ -1,2 +1,5 @@
 #!/bin/bash
+
+cd "$(dirname "$0")"
+
 pyuic6 -x pyloc_main.ui -o ../pyloc_main_window.py

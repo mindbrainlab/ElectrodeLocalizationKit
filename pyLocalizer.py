@@ -5,12 +5,11 @@ from PyQt6.QtGui import QImage, QPixmap, QResizeEvent
 from ui.pyloc_main_window import Ui_MainWindow
 
 import sys
-import numpy as np
 
 from core.cap_model import CapModel
-from core.head_models import HeadScan, MRIScan
+from core.head_models import HeadScan, MRIScan, UnitSphere
 from processing.electrode_detector import DogHoughElectrodeDetector
-from ui.surface_view import SurfaceView
+from ui.surface_view import InteractiveSurfaceView, LabelingSurfaceView
 from processing.surface_registrator import LandmarkSurfaceRegistrator
 
 class StartQt6(QMainWindow):
@@ -22,7 +21,7 @@ class StartQt6(QMainWindow):
         self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
 
         # main data model
-        self.model = CapModel()
+        self.model = CapModel([])
         
         # disable tabs
         self.ui.tabWidget.setTabEnabled(1, False)
@@ -37,6 +36,7 @@ class StartQt6(QMainWindow):
         self.ui.load_surface_button.clicked.connect(self.load_surface)
         self.ui.load_texture_button.clicked.connect(self.load_texture)
         self.ui.load_mri_button.clicked.connect(self.load_mri)
+        self.ui.load_locations_button.clicked.connect(self.load_locations)
         
         # display texture buttons slot connections
         self.ui.display_dog_button.clicked.connect(self.display_dog)
@@ -45,6 +45,7 @@ class StartQt6(QMainWindow):
         # display surface buttons slot connections
         self.ui.display_head_button.clicked.connect(self.display_surface)
         self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
+        self.ui.label_display_button.clicked.connect(self.display_unit_sphere)
         
         # surface to mri alignment buttons slot connections
         self.ui.align_scan_button.clicked.connect(self.align_scan_to_mri)
@@ -78,6 +79,14 @@ class StartQt6(QMainWindow):
         self.ui.mri_flagpost_height_spinbox.valueChanged.connect(self.update_mri_config)
         self.ui.mri_flagpost_size_spinbox.valueChanged.connect(self.update_mri_config)
         
+        # label configuration slot connections
+        self.ui.label_sphere_size_spinbox.valueChanged.connect(self.update_label_config)
+        self.ui.label_flagposts_checkbox.stateChanged.connect(self.update_label_config)
+        self.ui.label_flagpost_height_spinbox.valueChanged.connect(self.update_label_config)
+        self.ui.label_flagpost_size_spinbox.valueChanged.connect(self.update_label_config)
+        
+        self.ui.splitter.splitterMoved.connect(self.on_resize)
+        
         # alpha slider slot connections
         self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
         self.ui.mri_alpha_slider.valueChanged.connect(self.set_mri_surf_alpha)
@@ -100,9 +109,11 @@ class StartQt6(QMainWindow):
         self.hough = None
         self.circles = None
         
+        # temporary calls to avoid loading files during development
         self.load_texture()
         self.load_surface()
         self.load_mri()
+        self.load_locations()
         
         # set status bar
         self.ui.statusbar.showMessage('Welcome!')
@@ -158,7 +169,7 @@ class StartQt6(QMainWindow):
         if self.mri_file:
             self.mri_scan = MRIScan(self.mri_file)
             
-            self.mri_surface_view = SurfaceView(self.ui.mri_frame,
+            self.mri_surface_view = InteractiveSurfaceView(self.ui.mri_frame,
                                             self.mri_scan.mesh,
                                             self.mri_scan.modality)
             self.mri_surface_view.setModel(self.model)
@@ -167,11 +178,34 @@ class StartQt6(QMainWindow):
             self.ui.statusbar.showMessage("Loaded MRI file.")
             self.ui.tabWidget.setTabEnabled(3, True)
             
+    def load_locations(self):
+        # file_path, _ = QFileDialog.getOpenFileName(
+        #     self,
+        #     "Open Locations File",
+        #     "",
+        #     "All Files (*);;CSV Files (*.csv)"
+        #     )
+        # if file_path:
+        #     self.model.load_electrodes(file_path)
+        
+        self.reference_electrodes_model = CapModel([])
+        self.reference_electrodes_model.read_electrodes_from_file('sample_data/BC-MR-128+REF+EXG.ced')
+        
+        self.unit_sphere_surface = UnitSphere()
+        self.labeling_surface_view = LabelingSurfaceView(self.ui.labeling_reference_frame,
+                                                 self.unit_sphere_surface.mesh,
+                                                 self.unit_sphere_surface.modality)
+        self.labeling_surface_view.setModel(self.reference_electrodes_model)
+        self.labeling_surface_view_config = {}
+        # reference_electrodes = [electrode for electrode in]
+        self.ui.statusbar.showMessage("Loaded electrode locations.")
+        self.ui.tabWidget.setTabEnabled(4, True)
+            
     def prepare_surface(self):
         if self.surface_file:
             self.head_scan = HeadScan(self.surface_file, self.texture_file)
             
-            self.surface_view = SurfaceView(self.ui.headmodel_frame,
+            self.surface_view = InteractiveSurfaceView(self.ui.headmodel_frame,
                                     self.head_scan.mesh, # type: ignore
                                     self.head_scan.modality)
             self.surface_view.setModel(self.model)
@@ -200,6 +234,13 @@ class StartQt6(QMainWindow):
             self.mri_surface_view.resize_view(frame_size.width(), frame_size.height())
         
             self.mri_surface_view.show()
+            
+    def display_unit_sphere(self):
+        if self.labeling_surface_view is not None:
+            frame_size = self.ui.labeling_reference_frame.size()
+            self.labeling_surface_view.resize_view(frame_size.width(), frame_size.height())
+            
+            self.labeling_surface_view.show()
             
     def project_electrodes_to_mri(self):
         if self.mri_surface_view is not None:
@@ -257,6 +298,7 @@ class StartQt6(QMainWindow):
     def on_resize(self, event: QResizeEvent | None):
         scan_frame_size = self.ui.headmodel_frame.size()
         mri_frame_size = self.ui.mri_frame.size()
+        label_frame_size = self.ui.labeling_reference_frame.size()
         
         if self.surface_view is not None:
             self.surface_view.resize_view(scan_frame_size.width(),
@@ -265,6 +307,11 @@ class StartQt6(QMainWindow):
         if self.mri_surface_view is not None:
             self.mri_surface_view.resize_view(mri_frame_size.width(),
                                               mri_frame_size.height())
+            
+        if self.labeling_surface_view is not None:
+            self.labeling_surface_view.resize_view(label_frame_size.width(),
+                                                   label_frame_size.height())
+            
         
         if self.dog is not None:
             label_size = self.ui.texture_frame.size()
@@ -309,6 +356,14 @@ class StartQt6(QMainWindow):
             self.mri_surface_view_config["flagpost_height"] = self.ui.mri_flagpost_height_spinbox.value()
             self.mri_surface_view_config["flagpost_size"] = self.ui.mri_flagpost_size_spinbox.value()
             self.mri_surface_view.update_config(self.mri_surface_view_config)
+            
+    def update_label_config(self):
+        if self.labeling_surface_view is not None:
+            self.labeling_surface_view_config["sphere_size"] = self.ui.label_sphere_size_spinbox.value()
+            self.labeling_surface_view_config["draw_flagposts"] = self.ui.label_flagposts_checkbox.isChecked()
+            self.labeling_surface_view_config["flagpost_height"] = self.ui.label_flagpost_height_spinbox.value()
+            self.labeling_surface_view_config["flagpost_size"] = self.ui.label_flagpost_size_spinbox.value()
+            self.labeling_surface_view.update_config(self.labeling_surface_view_config)
 
     def align_scan_to_mri(self):
         scan_labeled_electrodes = self.model.get_labeled_electrodes('scan')

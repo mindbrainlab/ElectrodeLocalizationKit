@@ -3,6 +3,8 @@ import numpy as np
 import vedo as vd
 from collections.abc import Iterable
 
+from data.data_loader import load_electrodes_from_file
+
 from .electrode import Electrode
 
 class CapModel(QAbstractTableModel):
@@ -51,6 +53,11 @@ class CapModel(QAbstractTableModel):
         self.beginInsertRows(parent, self.rowCount(), self.rowCount())
         self._data.append(electrode)
         self.endInsertRows()
+        
+    def read_electrodes_from_file(self, filename: str) -> None:
+        electrodes = load_electrodes_from_file(filename)
+        for electrode in electrodes:
+            self.insert_electrode(electrode)
     
     def remove_electrode(self, electrode_index, parent=QModelIndex()) -> None:
         self.beginRemoveRows(parent, self.rowCount(), self.rowCount())

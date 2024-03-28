@@ -9,9 +9,9 @@ from .electrode import Electrode
 
 class CapModel(QAbstractTableModel):
     """CapModel class for displaying a list of electrodes in a Qt application."""
-    def __init__(self, data: list = []):
+    def __init__(self):
         super().__init__()
-        self._data = data
+        self._data = []
         self._labels = []
         
         self._undo_data = None

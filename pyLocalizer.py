@@ -36,7 +36,10 @@ class StartQt6(QMainWindow):
         self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
 
         # main data model
-        self.model = CapModel([])
+        self.model = CapModel()
+        
+        # reference electrodes model
+        self.reference_electrodes_model = CapModel()
         
         # disable tabs
         self.ui.tabWidget.setTabEnabled(1, False)
@@ -228,7 +231,6 @@ class StartQt6(QMainWindow):
         # if file_path:
         #     self.model.load_electrodes(file_path)
         
-        self.reference_electrodes_model = CapModel([])
         self.reference_electrodes_model.read_electrodes_from_file('sample_data/BC-MR-128+REF+EXG.ced')
         
         self.unit_sphere_surface = UnitSphere()

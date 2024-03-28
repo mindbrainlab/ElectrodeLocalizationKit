@@ -1,12 +1,14 @@
 import cv2 as cv
 import numpy as np
 
+from config.colors import HOUGH_CIRCLES_COLOR
+
 # Hough circle detection functions
 def compute_hough_circles(color_image, dog_image,
                           param1: float, param2: float,
                           min_distance_between_circles: int,
                           min_radius: int, max_radius: int,
-                          rgb_circles_color: tuple[int, int, int] = (255, 0, 255)) -> tuple[np.ndarray, list[np.uint16] | None]:
+                          rgb_circles_color: tuple[int, int, int] = HOUGH_CIRCLES_COLOR) -> tuple[np.ndarray, list[np.uint16] | None]:
     """Compute circles on the difference of gaussians (DoG) image using Hough circle detection."""    
     
     circles = cv.HoughCircles(dog_image,

@@ -2,7 +2,7 @@ import vedo as vd
 from abc import ABC, abstractmethod
 import vedo as vd
 
-from config.colors import MRI_SURFACE_COLOR, LABELING_SPHERE_COLOR
+from config.colors import HeadModelColors
 
 from processing.surface_registrator import BaseSurfaceRegistrator
 from utils.spatial_processing import normalize_mesh, rescale_to_original_size
@@ -72,7 +72,7 @@ class MRIScan(BaseHeadModel):
         
         self.normalize()
 
-        self.mesh.color(MRI_SURFACE_COLOR) # type: ignore
+        self.mesh.color(HeadModelColors.MRI_SURFACE_COLOR) # type: ignore
         
         self.modality = 'mri'
         
@@ -90,7 +90,7 @@ class MRIScan(BaseHeadModel):
     
 class UnitSphere(BaseHeadModel):
     def __init__(self):
-        self.mesh = vd.Sphere(pos = (0, 0, 0), r = 1.0, res = 24, c = LABELING_SPHERE_COLOR)
+        self.mesh = vd.Sphere(pos = (0, 0, 0), r = 1.0, res = 24, c = HeadModelColors.LABELING_SPHERE_COLOR)
         self.modality = 'reference'
         self.fiducials = []
         

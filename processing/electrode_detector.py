@@ -7,6 +7,9 @@ from core.electrode import Electrode
 
 from utils.texture_processing import compute_difference_of_gaussians, compute_hough_circles
 
+from config.electrode_detector import DogParameters, HoughParameters
+from config.colors import HOUGH_CIRCLES_COLOR
+
 class BaseElectrodeDetector(ABC):
     
     @abstractmethod
@@ -26,25 +29,25 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
         self.modality = 'scan'
 
     def get_difference_of_gaussians(self,
-                                    ksize: int = 35,
-                                    sigma: float = 12,
-                                    F: float = 1.1,
-                                    threshold_level: int = 1) -> np.ndarray:
+                                    ksize: int = DogParameters.KSIZE,
+                                    sigma: float = DogParameters.SIGMA,
+                                    F: float = DogParameters.FACTOR,
+                                    threshold_level: int = DogParameters.THRESHOLD_LEVEL) -> np.ndarray:
         
-        self.dog = compute_difference_of_gaussians(self.texture,
-                                                   ksize,
-                                                   sigma,
-                                                   F,
-                                                   threshold_level)
+        self.dog = compute_difference_of_gaussians(image = self.texture,
+                                                   ksize = ksize,
+                                                   sigma = sigma,
+                                                   F = F,
+                                                   threshold_level = threshold_level)
 
         return self.dog
     
     def get_hough_circles(self,
-                          param1: float = 5,
-                          param2: float = 12,
-                          min_distance_between_circles: int = 100,
-                          min_radius: int = 10,
-                          max_radius: int = 30) -> np.ndarray:
+                          param1: float = HoughParameters.PARAM1,
+                          param2: float = HoughParameters.PARAM2,
+                          min_distance_between_circles: int = HoughParameters.MIN_DISTANCE,
+                          min_radius: int = HoughParameters.MIN_RADIUS,
+                          max_radius: int = HoughParameters.MAX_RADIUS) -> np.ndarray:
         if self.dog is None:
             raise Exception("No DoG image available. Please run diff_of_gaussians() first.")
         
@@ -56,7 +59,7 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
             min_distance_between_circles,
             min_radius,
             max_radius,
-            (255, 0, 255))
+            HOUGH_CIRCLES_COLOR)
         
         return circles_image
     

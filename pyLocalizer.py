@@ -12,11 +12,26 @@ from processing.electrode_detector import DogHoughElectrodeDetector
 from ui.surface_view import InteractiveSurfaceView, LabelingSurfaceView
 from processing.surface_registrator import LandmarkSurfaceRegistrator
 
+from config.electrode_detector import DogParameters, HoughParameters
+from config.sizes import ElectrodeSizes
+
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # initialize variables
+        self.surface_file = None
+        self.texture_file = None
+        self.mri_file = None
+        self.surface_view = None
+        self.mri_surface_view = None
+        self.labeling_surface_view = None
+        self.image = None
+        self.dog = None
+        self.hough = None
+        self.circles = None
 
         self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
 
@@ -97,17 +112,36 @@ class StartQt6(QMainWindow):
         # resize and close event slot connections
         self.ui.centralwidget.resizeEvent = self.on_resize       # type: ignore
         self.ui.centralwidget.closeEvent = self.on_close         # type: ignore
-                
-        # initialize variables
-        self.surface_file = None
-        self.texture_file = None
-        self.mri_file = None
-        self.surface_view = None
-        self.mri_surface_view = None
-        self.image = None
-        self.dog = None
-        self.hough = None
-        self.circles = None
+
+
+
+        # texture DoG spinbox default values
+        self.ui.kernel_size_spinbox.setValue(DogParameters.KSIZE)
+        self.ui.sigma_spinbox.setValue(DogParameters.SIGMA)
+        self.ui.diff_factor_spinbox.setValue(DogParameters.FACTOR)
+        
+        # texture Hough spinbox default values
+        self.ui.param1_spinbox.setValue(HoughParameters.PARAM1)
+        self.ui.param2_spinbox.setValue(HoughParameters.PARAM2)
+        self.ui.min_dist_spinbox.setValue(HoughParameters.MIN_DISTANCE)
+        self.ui.min_radius_spinbox.setValue(HoughParameters.MIN_RADIUS)
+        self.ui.max_radius_spinbox.setValue(HoughParameters.MAX_RADIUS)
+        
+        # electrode size spinbox default values
+        self.ui.sphere_size_spinbox.setValue(ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE)
+        self.ui.flagpost_size_spinbox.setValue(ElectrodeSizes.HEADSCAN_FLAGPOST_SIZE)
+        self.ui.flagpost_height_spinbox.setValue(ElectrodeSizes.HEADSCAN_FLAGPOST_HEIGHT)
+        
+        # mri electrode size spinbox default values
+        self.ui.mri_sphere_size_spinbox.setValue(ElectrodeSizes.MRI_ELECTRODE_SIZE)
+        self.ui.mri_flagpost_size_spinbox.setValue(ElectrodeSizes.MRI_FLAGPOST_SIZE)
+        self.ui.mri_flagpost_height_spinbox.setValue(ElectrodeSizes.MRI_FLAGPOST_HEIGHT)
+        
+        # label electrode size spinbox default values
+        self.ui.label_sphere_size_spinbox.setValue(ElectrodeSizes.LABEL_ELECTRODE_SIZE)
+        self.ui.label_flagpost_size_spinbox.setValue(ElectrodeSizes.LABEL_FLAGPOST_SIZE)
+        self.ui.label_flagpost_height_spinbox.setValue(ElectrodeSizes.LABEL_FLAGPOST_HEIGHT)
+        
         
         # temporary calls to avoid loading files during development
         self.load_texture()
@@ -169,11 +203,17 @@ class StartQt6(QMainWindow):
         if self.mri_file:
             self.mri_scan = MRIScan(self.mri_file)
             
+            self.mri_surface_view_config = {"sphere_size": ElectrodeSizes.MRI_ELECTRODE_SIZE,
+                                        "draw_flagposts": False,
+                                        "flagpost_height": ElectrodeSizes.MRI_FLAGPOST_HEIGHT,
+                                        "flagpost_size": ElectrodeSizes.MRI_FLAGPOST_SIZE}
+            
             self.mri_surface_view = InteractiveSurfaceView(self.ui.mri_frame,
                                             self.mri_scan.mesh,
-                                            self.mri_scan.modality)
+                                            self.mri_scan.modality,
+                                            self.mri_surface_view_config)
+            
             self.mri_surface_view.setModel(self.model)
-            self.mri_surface_view_config = {}
             
             self.ui.statusbar.showMessage("Loaded MRI file.")
             self.ui.tabWidget.setTabEnabled(3, True)
@@ -192,11 +232,19 @@ class StartQt6(QMainWindow):
         self.reference_electrodes_model.read_electrodes_from_file('sample_data/BC-MR-128+REF+EXG.ced')
         
         self.unit_sphere_surface = UnitSphere()
+        
+        self.labeling_surface_view_config = {"sphere_size": ElectrodeSizes.LABEL_ELECTRODE_SIZE,
+                                            "draw_flagposts": False,
+                                            "flagpost_height": ElectrodeSizes.LABEL_FLAGPOST_HEIGHT,
+                                            "flagpost_size": ElectrodeSizes.LABEL_FLAGPOST_SIZE}
+        
         self.labeling_surface_view = LabelingSurfaceView(self.ui.labeling_reference_frame,
                                                  self.unit_sphere_surface.mesh,
-                                                 self.unit_sphere_surface.modality)
+                                                 self.unit_sphere_surface.modality,
+                                                 self.labeling_surface_view_config)
+        
         self.labeling_surface_view.setModel(self.reference_electrodes_model)
-        self.labeling_surface_view_config = {}
+        
         # reference_electrodes = [electrode for electrode in]
         self.ui.statusbar.showMessage("Loaded electrode locations.")
         self.ui.tabWidget.setTabEnabled(4, True)
@@ -205,11 +253,17 @@ class StartQt6(QMainWindow):
         if self.surface_file:
             self.head_scan = HeadScan(self.surface_file, self.texture_file)
             
+            self.surface_view_config = {"sphere_size": ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE,
+                                    "draw_flagposts": False,
+                                    "flagpost_height": ElectrodeSizes.HEADSCAN_FLAGPOST_HEIGHT,
+                                    "flagpost_size": ElectrodeSizes.HEADSCAN_FLAGPOST_SIZE}
+            
             self.surface_view = InteractiveSurfaceView(self.ui.headmodel_frame,
                                     self.head_scan.mesh, # type: ignore
-                                    self.head_scan.modality)
+                                    self.head_scan.modality,
+                                    self.surface_view_config)
+            
             self.surface_view.setModel(self.model)
-            self.surface_view_config = {}
             
             self.ui.statusbar.showMessage("Prepared headscan.")
             

@@ -6,6 +6,7 @@ except ImportError:
     raise ImportError('Cannot find the VTK Qt bindings, make sure you have ' \
         'installed them')
 
+from sympy import E
 import vedo as vd
 
 from core.electrode import Electrode
@@ -13,12 +14,8 @@ from core.cap_model import CapModel
 
 import numpy as np   
 
-from config.colors import (HEADSCAN_LABELED_ELECTRODES_COLOR,
-                           HEADSCAN_UNLABELED_ELECTRODES_COLOR, LABELING_REFERENCE_ELECTRODES_COLOR,
-                           MRI_LABELED_ELECTRODES_COLOR,
-                           MRI_UNLABELED_ELECTRODES_COLOR,
-                           LABELING_MEASURED_UNLABELED_ELECTRODES_COLOR,
-                           LABELING_MEASURED_LABELED_ELECTRODES_COLOR)
+from config.colors import ElectrodeColors
+from config.sizes import ElectrodeSizes
 
 class SurfaceView(QAbstractItemView):
     """SurfaceView class for displaying a 3D surface in a Qt application."""
@@ -43,7 +40,6 @@ class SurfaceView(QAbstractItemView):
         self.modality = modality
         
         self.config = config
-        self._set_config_defaults()
         
     def resize_view(self, width, height):
         self._vtk_widget.resize(width, height)
@@ -100,12 +96,6 @@ class SurfaceView(QAbstractItemView):
             self._plotter.remove(self.secondary_mesh)
             self.secondary_mesh = None
             self._plotter.render()
-        
-    def _set_config_defaults(self):
-        self.config.setdefault("sphere_size", 0.02)
-        self.config.setdefault("draw_flagposts", False)
-        self.config.setdefault("flagpost_size", 0.6)
-        self.config.setdefault("flagpost_height", 0.05)
     
     def close_vtk_widget(self):
         self._vtk_widget.close()
@@ -137,11 +127,11 @@ class InteractiveSurfaceView(SurfaceView):
             label = self.model.get_electrode(i).label
             
             if electrode_modality == "mri":
-                unlabeled_color = MRI_UNLABELED_ELECTRODES_COLOR
-                labeled_color = MRI_LABELED_ELECTRODES_COLOR
+                unlabeled_color = ElectrodeColors.MRI_UNLABELED_ELECTRODES_COLOR
+                labeled_color = ElectrodeColors.MRI_LABELED_ELECTRODES_COLOR
             else:
-                unlabeled_color = HEADSCAN_UNLABELED_ELECTRODES_COLOR
-                labeled_color = HEADSCAN_LABELED_ELECTRODES_COLOR
+                unlabeled_color = ElectrodeColors.HEADSCAN_UNLABELED_ELECTRODES_COLOR
+                labeled_color = ElectrodeColors.HEADSCAN_LABELED_ELECTRODES_COLOR
             
             if label is None or label == "" or label == "None":
                 #self.model.set_electrode_labeled_flag(i, False)
@@ -197,7 +187,7 @@ class InteractiveSurfaceView(SurfaceView):
             self.model.remove_closest_electrode(point, self.modality)
             
             self.render_electrodes()
-            self.model.layoutChanged.emit()  
+            self.model.layoutChanged.emit()
 
 class LabelingSurfaceView(SurfaceView):
     def __init__(self, frame, mesh: vd.Mesh | None = None,
@@ -220,11 +210,11 @@ class LabelingSurfaceView(SurfaceView):
             label = self.model.get_electrode(i).label
             
             if electrode_modality == "reference":
-                labeled_color = LABELING_REFERENCE_ELECTRODES_COLOR
+                labeled_color = ElectrodeColors.LABELING_REFERENCE_ELECTRODES_COLOR
                 unlabeled_color = '#000000'
             else:
-                unlabeled_color = LABELING_MEASURED_UNLABELED_ELECTRODES_COLOR
-                labeled_color = LABELING_MEASURED_LABELED_ELECTRODES_COLOR
+                unlabeled_color = ElectrodeColors.LABELING_MEASURED_UNLABELED_ELECTRODES_COLOR
+                labeled_color = ElectrodeColors.LABELING_MEASURED_LABELED_ELECTRODES_COLOR
             
             if label is None or label == "" or label == "None":
                 # self.model.set_electrode_labeled_flag(i, False)
@@ -262,3 +252,4 @@ class LabelingSurfaceView(SurfaceView):
                 self._plotter.add(fs)
             
         self._plotter.render()
+        

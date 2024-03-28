@@ -195,7 +195,6 @@ class LabelingSurfaceView(SurfaceView):
         super().__init__(frame, mesh, modality, config, parent)
         
     def render_electrodes(self):
-        
         self._plotter.clear()
         self._plotter.add(self.mesh)
         if self.secondary_mesh is not None:
@@ -217,11 +216,11 @@ class LabelingSurfaceView(SurfaceView):
                 labeled_color = ElectrodeColors.LABELING_MEASURED_LABELED_ELECTRODES_COLOR
             
             if label is None or label == "" or label == "None":
-                # self.model.set_electrode_labeled_flag(i, False)
+                self.model.set_electrode_labeled_flag(i, False)
                 label = str(i+1)
                 points_unlabeled.append((point, label, unlabeled_color))
             else:
-                # self.model.set_electrode_labeled_flag(i, True)
+                self.model.set_electrode_labeled_flag(i, True)
                 points_labeled.append((point, label, labeled_color))
             
         for point, label, color in points_unlabeled:

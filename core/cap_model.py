@@ -37,6 +37,9 @@ class CapModel(QAbstractTableModel):
     def get_labeled_electrodes(self, modality: str) -> list[Electrode]:
         return [electrode for electrode in self._data
                 if electrode.labeled and electrode.modality == modality]
+    
+    def get_electrodes_by_modality(self, modality: str) -> list[Electrode]:
+        return [electrode for electrode in self._data if electrode.modality == modality]
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole) -> str | None:
         if index.isValid():

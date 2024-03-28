@@ -37,7 +37,6 @@ class StartQt6(QMainWindow):
 
         # main data model
         self.model = CapModel()
-        
         # reference electrodes model
         self.reference_electrodes_model = CapModel()
         
@@ -295,6 +294,11 @@ class StartQt6(QMainWindow):
         if self.labeling_surface_view is not None:
             frame_size = self.ui.labeling_reference_frame.size()
             self.labeling_surface_view.resize_view(frame_size.width(), frame_size.height())
+            
+            # modality will need to change -> TEMPORARY SOLUTION
+            measured_electrodes = self.model.get_electrodes_by_modality('scan')
+            for electrode in measured_electrodes:
+                self.reference_electrodes_model.insert_electrode(electrode)
             
             self.labeling_surface_view.show()
             

@@ -13,6 +13,8 @@ class Electrode:
     modality: str | None = None
     label: str | None = None
     labeled: bool = False
+    _cap_centroid: np.ndarray | None = None
+    _mapped_to_unit_sphere: bool = False
 
     @property
     def keys(self):
@@ -25,16 +27,39 @@ class Electrode:
         return np.array([theta, phi])
     
     @property
-    def unit_sphere_cartesian_coordinates(self) -> np.ndarray:
+    def unit_sphere_cartesian_coordinates(self) -> np.ndarray | list[float] | tuple[float, ...]:
         """Returns the electrode's cartesian coordinates in the unit sphere."""
-        theta, phi = self._compute_unit_sphere_spherical_coordinates()
-        unit_sphere_coordinates = self._compute_unit_sphere_cartesian_coordinates(theta, phi)
+        if not self._mapped_to_unit_sphere:
+            theta, phi = self._compute_unit_sphere_spherical_coordinates()
+            unit_sphere_coordinates = self._compute_unit_sphere_cartesian_coordinates(theta, phi)
+        else: 
+            unit_sphere_coordinates = self.coordinates
         return unit_sphere_coordinates
+    
+    @property
+    def cap_centroid(self):
+        return self._cap_centroid
+    
+    @cap_centroid.setter
+    def cap_centroid(self, centroid: np.ndarray):
+        self._cap_centroid = centroid
+        
+    
+    @unit_sphere_cartesian_coordinates.setter
+    def unit_sphere_cartesian_coordinates(self, coordinates: np.ndarray):
+        """Sets the electrode's cartesian coordinates in the unit sphere."""
+        self.coordinates = coordinates
+        self._mapped_to_unit_sphere = True
     
     def _compute_unit_sphere_spherical_coordinates(self) -> tuple[float, float]:
         """Computes the spherical coordinates of the electrode."""
+        # compute centroid of the mesh
+        if self._cap_centroid is not None:
+            origin = self._cap_centroid
+        else:
+            origin = (0, 0, 0)
         (theta, phi) = compute_unit_spherical_coordinates_from_cartesian(list(self.coordinates),
-                                                                         origin = (0, 0, 0))
+                                                                         origin = origin)
         return (theta, phi)
         
     def _compute_unit_sphere_cartesian_coordinates(self, theta: float, phi: float) -> np.ndarray:

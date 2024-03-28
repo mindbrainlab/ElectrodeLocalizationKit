@@ -34,12 +34,12 @@ class CapModel(QAbstractTableModel):
     def set_electrode_labeled_flag(self, index: int, labeled: bool) -> None:
         self._data[index].labeled = labeled
         
-    def get_labeled_electrodes(self, modality: str) -> list[Electrode]:
+    def get_labeled_electrodes(self, modality: list[str]) -> list[Electrode]:
         return [electrode for electrode in self._data
-                if electrode.labeled and electrode.modality == modality]
+                if electrode.labeled and electrode.modality in modality]
     
-    def get_electrodes_by_modality(self, modality: str) -> list[Electrode]:
-        return [electrode for electrode in self._data if electrode.modality == modality]
+    def get_electrodes_by_modality(self, modality: list[str]) -> list[Electrode]:
+        return [electrode for electrode in self._data if electrode.modality in modality]
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole) -> str | None:
         if index.isValid():
@@ -56,6 +56,17 @@ class CapModel(QAbstractTableModel):
         self.beginInsertRows(parent, self.rowCount(), self.rowCount())
         self._data.append(electrode)
         self.endInsertRows()
+        
+        if electrode.modality in ['scan', 'mri']:
+            self._compute_centroid()
+            
+    def _compute_centroid(self):
+        all_measured_electrodes = self.get_electrodes_by_modality(['scan', 'mri'])
+        coordinates = [electrode.coordinates for electrode in all_measured_electrodes]
+        centroid = np.mean(coordinates, axis=0) # type: ignore
+        
+        for electrode in all_measured_electrodes:
+            electrode.cap_centroid = centroid
         
     def read_electrodes_from_file(self, filename: str) -> None:
         electrodes = load_electrodes_from_file(filename)

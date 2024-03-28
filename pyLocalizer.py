@@ -15,6 +15,10 @@ from processing.surface_registrator import LandmarkSurfaceRegistrator
 from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
+from processing.electrode_registrator import RigidElectrodeRegistrator
+
+import numpy as np
+
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -37,8 +41,6 @@ class StartQt6(QMainWindow):
 
         # main data model
         self.model = CapModel()
-        # reference electrodes model
-        self.reference_electrodes_model = CapModel()
         
         # disable tabs
         self.ui.tabWidget.setTabEnabled(1, False)
@@ -103,6 +105,8 @@ class StartQt6(QMainWindow):
         self.ui.label_flagpost_size_spinbox.valueChanged.connect(self.update_label_config)
         
         self.ui.splitter.splitterMoved.connect(self.on_resize)
+        
+        self.ui.label_update_button.clicked.connect(self.align_reference_electrodes)
         
         # alpha slider slot connections
         self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
@@ -230,7 +234,7 @@ class StartQt6(QMainWindow):
         # if file_path:
         #     self.model.load_electrodes(file_path)
         
-        self.reference_electrodes_model.read_electrodes_from_file('sample_data/BC-MR-128+REF+EXG.ced')
+        self.model.read_electrodes_from_file('sample_data/BC-MR-128+REF+EXG.ced')
         
         self.unit_sphere_surface = UnitSphere()
         
@@ -244,9 +248,8 @@ class StartQt6(QMainWindow):
                                                  self.unit_sphere_surface.modality,
                                                  self.labeling_surface_view_config)
         
-        self.labeling_surface_view.setModel(self.reference_electrodes_model)
+        self.labeling_surface_view.setModel(self.model)
         
-        # reference_electrodes = [electrode for electrode in]
         self.ui.statusbar.showMessage("Loaded electrode locations.")
         self.ui.tabWidget.setTabEnabled(4, True)
             
@@ -294,11 +297,6 @@ class StartQt6(QMainWindow):
         if self.labeling_surface_view is not None:
             frame_size = self.ui.labeling_reference_frame.size()
             self.labeling_surface_view.resize_view(frame_size.width(), frame_size.height())
-            
-            # modality will need to change -> TEMPORARY SOLUTION
-            measured_electrodes = self.model.get_electrodes_by_modality('scan')
-            for electrode in measured_electrodes:
-                self.reference_electrodes_model.insert_electrode(electrode)
             
             self.labeling_surface_view.show()
             
@@ -426,8 +424,8 @@ class StartQt6(QMainWindow):
             self.labeling_surface_view.update_config(self.labeling_surface_view_config)
 
     def align_scan_to_mri(self):
-        scan_labeled_electrodes = self.model.get_labeled_electrodes('scan')
-        mri_labeled_electrodes = self.model.get_labeled_electrodes('mri')
+        scan_labeled_electrodes = self.model.get_labeled_electrodes(['scan'])
+        mri_labeled_electrodes = self.model.get_labeled_electrodes(['mri'])
         
         scan_landmarks = []
         mri_landmarks = []
@@ -437,13 +435,13 @@ class StartQt6(QMainWindow):
                     scan_landmarks.append(electrode_i.coordinates)
                     mri_landmarks.append(electrode_j.coordinates)
         
-        self.surface_registrator = LandmarkSurfaceRegistrator(
+        surface_registrator = LandmarkSurfaceRegistrator(
             source_landmarks=scan_landmarks,
             target_landmarks=mri_landmarks)
         
         # add the necessary checks
         
-        transformation_matrix = self.head_scan.register_mesh(self.surface_registrator)
+        transformation_matrix = self.head_scan.register_mesh(surface_registrator)
         if transformation_matrix is not None:
             self.model.transform_electrodes('scan', transformation_matrix)
         
@@ -457,6 +455,16 @@ class StartQt6(QMainWindow):
         self.head_scan.undo_registration()
         if self.mri_surface_view is not None:
             self.mri_surface_view.reset_secondary_mesh('mri')
+
+    def align_reference_electrodes(self):
+        labeled_measured_electrodes = self.model.get_labeled_electrodes(['mri', 'scan'])
+        reference_electrodes = self.model.get_electrodes_by_modality(['reference'])
+        
+        rigid_electrode_registrator = RigidElectrodeRegistrator(
+                source_electrodes = reference_electrodes,
+                target_electrodes = labeled_measured_electrodes)
+        rigid_electrode_registrator.register()
+            
 
     def on_close(self):
         if self.surface_view is not None:

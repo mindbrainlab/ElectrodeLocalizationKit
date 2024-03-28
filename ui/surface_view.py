@@ -134,11 +134,11 @@ class InteractiveSurfaceView(SurfaceView):
                 labeled_color = ElectrodeColors.HEADSCAN_LABELED_ELECTRODES_COLOR
             
             if label is None or label == "" or label == "None":
-                #self.model.set_electrode_labeled_flag(i, False)
+                self.model.set_electrode_labeled_flag(i, False)
                 label = str(i+1)
                 points_unlabeled.append((point, label, unlabeled_color))
             else:
-                #self.model.set_electrode_labeled_flag(i, True)
+                self.model.set_electrode_labeled_flag(i, True)
                 points_labeled.append((point, label, labeled_color))
             
         for point, label, color in points_unlabeled:

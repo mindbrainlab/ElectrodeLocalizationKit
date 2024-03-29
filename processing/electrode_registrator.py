@@ -38,22 +38,8 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
                                                   np.array([e.unit_sphere_cartesian_coordinates
                                                             for e in self.target_electrodes]))
         
-        transformed_coordinates = []
-        # coordinate_indices = []
-        for i, electrode in enumerate(self.source_electrodes):
+        for electrode in self.source_electrodes:
             source_vector = electrode.unit_sphere_cartesian_coordinates
             source_vector = np.append(source_vector, 1)
             transformed_vector = np.dot(T, source_vector)
-            transformed_coordinates.append(transformed_vector[:3])
             electrode.coordinates = transformed_vector[:3]
-            # coordinate_indices.append(i)
-            
-        # compute the centroid of transformed coordinates
-        cap_centroid = np.mean(transformed_coordinates, axis=0)
-        
-        # for electrode in self.source_electrodes:
-        #     electrode.cap_centroid = cap_centroid
-        
-        # assign the transformed coordinates to the source electrodes
-        # for i in coordinate_indices:
-        #     self.source_electrodes[i].coordinates = transformed_coordinates[i]

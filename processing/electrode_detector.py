@@ -13,7 +13,7 @@ from config.colors import HOUGH_CIRCLES_COLOR
 class BaseElectrodeDetector(ABC):
     
     @abstractmethod
-    def detect_electrodes(self) -> list[Electrode]:
+    def detect(self) -> list[Electrode]:
         pass
     
 
@@ -64,7 +64,7 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
         return circles_image
     
     
-    def detect_electrodes(self, mesh: vd.Mesh) -> list[Electrode]:
+    def detect(self, mesh: vd.Mesh) -> list[Electrode]:
         for circle in self.circles[0, :]: # type: ignore
             vertex = self._get_vertex_from_pixels((circle[0], circle[1]), mesh, self.texture.shape[0:2])
             self.electrodes.append(Electrode(vertex,

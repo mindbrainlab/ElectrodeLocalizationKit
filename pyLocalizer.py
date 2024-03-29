@@ -31,7 +31,8 @@ class StartQt6(QMainWindow):
         self.mri_file = None
         self.surface_view = None
         self.mri_surface_view = None
-        self.labeling_surface_view = None
+        self.labeling_main_surface_view = None
+        self.labeling_reference_surface_view = None
         self.image = None
         self.dog = None
         self.hough = None
@@ -99,10 +100,10 @@ class StartQt6(QMainWindow):
         self.ui.mri_flagpost_size_spinbox.valueChanged.connect(self.update_mri_config)
         
         # label configuration slot connections
-        self.ui.label_sphere_size_spinbox.valueChanged.connect(self.update_label_config)
-        self.ui.label_flagposts_checkbox.stateChanged.connect(self.update_label_config)
-        self.ui.label_flagpost_height_spinbox.valueChanged.connect(self.update_label_config)
-        self.ui.label_flagpost_size_spinbox.valueChanged.connect(self.update_label_config)
+        self.ui.label_sphere_size_spinbox.valueChanged.connect(self.update_reference_labeling_config)
+        self.ui.label_flagposts_checkbox.stateChanged.connect(self.update_reference_labeling_config)
+        self.ui.label_flagpost_height_spinbox.valueChanged.connect(self.update_reference_labeling_config)
+        self.ui.label_flagpost_size_spinbox.valueChanged.connect(self.update_reference_labeling_config)
         
         self.ui.splitter.splitterMoved.connect(self.on_resize)
         
@@ -238,17 +239,18 @@ class StartQt6(QMainWindow):
         
         self.unit_sphere_surface = UnitSphere()
         
-        self.labeling_surface_view_config = {"sphere_size": ElectrodeSizes.LABEL_ELECTRODE_SIZE,
-                                            "draw_flagposts": False,
-                                            "flagpost_height": ElectrodeSizes.LABEL_FLAGPOST_HEIGHT,
-                                            "flagpost_size": ElectrodeSizes.LABEL_FLAGPOST_SIZE}
+        self.labeling_reference_surface_view_config = {
+            "sphere_size": ElectrodeSizes.LABEL_ELECTRODE_SIZE,
+            "draw_flagposts": False,
+            "flagpost_height": ElectrodeSizes.LABEL_FLAGPOST_HEIGHT,
+            "flagpost_size": ElectrodeSizes.LABEL_FLAGPOST_SIZE}
         
-        self.labeling_surface_view = LabelingSurfaceView(self.ui.labeling_reference_frame,
+        self.labeling_reference_surface_view = LabelingSurfaceView(self.ui.labeling_reference_frame,
                                                  self.unit_sphere_surface.mesh,
                                                  self.unit_sphere_surface.modality,
-                                                 self.labeling_surface_view_config)
+                                                 self.labeling_reference_surface_view_config)
         
-        self.labeling_surface_view.setModel(self.model)
+        self.labeling_reference_surface_view.setModel(self.model)
         
         self.ui.statusbar.showMessage("Loaded electrode locations.")
         self.ui.tabWidget.setTabEnabled(4, True)
@@ -257,15 +259,30 @@ class StartQt6(QMainWindow):
         if self.surface_file:
             self.head_scan = HeadScan(self.surface_file, self.texture_file)
             
-            self.surface_view_config = {"sphere_size": ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE,
-                                    "draw_flagposts": False,
-                                    "flagpost_height": ElectrodeSizes.HEADSCAN_FLAGPOST_HEIGHT,
-                                    "flagpost_size": ElectrodeSizes.HEADSCAN_FLAGPOST_SIZE}
+            self.surface_view_config = {
+                "sphere_size": ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE,
+                "draw_flagposts": False,
+                "flagpost_height": ElectrodeSizes.HEADSCAN_FLAGPOST_HEIGHT,
+                "flagpost_size": ElectrodeSizes.HEADSCAN_FLAGPOST_SIZE}
             
             self.surface_view = InteractiveSurfaceView(self.ui.headmodel_frame,
                                     self.head_scan.mesh, # type: ignore
                                     self.head_scan.modality,
                                     self.surface_view_config)
+            
+            # this is TEMPORARY, because it should also support MRI
+            self.labeling_main_surface_view_config = {
+                "sphere_size": ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE,
+                "draw_flagposts": False,
+                "flagpost_height": ElectrodeSizes.HEADSCAN_FLAGPOST_HEIGHT,
+                "flagpost_size": ElectrodeSizes.HEADSCAN_FLAGPOST_SIZE}
+            
+            self.labeling_main_surface_view = InteractiveSurfaceView(self.ui.labeling_main_frame,
+                                    self.head_scan.mesh, # type: ignore
+                                    self.head_scan.modality,
+                                    self.labeling_main_surface_view_config)
+            
+            self.labeling_main_surface_view.setModel(self.model)
             
             self.surface_view.setModel(self.model)
             
@@ -278,6 +295,9 @@ class StartQt6(QMainWindow):
             self.display_surface()
         elif t == 3:
             self.display_mri_surface()
+        elif t == 4:
+            self.display_labeling_surface()
+            self.display_unit_sphere()
             
     def display_surface(self):
         if self.surface_view is not None:
@@ -293,12 +313,19 @@ class StartQt6(QMainWindow):
         
             self.mri_surface_view.show()
             
-    def display_unit_sphere(self):
-        if self.labeling_surface_view is not None:
-            frame_size = self.ui.labeling_reference_frame.size()
-            self.labeling_surface_view.resize_view(frame_size.width(), frame_size.height())
+    def display_labeling_surface(self):
+        if self.labeling_main_surface_view is not None:
+            frame_size = self.ui.labeling_main_frame.size()
+            self.labeling_main_surface_view.resize_view(frame_size.width(), frame_size.height())
             
-            self.labeling_surface_view.show()
+            self.labeling_main_surface_view.show()
+            
+    def display_unit_sphere(self):
+        if self.labeling_reference_surface_view is not None:
+            frame_size = self.ui.labeling_reference_frame.size()
+            self.labeling_reference_surface_view.resize_view(frame_size.width(), frame_size.height())
+            
+            self.labeling_reference_surface_view.show()
             
     def project_electrodes_to_mri(self):
         if self.mri_surface_view is not None:
@@ -348,7 +375,7 @@ class StartQt6(QMainWindow):
         self.ui.photo_label.setPixmap(QPixmap.fromImage(self.hough_qimage))
         
     def detect_electrodes(self):
-        self.electrodes = self.dog_hough_detector.detect_electrodes(
+        self.electrodes = self.dog_hough_detector.detect(
             self.head_scan.mesh) # type: ignore
         for electrode in self.electrodes:
             self.model.insert_electrode(electrode)
@@ -356,7 +383,8 @@ class StartQt6(QMainWindow):
     def on_resize(self, event: QResizeEvent | None):
         scan_frame_size = self.ui.headmodel_frame.size()
         mri_frame_size = self.ui.mri_frame.size()
-        label_frame_size = self.ui.labeling_reference_frame.size()
+        label_main_frame_size = self.ui.labeling_main_frame.size()
+        label_reference_frame_size = self.ui.labeling_reference_frame.size()
         
         if self.surface_view is not None:
             self.surface_view.resize_view(scan_frame_size.width(),
@@ -366,9 +394,13 @@ class StartQt6(QMainWindow):
             self.mri_surface_view.resize_view(mri_frame_size.width(),
                                               mri_frame_size.height())
             
-        if self.labeling_surface_view is not None:
-            self.labeling_surface_view.resize_view(label_frame_size.width(),
-                                                   label_frame_size.height())
+        if self.labeling_main_surface_view is not None:
+            self.labeling_main_surface_view.resize_view(label_main_frame_size.width(),
+                                                   label_main_frame_size.height())
+            
+        if self.labeling_reference_surface_view is not None:
+            self.labeling_reference_surface_view.resize_view(label_reference_frame_size.width(),
+                                                   label_reference_frame_size.height())
             
         
         if self.dog is not None:
@@ -407,6 +439,13 @@ class StartQt6(QMainWindow):
             self.surface_view_config["flagpost_size"] = self.ui.flagpost_size_spinbox.value()
             self.surface_view.update_config(self.surface_view_config)
             
+        if self.labeling_main_surface_view is not None:
+            self.labeling_main_surface_view_config["sphere_size"] = self.ui.sphere_size_spinbox.value()
+            self.labeling_main_surface_view_config["draw_flagposts"] = self.ui.flagposts_checkbox.isChecked()
+            self.labeling_main_surface_view_config["flagpost_height"] = self.ui.flagpost_height_spinbox.value()
+            self.labeling_main_surface_view_config["flagpost_size"] = self.ui.flagpost_size_spinbox.value()
+            self.labeling_main_surface_view.update_config(self.labeling_main_surface_view_config)
+            
     def update_mri_config(self):
         if self.mri_surface_view is not None:
             self.mri_surface_view_config["sphere_size"] = self.ui.mri_sphere_size_spinbox.value()
@@ -415,13 +454,13 @@ class StartQt6(QMainWindow):
             self.mri_surface_view_config["flagpost_size"] = self.ui.mri_flagpost_size_spinbox.value()
             self.mri_surface_view.update_config(self.mri_surface_view_config)
             
-    def update_label_config(self):
-        if self.labeling_surface_view is not None:
-            self.labeling_surface_view_config["sphere_size"] = self.ui.label_sphere_size_spinbox.value()
-            self.labeling_surface_view_config["draw_flagposts"] = self.ui.label_flagposts_checkbox.isChecked()
-            self.labeling_surface_view_config["flagpost_height"] = self.ui.label_flagpost_height_spinbox.value()
-            self.labeling_surface_view_config["flagpost_size"] = self.ui.label_flagpost_size_spinbox.value()
-            self.labeling_surface_view.update_config(self.labeling_surface_view_config)
+    def update_reference_labeling_config(self):
+        if self.labeling_reference_surface_view is not None:
+            self.labeling_reference_surface_view_config["sphere_size"] = self.ui.label_sphere_size_spinbox.value()
+            self.labeling_reference_surface_view_config["draw_flagposts"] = self.ui.label_flagposts_checkbox.isChecked()
+            self.labeling_reference_surface_view_config["flagpost_height"] = self.ui.label_flagpost_height_spinbox.value()
+            self.labeling_reference_surface_view_config["flagpost_size"] = self.ui.label_flagpost_size_spinbox.value()
+            self.labeling_reference_surface_view.update_config(self.labeling_reference_surface_view_config)
 
     def align_scan_to_mri(self):
         scan_labeled_electrodes = self.model.get_labeled_electrodes(['scan'])

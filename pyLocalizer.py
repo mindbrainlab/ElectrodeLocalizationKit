@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QMainWindow, QFileDialog, QApplication
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap, QResizeEvent
 
+from processing import electrode_aligner
 from ui.pyloc_main_window import Ui_MainWindow
 
 import sys
@@ -16,6 +17,7 @@ from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
 from processing.electrode_registrator import RigidElectrodeRegistrator
+from processing.electrode_aligner import ElectrodeAligner
 
 import numpy as np
 
@@ -504,6 +506,13 @@ class StartQt6(QMainWindow):
                 target_electrodes = labeled_measured_electrodes)
         rigid_electrode_registrator.register()
             
+            
+        electrode_aligner = ElectrodeAligner(
+            source_electrodes = reference_electrodes,
+            target_electrodes = labeled_measured_electrodes)
+        
+        for electrode in reference_electrodes:
+            electrode_aligner.align(electrode.label)
 
     def on_close(self):
         if self.surface_view is not None:

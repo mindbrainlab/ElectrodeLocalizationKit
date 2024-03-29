@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import scipy as sp
 import vedo as vd
 
 from dataclasses import dataclass
@@ -9,12 +10,13 @@ from utils.spatial_processing import (compute_unit_spherical_coordinates_from_ca
 
 @dataclass
 class Electrode:
-    coordinates: np.ndarray | list[float] | tuple[float, ...]
+    coordinates: np.ndarray
     modality: str | None = None
     label: str | None = None
     labeled: bool = False
     _cap_centroid: np.ndarray | None = None
     _mapped_to_unit_sphere: bool = False
+    _registered: bool = False
 
     @property
     def keys(self):
@@ -27,7 +29,7 @@ class Electrode:
         return np.array([theta, phi])
     
     @property
-    def unit_sphere_cartesian_coordinates(self) -> np.ndarray | list[float] | tuple[float, ...]:
+    def unit_sphere_cartesian_coordinates(self) -> np.ndarray:
         """Returns the electrode's cartesian coordinates in the unit sphere."""
         if not self._mapped_to_unit_sphere:
             theta, phi = self._compute_unit_sphere_spherical_coordinates()
@@ -37,6 +39,14 @@ class Electrode:
         return unit_sphere_coordinates
     
     @property
+    def registered(self) -> bool:
+        return self._registered
+    
+    @registered.setter
+    def registered(self, value: bool):
+        self._registered = value
+    
+    @property
     def cap_centroid(self):
         return self._cap_centroid
     
@@ -44,7 +54,13 @@ class Electrode:
     def cap_centroid(self, centroid: np.ndarray):
         self._cap_centroid = centroid
         
-    
+    @spherical_coordinates.setter
+    def spherical_coordinates(self, coordinates: np.ndarray):
+        """Sets the electrode's spherical coordinates."""
+        theta, phi = coordinates
+        self.coordinates = self._compute_unit_sphere_cartesian_coordinates(theta, phi)
+        self._mapped_to_unit_sphere = True
+        
     @unit_sphere_cartesian_coordinates.setter
     def unit_sphere_cartesian_coordinates(self, coordinates: np.ndarray):
         """Sets the electrode's cartesian coordinates in the unit sphere."""

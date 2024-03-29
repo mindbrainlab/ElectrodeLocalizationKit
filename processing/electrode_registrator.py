@@ -11,7 +11,7 @@ from utils.spatial_processing import compute_umeyama_transformation_matrix
 class BaseElectrodeRegistrator(ABC):
     
     @abstractmethod
-    def register(self, destination_electrodes: list[Electrode], target_electrodes: list[Electrode]):
+    def register(self):
         pass
     
     

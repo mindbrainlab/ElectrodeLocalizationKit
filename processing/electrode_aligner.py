@@ -12,7 +12,7 @@ from utils.spatial_processing import compute_umeyama_transformation_matrix
 class BaseElectrodeAligner(ABC):
     
     @abstractmethod
-    def align(self, electrode_label: str):
+    def align(self, electrode_label: str | None):
         pass
     
     
@@ -24,7 +24,7 @@ class ElectrodeAligner(BaseElectrodeAligner):
         self.source_electrodes = source_electrodes
         self.target_electrodes = target_electrodes
         
-    def align(self, electrode_label: str):
+    def align(self, electrode_label: str | None):
         # extract the source electrode with the given label
         for electrode in self.source_electrodes:
             if electrode.label == electrode_label:
@@ -37,6 +37,7 @@ class ElectrodeAligner(BaseElectrodeAligner):
                 target_electrode = electrode
                 break
 
+        # if the source (reference) electrode has not yet been registered, register it
         if not source_electrode.registered:
             # extract the spherical coordinates of the source and target electrodes
             source_vector = source_electrode.unit_sphere_cartesian_coordinates
@@ -54,7 +55,7 @@ class ElectrodeAligner(BaseElectrodeAligner):
             source_electrode.spherical_coordinates = target_electrode.spherical_coordinates
             source_electrode.registered = True
 
-            # -- apply the adjustment to every non-registered electrode
+            # apply the adjustment to every non-aligned electrode
             for i, electrode in enumerate(self.source_electrodes):
                 if not electrode.registered:
                     electrode.unit_sphere_cartesian_coordinates = align_vectors(
@@ -74,11 +75,11 @@ def compute_alignment_attenuation_vector(electrodes: list[Electrode],
 
     # compute the angular distance from every electrode to the target electrode
     D = np.zeros(len(electrodes))
-    source_vector = target_electrode.unit_sphere_cartesian_coordinates
+    target_vector = target_electrode.unit_sphere_cartesian_coordinates
     for i, electrode in enumerate(electrodes):
-        target_vector = electrode.unit_sphere_cartesian_coordinates
+        source_vector = electrode.unit_sphere_cartesian_coordinates
         # -- compute the angle between the two vectors
-        D[i] = compute_angular_distance(source_vector, target_vector)
+        D[i] = compute_angular_distance(target_vector, source_vector)
         
     # convert D to degrees
     D = np.degrees(D)

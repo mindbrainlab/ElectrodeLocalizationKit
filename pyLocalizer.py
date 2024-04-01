@@ -39,6 +39,7 @@ class StartQt6(QMainWindow):
         self.dog = None
         self.hough = None
         self.circles = None
+        self.electrodes_registered_to_reference = False
 
         self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
 
@@ -501,18 +502,24 @@ class StartQt6(QMainWindow):
         labeled_measured_electrodes = self.model.get_labeled_electrodes(['mri', 'scan'])
         reference_electrodes = self.model.get_electrodes_by_modality(['reference'])
         
-        rigid_electrode_registrator = RigidElectrodeRegistrator(
+        if ((not self.electrodes_registered_to_reference) and
+            len(labeled_measured_electrodes) >= 3):
+            rigid_electrode_registrator = RigidElectrodeRegistrator(
                 source_electrodes = reference_electrodes,
                 target_electrodes = labeled_measured_electrodes)
-        rigid_electrode_registrator.register()
             
+            rigid_electrode_registrator.register()
+            self.electrodes_registered_to_reference = True
             
-        electrode_aligner = ElectrodeAligner(
-            source_electrodes = reference_electrodes,
-            target_electrodes = labeled_measured_electrodes)
+        if self.electrodes_registered_to_reference:
+            electrode_aligner = ElectrodeAligner(
+                source_electrodes = reference_electrodes,
+                target_electrodes = labeled_measured_electrodes)
+            
+            for electrode in labeled_measured_electrodes:
+                electrode_aligner.align(electrode.label)
         
-        for electrode in reference_electrodes:
-            electrode_aligner.align(electrode.label)
+        self.display_unit_sphere()
 
     def on_close(self):
         if self.surface_view is not None:

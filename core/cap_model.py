@@ -56,11 +56,8 @@ class CapModel(QAbstractTableModel):
         self.beginInsertRows(parent, self.rowCount(), self.rowCount())
         self._data.append(electrode)
         self.endInsertRows()
-        
-        if electrode.modality in ['scan', 'mri']:
-            self._compute_centroid()
             
-    def _compute_centroid(self):
+    def compute_centroid(self):
         all_measured_electrodes = self.get_electrodes_by_modality(['scan', 'mri'])
         coordinates = [electrode.coordinates for electrode in all_measured_electrodes]
         centroid = np.mean(coordinates, axis=0) # type: ignore

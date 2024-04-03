@@ -69,7 +69,10 @@ def compute_cartesian_coordinates_from_unit_spherical(spherical_coordinates: lis
     y = rcosphi * np.sin(theta)
     return (x, y, z)
 
-def compute_umeyama_transformation_matrix(source: np.ndarray, target: np.ndarray) -> np.ndarray:
+def compute_umeyama_transformation_matrix(source: np.ndarray,
+                                          target: np.ndarray,
+                                          rotate: bool = True,
+                                          translate: bool = False) -> np.ndarray:
     """
     Aligns two point clouds using the Umeyama algorithm. Transforms the source
     point cloud to the target point cloud.
@@ -100,6 +103,10 @@ def compute_umeyama_transformation_matrix(source: np.ndarray, target: np.ndarray
     
     # compute transformation matrix
     T = np.eye(4)
-    T[:3, :3] = R
-    T[:3, 3] = t
+    if rotate:
+        T[:3, :3] = R
+    
+    if translate:
+        T[:3, 3] = t
+        
     return T

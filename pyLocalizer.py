@@ -110,7 +110,11 @@ class StartQt6(QMainWindow):
         
         self.ui.splitter.splitterMoved.connect(self.on_resize)
         
-        self.ui.label_update_button.clicked.connect(self.align_reference_electrodes)
+        self.ui.label_register_button.clicked.connect(self.register_reference_electrodes_to_measured)
+        self.ui.label_align_button.clicked.connect(self.align_reference_electrodes_to_measured)
+        self.ui.label_autolabel_button.clicked.connect(self.autolabel_measured_electrodes)
+        self.ui.label_visualize_correspondence_button.clicked.connect(self.visualize_labeling_correspondence)
+        self.ui.correspondence_slider.valueChanged.connect(self.update_correspondence_value)
         
         # alpha slider slot connections
         self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
@@ -498,7 +502,9 @@ class StartQt6(QMainWindow):
         if self.mri_surface_view is not None:
             self.mri_surface_view.reset_secondary_mesh('mri')
 
-    def align_reference_electrodes(self):
+    def register_reference_electrodes_to_measured(self):
+        self.model.compute_centroid()
+        
         labeled_measured_electrodes = self.model.get_labeled_electrodes(['mri', 'scan'])
         reference_electrodes = self.model.get_electrodes_by_modality(['reference'])
         
@@ -510,7 +516,11 @@ class StartQt6(QMainWindow):
             
             rigid_electrode_registrator.register()
             self.electrodes_registered_to_reference = True
-            
+
+    def align_reference_electrodes_to_measured(self):
+        labeled_measured_electrodes = self.model.get_labeled_electrodes(['mri', 'scan'])
+        reference_electrodes = self.model.get_electrodes_by_modality(['reference'])
+              
         if self.electrodes_registered_to_reference:
             electrode_aligner = ElectrodeAligner(
                 source_electrodes = reference_electrodes,
@@ -520,6 +530,20 @@ class StartQt6(QMainWindow):
                 electrode_aligner.align(electrode.label)
         
         self.display_unit_sphere()
+        
+    def autolabel_measured_electrodes(self):
+        pass
+    
+    def visualize_labeling_correspondence(self):
+        pass
+    
+    def update_correspondence_value(self):
+        def f(x: float, k: float = 0.0088, n: float = 0.05):
+            return k * x + n
+        
+        x = self.ui.correspondence_slider.value()
+        y = f(x)
+        self.ui.correspondence_slider_label.setText(f"Value: {y:.2f}")
 
     def on_close(self):
         if self.surface_view is not None:

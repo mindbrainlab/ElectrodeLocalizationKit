@@ -17,7 +17,7 @@ from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
 from processor.electrode_registrator import RigidElectrodeRegistrator
-from processor.electrode_aligner import ElasticElectrodeLabelingAligner
+from processor.electrode_aligner import ElasticElectrodeAligner
 
 
 class StartQt6(QMainWindow):
@@ -521,8 +521,7 @@ class StartQt6(QMainWindow):
         
         if ((not self.electrodes_registered_to_reference) and
             len(labeled_measured_electrodes) >= 3):
-            self.rigid_electrode_registrator = RigidElectrodeRegistrator(
-                source_electrodes = reference_electrodes)
+            self.rigid_electrode_registrator = RigidElectrodeRegistrator(reference_electrodes)
             
             self.rigid_electrode_registrator.register(target_electrodes = labeled_measured_electrodes)
             self.electrodes_registered_to_reference = True
@@ -549,7 +548,7 @@ class StartQt6(QMainWindow):
               
         if (self.electrodes_registered_to_reference and
             len(measured_electrodes_matching_reference_labels) > 0):
-            electrode_aligner = ElasticElectrodeLabelingAligner(reference_electrodes)
+            electrode_aligner = ElasticElectrodeAligner(reference_electrodes)
             
             for electrode in measured_electrodes_matching_reference_labels:
                 if electrode.label is not None:

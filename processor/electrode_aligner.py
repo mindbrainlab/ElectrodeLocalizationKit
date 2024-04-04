@@ -14,9 +14,9 @@ class BaseElectrodeLabelingAligner(ABC):
         pass
     
     
-class ElasticElectrodeLabelingAligner(BaseElectrodeLabelingAligner):
+class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
     """
-    ElasticElectrodeLabelingAligner class is responsible for aligning electrodes based on the
+    ElasticElectrodeAligner class is responsible for aligning electrodes based on the
     elastic alignment method.
     """
     def __init__(self,

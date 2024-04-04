@@ -552,7 +552,7 @@ class StartQt6(QMainWindow):
                     measured_electrodes_matching_reference_labels.append(electrode)
         
         assert (len(set([e.label for e in measured_electrodes_matching_reference_labels])) ==
-               len([e.label for e in labeled_measured_electrodes]))
+               len([e.label for e in measured_electrodes_matching_reference_labels]))
               
         if (self.electrodes_registered_to_reference and
             len(measured_electrodes_matching_reference_labels) > 0):

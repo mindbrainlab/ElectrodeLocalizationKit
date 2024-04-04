@@ -89,7 +89,7 @@ class MRIScan(BaseHeadModel):
 class UnitSphere(BaseHeadModel):
     def __init__(self):
         self.mesh = vd.Sphere(pos = (0, 0, 0), r = 1.0, res = 24, c = HeadModelColors.LABELING_SPHERE_COLOR)
-        self.modality = 'reference'
+        self.modality = ModalitiesMapping.REFERENCE
         self.fiducials = []
         
     def normalize(self):

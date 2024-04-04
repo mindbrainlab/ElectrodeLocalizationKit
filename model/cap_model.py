@@ -1,3 +1,4 @@
+import re
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractTableModel
 import numpy as np
 import vedo as vd
@@ -36,10 +37,26 @@ class CapModel(QAbstractTableModel):
     def get_labeled_electrodes(self, modality: list[str]) -> list[Electrode]:
         return [electrode for electrode in self._data
                 if electrode.labeled and electrode.modality in modality]
+        
+    def get_unlabeled_electrodes(self, modality: list[str]) -> list[Electrode]:
+        return [electrode for electrode in self._data
+                if not electrode.labeled and electrode.modality in modality]
     
     def get_electrodes_by_modality(self, modality: list[str]) -> list[Electrode]:
         return [electrode for electrode in self._data if electrode.modality in modality]
-
+    
+    def get_electrode_by_object_id(self, object_id: int) -> Electrode | None:
+        electrodes = [electrode for electrode in self._data if id(electrode) == object_id]
+        if len(electrodes) == 1:
+            return electrodes[0]
+        return None
+    
+    def get_electrode_by_label_and_modality(self, label: str, modality: str) -> Electrode | None:
+        electrodes = [electrode for electrode in self._data if electrode.label == label and electrode.modality == modality]
+        if len(electrodes) == 1:
+            return electrodes[0]
+        return None
+        
     def data(self, index, role=Qt.ItemDataRole.DisplayRole) -> str | None:
         if index.isValid():
             if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:

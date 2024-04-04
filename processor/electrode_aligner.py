@@ -77,14 +77,16 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
         return self.L/(1+np.exp(-self.k*(self.x0-D)))
                 
 
-def compute_electrode_correspondence(labeled_electrodes: list[Electrode], unlabeled_electrodes: list[Electrode], factor_threshold: float = 0.3):
+def compute_electrode_correspondence(reference_electrodes: list[Electrode],
+                                     unlabeled_electrodes: list[Electrode],
+                                     factor_threshold: float = 0.3):
     correspondence = []
     for unlabeled_electrode in unlabeled_electrodes:
         distances = {}
         
-        for labeled_electrode in labeled_electrodes:
-            distances["electrode"] = compute_angular_distance(unlabeled_electrode.unit_sphere_cartesian_coordinates,
-                                                              labeled_electrode.unit_sphere_cartesian_coordinates)
+        for reference_electrode in reference_electrodes:
+            distances[reference_electrode.label] = compute_angular_distance(unlabeled_electrode.unit_sphere_cartesian_coordinates,
+                                                                            reference_electrode.unit_sphere_cartesian_coordinates)
         
         sorted_distance_vector = dict(sorted(distances.items(), key=lambda item: item[1]))
         sorted_distances = list(sorted_distance_vector.values())
@@ -94,7 +96,7 @@ def compute_electrode_correspondence(labeled_electrodes: list[Electrode], unlabe
         
         if correspondence_factor < factor_threshold:
             correspondence_entry = {}
-            correspondence_entry['electrode'] = labeled_electrode.label
+            correspondence_entry['electrode_id'] = id(unlabeled_electrode)
             correspondence_entry['factor'] = correspondence_factor
             correspondence_entry['suggested_label'] = sorted_labels[0]
             correspondence.append(correspondence_entry)

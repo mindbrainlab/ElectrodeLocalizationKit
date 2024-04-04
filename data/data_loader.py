@@ -1,5 +1,5 @@
 from model.electrode import Electrode
-from config.mappings import ElectrodesFileMapping
+from config.mappings import ElectrodesFileMapping, ModalitiesMapping
 import pandas as pd
 import numpy as np
 
@@ -30,7 +30,7 @@ def load_electrodes_from_file(filename: str) -> list[Electrode]:
         electrodes.append(Electrode(np.array([float(row[ElectrodesFileMapping.CED_X]),
                                               float(row[ElectrodesFileMapping.CED_Y]),
                                               float(row[ElectrodesFileMapping.CED_Z])]),
-                                    modality='reference',
+                                    modality=ModalitiesMapping.REFERENCE,
                                     label=row[ElectrodesFileMapping.CED_LABEL],
                                     labeled=True))
     return electrodes

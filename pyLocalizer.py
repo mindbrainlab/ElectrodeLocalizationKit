@@ -8,16 +8,20 @@ import sys
 
 from model.cap_model import CapModel
 from model.head_models import HeadScan, MRIScan, UnitSphere
+
 from processor.electrode_detector import DogHoughElectrodeDetector
-from ui.surface_view import InteractiveSurfaceView, LabelingSurfaceView
 from processor.surface_registrator import LandmarkSurfaceRegistrator
+from processor.electrode_registrator import RigidElectrodeRegistrator
+from processor.electrode_aligner import ElasticElectrodeAligner, compute_electrode_correspondence
+
+from view.interactive_surface_view import InteractiveSurfaceView
+from view.labeling_surface_view import LabelingSurfaceView
 
 from config.mappings import ModalitiesMapping
 from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
-from processor.electrode_registrator import RigidElectrodeRegistrator
-from processor.electrode_aligner import ElasticElectrodeAligner
+
 
 
 class StartQt6(QMainWindow):
@@ -37,6 +41,7 @@ class StartQt6(QMainWindow):
         self.image = None
         self.dog = None
         self.hough = None
+        self.dog_hough_detector = None
         self.circles = None
         self.electrodes_registered_to_reference = False
 
@@ -345,50 +350,53 @@ class StartQt6(QMainWindow):
         #     self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
 
     def display_dog(self):
-        self.dog = self.dog_hough_detector.get_difference_of_gaussians(
-            ksize=self.ui.kernel_size_spinbox.value(),
-            sigma=self.ui.sigma_spinbox.value(),
-            F=self.ui.diff_factor_spinbox.value())
+        if self.dog_hough_detector is not None:
+            self.dog = self.dog_hough_detector.get_difference_of_gaussians(
+                ksize=self.ui.kernel_size_spinbox.value(),
+                sigma=self.ui.sigma_spinbox.value(),
+                F=self.ui.diff_factor_spinbox.value())
         
-        self.dog_qimage = QImage(
-            self.dog.data,
-            self.dog.shape[1], self.dog.shape[0],
-            QImage.Format.Format_Grayscale8).rgbSwapped()
-        
-        label_size = self.ui.texture_frame.size()
-        self.dog_qimage = self.dog_qimage.scaled(
-            label_size.width(),label_size.height(),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.FastTransformation)
+            self.dog_qimage = QImage(
+                self.dog.data,
+                self.dog.shape[1], self.dog.shape[0],
+                QImage.Format.Format_Grayscale8).rgbSwapped()
+            
+            label_size = self.ui.texture_frame.size()
+            self.dog_qimage = self.dog_qimage.scaled(
+                label_size.width(),label_size.height(),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.FastTransformation)
 
-        self.ui.photo_label.setPixmap(QPixmap.fromImage(self.dog_qimage))
+            self.ui.photo_label.setPixmap(QPixmap.fromImage(self.dog_qimage))
         
     def display_hough(self):
-        self.hough = self.dog_hough_detector.get_hough_circles(
-            param1=self.ui.param1_spinbox.value(),
-            param2=self.ui.param2_spinbox.value(),
-            min_distance_between_circles=self.ui.min_dist_spinbox.value(),
-            min_radius=self.ui.min_radius_spinbox.value(),
-            max_radius=self.ui.max_radius_spinbox.value())
-        
-        self.hough_qimage = QImage(
-            self.hough.data,
-            self.hough.shape[1], self.hough.shape[0],
-            QImage.Format.Format_RGB888).rgbSwapped()
-        
-        label_size = self.ui.texture_frame.size()
-        self.hough_qimage = self.hough_qimage.scaled(
-            label_size.width(), label_size.height(),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.FastTransformation)
+        if self.dog_hough_detector is not None:
+            self.hough = self.dog_hough_detector.get_hough_circles(
+                param1=self.ui.param1_spinbox.value(),
+                param2=self.ui.param2_spinbox.value(),
+                min_distance_between_circles=self.ui.min_dist_spinbox.value(),
+                min_radius=self.ui.min_radius_spinbox.value(),
+                max_radius=self.ui.max_radius_spinbox.value())
+            
+            self.hough_qimage = QImage(
+                self.hough.data,
+                self.hough.shape[1], self.hough.shape[0],
+                QImage.Format.Format_RGB888).rgbSwapped()
+            
+            label_size = self.ui.texture_frame.size()
+            self.hough_qimage = self.hough_qimage.scaled(
+                label_size.width(), label_size.height(),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.FastTransformation)
 
-        self.ui.photo_label.setPixmap(QPixmap.fromImage(self.hough_qimage))
+            self.ui.photo_label.setPixmap(QPixmap.fromImage(self.hough_qimage))
         
     def detect_electrodes(self):
-        self.electrodes = self.dog_hough_detector.detect(
-            self.head_scan.mesh) # type: ignore
-        for electrode in self.electrodes:
-            self.model.insert_electrode(electrode)
+        if self.dog_hough_detector is not None:
+            self.electrodes = self.dog_hough_detector.detect(
+                self.head_scan.mesh) # type: ignore
+            for electrode in self.electrodes:
+                self.model.insert_electrode(electrode)
 
     def on_resize(self, event: QResizeEvent | None):
         scan_frame_size = self.ui.headmodel_frame.size()
@@ -560,15 +568,29 @@ class StartQt6(QMainWindow):
         pass
     
     def visualize_labeling_correspondence(self):
-        pass
+        correspondence = compute_electrode_correspondence(
+            reference_electrodes = self.model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE]),
+            unlabeled_electrodes = self.model.get_unlabeled_electrodes([ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN]),
+            factor_threshold = self.correspondence_value)
+        
+        display_pairs = []
+        for entry in correspondence:
+            unlabeled_electrode = self.model.get_electrode_by_object_id(entry["electrode_id"])
+            reference_electrode = self.model.get_electrode_by_label_and_modality(entry["suggested_label"], ModalitiesMapping.REFERENCE)
+            display_pairs.append((unlabeled_electrode, reference_electrode))
+        
+        if self.labeling_reference_surface_view is not None:
+            self.labeling_reference_surface_view.generate_correspondence_arrows(display_pairs)
+        
+        
     
     def update_correspondence_value(self):
         def f(x: float, k: float = 0.0088, n: float = 0.05):
             return k * x + n
         
         x = self.ui.correspondence_slider.value()
-        y = f(x)
-        self.ui.correspondence_slider_label.setText(f"Value: {y:.2f}")
+        self.correspondence_value = f(x)
+        self.ui.correspondence_slider_label.setText(f"Value: {self.correspondence_value:.2f}")
 
     def on_close(self):
         if self.surface_view is not None:

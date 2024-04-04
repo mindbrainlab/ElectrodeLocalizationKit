@@ -19,8 +19,8 @@ from config.sizes import ElectrodeSizes
 
 class SurfaceView(QAbstractItemView):
     """SurfaceView class for displaying a 3D surface in a Qt application."""
-    def __init__(self, frame, mesh: vd.Mesh | None = None,
-                 modality: str = "", config = {}, parent=None):
+    def __init__(self, frame, mesh: vd.Mesh,
+                 modality: list[str], config = {}, parent=None):
         super().__init__(parent)
         self._vtk_widget = QVTKRenderWindowInteractor(frame)
         
@@ -85,11 +85,12 @@ class SurfaceView(QAbstractItemView):
         self.secondary_mesh = mesh
         self._plotter.add(mesh)
         self._plotter.render()
+        self.modality.append("scan")
         
-    def reset_secondary_mesh(self, modality: str = ""):
+    def reset_secondary_mesh(self):
         self.secondary_mesh = None
-        self.modality = modality
         self._plotter.render()
+        self.modality = [self.modality[0]]
         
     def remove_secondary_mesh(self):
         if self.secondary_mesh is not None:
@@ -102,8 +103,8 @@ class SurfaceView(QAbstractItemView):
 
 
 class InteractiveSurfaceView(SurfaceView):
-    def __init__(self, frame, mesh: vd.Mesh | None = None,
-                 modality: str = "", config = {}, parent=None):
+    def __init__(self, frame, mesh: vd.Mesh,
+                 modality: list[str], config = {}, parent=None):
         super().__init__(frame, mesh, modality, config, parent)
         
         self._plotter.add_callback('LeftButtonPress', self._on_left_click)
@@ -120,7 +121,7 @@ class InteractiveSurfaceView(SurfaceView):
         for i in range(self.model.rowCount()):
             electrode_modality = self.model.get_electrode(i).modality
             
-            if electrode_modality != self.modality and self.modality != "both":
+            if electrode_modality not in self.modality:
                 continue
             
             point = self.model.get_electrode(i).coordinates
@@ -174,7 +175,7 @@ class InteractiveSurfaceView(SurfaceView):
         point = evt.picked3d
         if point is not None:
             electrode = Electrode(point,
-                                modality=self.modality,
+                                modality=self.modality[0],
                                 label="None")
             self.model.insert_electrode(electrode)
             
@@ -184,15 +185,41 @@ class InteractiveSurfaceView(SurfaceView):
     def _on_right_click(self, evt):
         point = evt.picked3d
         if point is not None:
-            self.model.remove_closest_electrode(point, self.modality)
+            self.model.remove_closest_electrode(point, self.modality[0])
             
             self.render_electrodes()
             self.model.layoutChanged.emit()
 
 class LabelingSurfaceView(SurfaceView):
-    def __init__(self, frame, mesh: vd.Mesh | None = None,
-                 modality: str = "", config = {}, parent=None):
+    def __init__(self, frame, mesh: vd.Mesh,
+                 modality: list[str], config = {}, parent=None):
         super().__init__(frame, mesh, modality, config, parent)
+        
+    def render_correspondence_arrows(self, corresponding_electrode_pairs: list[tuple[Electrode, Electrode]]):
+        for pair in corresponding_electrode_pairs:
+            if pair[0].modality == 'reference' and pair[1].modality in ['scan', 'mri']:
+                electrode_A = pair[1]
+                electrode_B = pair[0]
+            elif pair[1].modality == 'reference' and pair[0].modality in ['scan', 'mri']:
+                electrode_A = pair[0]
+                electrode_B = pair[1]
+            else:
+                raise ValueError("Pair of electrodes must contain one reference electrode and one scan/mri electrode.")
+            
+            arrow = vd.Arrow(
+                start_pt=electrode_A.coordinates,
+                end_pt=electrode_B.coordinates,
+                s=None,
+                shaft_radius=None,
+                head_radius=None,
+                head_length=None,
+                res=12,
+                c='r4',
+                alpha=1.0
+                )
+            
+            self._plotter.add(arrow)
+            
         
     def render_electrodes(self):
         self._plotter.clear()

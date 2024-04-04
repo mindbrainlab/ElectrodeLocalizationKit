@@ -11,12 +11,13 @@ from utils.spatial_processing import (compute_unit_spherical_coordinates_from_ca
 @dataclass
 class Electrode:
     coordinates: np.ndarray
-    modality: str | None = None
+    modality: str
     label: str | None = None
     labeled: bool = False
     _cap_centroid: np.ndarray | None = None
     _mapped_to_unit_sphere: bool = False
     _registered: bool = False
+    _undo_coordinates: np.ndarray | None = None
 
     @property
     def keys(self):
@@ -83,16 +84,28 @@ class Electrode:
         (x, y, z) = compute_cartesian_coordinates_from_unit_spherical((theta, phi))
         return np.array([x, y, z])
         
+    @property
+    def undo_coordinates(self) -> np.ndarray | None:
+        return self._undo_coordinates
+    
+    def create_coordinates_snapshot(self):
+        self._undo_coordinates = self.coordinates.copy()
+        
+    def revert_coordinates_to_snapshot(self):
+        if self._undo_coordinates is not None:
+            self.coordinates = self._undo_coordinates
+            self._undo_coordinates = None
+        
     def apply_transformation(self, A: np.matrix):
         x = np.array([self.coordinates[0],
-                        self.coordinates[1],
-                        self.coordinates[2],
-                        1])
+                      self.coordinates[1],
+                      self.coordinates[2],
+                      1])
         
         x.shape = (4, 1)
         y4d = A @ x
         y = np.array(y4d[0:3])
-        self.coordinates = y
+        self.coordinates = np.array([c[0] for c in y])
         
     def project_to_mesh(self, mesh: vd.Mesh):
         """Projects the electrode to the mesh."""

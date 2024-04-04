@@ -14,8 +14,6 @@ class CapModel(QAbstractTableModel):
         self._data = []
         self._labels = []
         
-        self._undo_data = None
-        
         # define Electrode class attributes to display in the table
         self._display_keys = ('label', 'modality')
         
@@ -93,25 +91,24 @@ class CapModel(QAbstractTableModel):
             min_distance = min(distances, key=lambda x: x[1])
             self.remove_electrode(min_distance[0])
             
-    def transform_electrodes(self, modality: str, A: np.matrix) -> None:
+    def transform_electrodes(self, modality: str, A: np.ndarray) -> None:
         """Applies a transformation to all electrodes in the cap."""
-        self._undo_data = self._data.copy()
         for electrode in self._data:
             if electrode.modality == modality:
+                electrode.create_coordinates_snapshot()
                 electrode.apply_transformation(A)
                 
     def project_electrodes_to_mesh(self, mesh: vd.Mesh, modality: str) -> None:
         """Projects all electrodes in the cap to the given mesh."""
-        self._undo_data = self._data.copy()
         for electrode in self._data:
             if electrode.modality == modality:
+                electrode.create_coordinates_snapshot()
                 electrode.project_to_mesh(mesh)
                 
     def undo_transformation(self) -> None:
         """Undoes the last transformation step."""
-        if self._undo_data is not None:
-            self._data = self._undo_data.copy()
-            self._undo_data = None
+        for electrode in self._data:
+            electrode.revert_coordinates_to_snapshot()
 
     def setData(self, index, value, role) -> bool:
         if role == Qt.ItemDataRole.EditRole:

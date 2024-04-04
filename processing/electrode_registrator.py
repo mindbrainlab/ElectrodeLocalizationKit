@@ -14,7 +14,6 @@ class BaseElectrodeRegistrator(ABC):
     def register(self):
         pass
     
-    
 class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
     def __init__(self,
                  source_electrodes: list[Electrode],
@@ -24,6 +23,9 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
         self.target_electrodes = target_electrodes
         
     def register(self):
+        for electrode in self.source_electrodes:
+            electrode.create_coordinates_snapshot()
+        
         matching_source_electrodes = []
         for target_electrode in self.target_electrodes:
             for source_electrode in self.source_electrodes:
@@ -36,10 +38,15 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
                                                             for e in matching_source_electrodes]),
                                                   target =
                                                   np.array([e.unit_sphere_cartesian_coordinates
-                                                            for e in self.target_electrodes]))
+                                                            for e in self.target_electrodes]),
+                                                  translate=False)
         
         for electrode in self.source_electrodes:
             source_vector = electrode.unit_sphere_cartesian_coordinates
             source_vector = np.append(source_vector, 1)
             transformed_vector = np.dot(T, source_vector)
             electrode.coordinates = transformed_vector[:3]
+            
+    def undo(self):
+        for electrode in self.source_electrodes:
+            electrode.revert_coordinates_to_snapshot()

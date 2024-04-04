@@ -73,7 +73,7 @@ class StartQt6(QMainWindow):
         # surface to mri alignment buttons slot connections
         self.ui.align_scan_button.clicked.connect(self.align_scan_to_mri)
         self.ui.project_electrodes_button.clicked.connect(self.project_electrodes_to_mri)
-        self.ui.revert_alignment_button.clicked.connect(self.undo_last_transformation)
+        self.ui.revert_alignment_button.clicked.connect(self.undo_scan2mri_transformation)
         
         # texture detect electrodes button slot connection
         self.ui.compute_electrodes_button.clicked.connect(self.detect_electrodes)
@@ -115,11 +115,15 @@ class StartQt6(QMainWindow):
         self.ui.label_autolabel_button.clicked.connect(self.autolabel_measured_electrodes)
         self.ui.label_visualize_correspondence_button.clicked.connect(self.visualize_labeling_correspondence)
         self.ui.correspondence_slider.valueChanged.connect(self.update_correspondence_value)
+        self.ui.label_revert_button.clicked.connect(self.undo_labeling)
         
         # alpha slider slot connections
         self.ui.head_alpha_slider.valueChanged.connect(self.set_head_surf_alpha)
         self.ui.mri_alpha_slider.valueChanged.connect(self.set_mri_surf_alpha)
         self.ui.mri_head_alpha_slider.valueChanged.connect(self.set_alignment_surf_alpha)
+                
+        self.ui.display_secondary_mesh_checkbox.stateChanged.connect(self.display_secondary_mesh)
+                
                 
         self.ui.tabWidget.currentChanged.connect(self.refresh_views)
                 
@@ -224,7 +228,7 @@ class StartQt6(QMainWindow):
             
             self.mri_surface_view = InteractiveSurfaceView(self.ui.mri_frame,
                                             self.mri_scan.mesh,
-                                            self.mri_scan.modality,
+                                            [self.mri_scan.modality],
                                             self.mri_surface_view_config)
             
             self.mri_surface_view.setModel(self.model)
@@ -254,7 +258,7 @@ class StartQt6(QMainWindow):
         
         self.labeling_reference_surface_view = LabelingSurfaceView(self.ui.labeling_reference_frame,
                                                  self.unit_sphere_surface.mesh,
-                                                 self.unit_sphere_surface.modality,
+                                                 [self.unit_sphere_surface.modality],
                                                  self.labeling_reference_surface_view_config)
         
         self.labeling_reference_surface_view.setModel(self.model)
@@ -274,7 +278,7 @@ class StartQt6(QMainWindow):
             
             self.surface_view = InteractiveSurfaceView(self.ui.headmodel_frame,
                                     self.head_scan.mesh, # type: ignore
-                                    self.head_scan.modality,
+                                    [self.head_scan.modality],
                                     self.surface_view_config)
             
             # this is TEMPORARY, because it should also support MRI
@@ -286,7 +290,7 @@ class StartQt6(QMainWindow):
             
             self.labeling_main_surface_view = InteractiveSurfaceView(self.ui.labeling_main_frame,
                                     self.head_scan.mesh, # type: ignore
-                                    self.head_scan.modality,
+                                    [self.head_scan.modality],
                                     self.labeling_main_surface_view_config)
             
             self.labeling_main_surface_view.setModel(self.model)
@@ -481,26 +485,34 @@ class StartQt6(QMainWindow):
                     scan_landmarks.append(electrode_i.coordinates)
                     mri_landmarks.append(electrode_j.coordinates)
         
-        surface_registrator = LandmarkSurfaceRegistrator(
+        self.surface_registrator = LandmarkSurfaceRegistrator(
+            source_mesh=self.head_scan.mesh,
             source_landmarks=scan_landmarks,
             target_landmarks=mri_landmarks)
         
         # add the necessary checks
         
-        transformation_matrix = self.head_scan.register_mesh(surface_registrator)
+        transformation_matrix = self.head_scan.register_mesh(self.surface_registrator)
         if transformation_matrix is not None:
             self.model.transform_electrodes('scan', transformation_matrix)
         
-        if self.mri_surface_view is not None:
-            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
-            self.mri_surface_view.modality = "both"
-            self.mri_surface_view.show()
+        self.ui.display_secondary_mesh_checkbox.setChecked(True)
+        self.mri_surface_view.show() # type: ignore
             
-    def undo_last_transformation(self):
-        self.model.undo_transformation()
-        self.head_scan.undo_registration()
-        if self.mri_surface_view is not None:
-            self.mri_surface_view.reset_secondary_mesh('mri')
+    def undo_scan2mri_transformation(self):
+        inverse_transformation = self.head_scan.undo_registration(self.surface_registrator)
+        # self.model.undo_transformation()
+        # if inverse_transofrmation is not None:
+        self.model.transform_electrodes('scan', inverse_transformation) # type: ignore
+        self.mri_surface_view.reset_secondary_mesh() # type: ignore
+        self.ui.display_secondary_mesh_checkbox.setChecked(False)
+
+    def display_secondary_mesh(self):
+        if self.ui.display_secondary_mesh_checkbox.isChecked():
+            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
+        else:
+            self.mri_surface_view.reset_secondary_mesh() # type: ignore
+            self.mri_surface_view.show() # type: ignore
 
     def register_reference_electrodes_to_measured(self):
         self.model.compute_centroid()
@@ -510,12 +522,17 @@ class StartQt6(QMainWindow):
         
         if ((not self.electrodes_registered_to_reference) and
             len(labeled_measured_electrodes) >= 3):
-            rigid_electrode_registrator = RigidElectrodeRegistrator(
+            self.rigid_electrode_registrator = RigidElectrodeRegistrator(
                 source_electrodes = reference_electrodes,
                 target_electrodes = labeled_measured_electrodes)
             
-            rigid_electrode_registrator.register()
+            self.rigid_electrode_registrator.register()
             self.electrodes_registered_to_reference = True
+            
+    def undo_labeling(self):
+        if self.electrodes_registered_to_reference:
+            self.rigid_electrode_registrator.undo()
+            self.electrodes_registered_to_reference = False
 
     def align_reference_electrodes_to_measured(self):
         labeled_measured_electrodes = self.model.get_labeled_electrodes(['mri', 'scan'])

@@ -24,6 +24,7 @@ class Ui_MainWindow(object):
 "margin-top: 0px;\n"
 "border-radius: 15px;\n"
 "}\n"
+"\n"
 "QGroupBox::title {\n"
 "border-top-left-radius: 9px;\n"
 "border-top-right-radius: 9px;\n"
@@ -34,7 +35,7 @@ class Ui_MainWindow(object):
 "QPushButton {\n"
 "    color: #11356B;\n"
 "    border: 1px solid #11356B;\n"
-"    border-radius: 0px;\n"
+"    border-radius: 5px;\n"
 "    border-style: outset;\n"
 "    background: qradialgradient(\n"
 "        cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,\n"
@@ -58,21 +59,21 @@ class Ui_MainWindow(object):
 "    }\n"
 "\n"
 "QTabWidget::pane {\n"
-"  border: 1px solid lightgray;\n"
+"  border: 1px solid #11356B;;\n"
 "  top:-1px; \n"
-"  background: rgb(245, 245, 245);\n"
+"  background: rgb(245, 250, 255);\n"
 "  color: #11356B;\n"
 "} \n"
 "\n"
 "QTabBar::tab {\n"
-"  background: rgb(230, 230, 230); \n"
-"  border: 1px solid lightgray; \n"
+"  background: rgb(210, 230, 255); \n"
+"  border: 1px solid #11356B;; \n"
 "  padding: 5px;\n"
 "  color: #11356B;\n"
 "} \n"
 "\n"
 "QTabBar::tab:selected { \n"
-"  background: rgb(245, 245, 245); \n"
+"  background: rgb(245, 250, 255); \n"
 "  margin-bottom: -1px;\n"
 "  color: #11356B;\n"
 "}\n"
@@ -565,11 +566,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.tab_5)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.widget_5 = QtWidgets.QWidget(parent=self.tab_5)
-        self.widget_5.setMinimumSize(QtCore.QSize(170, 700))
-        self.widget_5.setMaximumSize(QtCore.QSize(170, 700))
+        self.widget_5.setMinimumSize(QtCore.QSize(170, 800))
+        self.widget_5.setMaximumSize(QtCore.QSize(170, 800))
         self.widget_5.setObjectName("widget_5")
-        self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.widget_5)
-        self.verticalLayout_13.setObjectName("verticalLayout_13")
+        self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.widget_5)
+        self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.display_mri_button = QtWidgets.QPushButton(parent=self.widget_5)
         self.display_mri_button.setMinimumSize(QtCore.QSize(150, 30))
         self.display_mri_button.setMaximumSize(QtCore.QSize(150, 30))
@@ -578,7 +579,7 @@ class Ui_MainWindow(object):
         self.display_mri_button.setFont(font)
         self.display_mri_button.setStyleSheet("")
         self.display_mri_button.setObjectName("display_mri_button")
-        self.verticalLayout_13.addWidget(self.display_mri_button)
+        self.verticalLayout_8.addWidget(self.display_mri_button)
         self.align_scan_button = QtWidgets.QPushButton(parent=self.widget_5)
         self.align_scan_button.setMinimumSize(QtCore.QSize(150, 60))
         self.align_scan_button.setMaximumSize(QtCore.QSize(150, 60))
@@ -589,7 +590,7 @@ class Ui_MainWindow(object):
 "    margin-top: 30px;\n"
 "    }")
         self.align_scan_button.setObjectName("align_scan_button")
-        self.verticalLayout_13.addWidget(self.align_scan_button)
+        self.verticalLayout_8.addWidget(self.align_scan_button)
         self.project_electrodes_button = QtWidgets.QPushButton(parent=self.widget_5)
         self.project_electrodes_button.setMinimumSize(QtCore.QSize(150, 30))
         self.project_electrodes_button.setMaximumSize(QtCore.QSize(150, 30))
@@ -598,7 +599,7 @@ class Ui_MainWindow(object):
         self.project_electrodes_button.setFont(font)
         self.project_electrodes_button.setStyleSheet("")
         self.project_electrodes_button.setObjectName("project_electrodes_button")
-        self.verticalLayout_13.addWidget(self.project_electrodes_button)
+        self.verticalLayout_8.addWidget(self.project_electrodes_button)
         self.revert_alignment_button = QtWidgets.QPushButton(parent=self.widget_5)
         self.revert_alignment_button.setMinimumSize(QtCore.QSize(150, 30))
         self.revert_alignment_button.setMaximumSize(QtCore.QSize(150, 30))
@@ -607,25 +608,12 @@ class Ui_MainWindow(object):
         self.revert_alignment_button.setFont(font)
         self.revert_alignment_button.setStyleSheet("")
         self.revert_alignment_button.setObjectName("revert_alignment_button")
-        self.verticalLayout_13.addWidget(self.revert_alignment_button)
+        self.verticalLayout_8.addWidget(self.revert_alignment_button)
         self.label_12 = QtWidgets.QLabel(parent=self.widget_5)
         self.label_12.setMinimumSize(QtCore.QSize(111, 16))
         self.label_12.setMaximumSize(QtCore.QSize(111, 16))
         self.label_12.setObjectName("label_12")
-        self.verticalLayout_13.addWidget(self.label_12)
-        self.mri_head_alpha_slider = QtWidgets.QSlider(parent=self.widget_5)
-        self.mri_head_alpha_slider.setMinimumSize(QtCore.QSize(121, 22))
-        self.mri_head_alpha_slider.setMaximum(100)
-        self.mri_head_alpha_slider.setProperty("value", 100)
-        self.mri_head_alpha_slider.setSliderPosition(100)
-        self.mri_head_alpha_slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
-        self.mri_head_alpha_slider.setObjectName("mri_head_alpha_slider")
-        self.verticalLayout_13.addWidget(self.mri_head_alpha_slider)
-        self.label_13 = QtWidgets.QLabel(parent=self.widget_5)
-        self.label_13.setMinimumSize(QtCore.QSize(111, 16))
-        self.label_13.setMaximumSize(QtCore.QSize(111, 16))
-        self.label_13.setObjectName("label_13")
-        self.verticalLayout_13.addWidget(self.label_13)
+        self.verticalLayout_8.addWidget(self.label_12)
         self.mri_alpha_slider = QtWidgets.QSlider(parent=self.widget_5)
         self.mri_alpha_slider.setMinimumSize(QtCore.QSize(121, 22))
         self.mri_alpha_slider.setMaximum(100)
@@ -633,7 +621,7 @@ class Ui_MainWindow(object):
         self.mri_alpha_slider.setSliderPosition(100)
         self.mri_alpha_slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.mri_alpha_slider.setObjectName("mri_alpha_slider")
-        self.verticalLayout_13.addWidget(self.mri_alpha_slider)
+        self.verticalLayout_8.addWidget(self.mri_alpha_slider)
         self.groupBox_3 = QtWidgets.QGroupBox(parent=self.widget_5)
         self.groupBox_3.setMinimumSize(QtCore.QSize(150, 300))
         self.groupBox_3.setMaximumSize(QtCore.QSize(150, 300))
@@ -689,7 +677,38 @@ class Ui_MainWindow(object):
         self.mri_flagpost_height_spinbox.setProperty("value", 0.05)
         self.mri_flagpost_height_spinbox.setObjectName("mri_flagpost_height_spinbox")
         self.verticalLayout_11.addWidget(self.mri_flagpost_height_spinbox)
-        self.verticalLayout_13.addWidget(self.groupBox_3)
+        self.verticalLayout_8.addWidget(self.groupBox_3)
+        self.groupBox_5 = QtWidgets.QGroupBox(parent=self.widget_5)
+        self.groupBox_5.setMinimumSize(QtCore.QSize(150, 120))
+        self.groupBox_5.setMaximumSize(QtCore.QSize(150, 120))
+        self.groupBox_5.setStyleSheet("QGroupBox::title {\n"
+"border-top-left-radius: 9px;\n"
+"border-top-right-radius: 9px;\n"
+"background-color: #11356B;\n"
+"padding: 2px 40px;\n"
+"color: rgb(255, 255, 255);\n"
+"}")
+        self.groupBox_5.setObjectName("groupBox_5")
+        self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.groupBox_5)
+        self.verticalLayout_13.setObjectName("verticalLayout_13")
+        self.display_secondary_mesh_checkbox = QtWidgets.QCheckBox(parent=self.groupBox_5)
+        self.display_secondary_mesh_checkbox.setStyleSheet("QCheckBox {margin-top: 20px;}")
+        self.display_secondary_mesh_checkbox.setObjectName("display_secondary_mesh_checkbox")
+        self.verticalLayout_13.addWidget(self.display_secondary_mesh_checkbox)
+        self.label_13 = QtWidgets.QLabel(parent=self.groupBox_5)
+        self.label_13.setMinimumSize(QtCore.QSize(111, 16))
+        self.label_13.setMaximumSize(QtCore.QSize(111, 16))
+        self.label_13.setObjectName("label_13")
+        self.verticalLayout_13.addWidget(self.label_13)
+        self.mri_head_alpha_slider = QtWidgets.QSlider(parent=self.groupBox_5)
+        self.mri_head_alpha_slider.setMinimumSize(QtCore.QSize(121, 22))
+        self.mri_head_alpha_slider.setMaximum(100)
+        self.mri_head_alpha_slider.setProperty("value", 100)
+        self.mri_head_alpha_slider.setSliderPosition(100)
+        self.mri_head_alpha_slider.setOrientation(QtCore.Qt.Orientation.Horizontal)
+        self.mri_head_alpha_slider.setObjectName("mri_head_alpha_slider")
+        self.verticalLayout_13.addWidget(self.mri_head_alpha_slider)
+        self.verticalLayout_8.addWidget(self.groupBox_5)
         self.horizontalLayout_4.addWidget(self.widget_5, 0, QtCore.Qt.AlignmentFlag.AlignTop)
         self.mri_frame = QtWidgets.QFrame(parent=self.tab_5)
         self.mri_frame.setMinimumSize(QtCore.QSize(0, 0))
@@ -938,12 +957,14 @@ class Ui_MainWindow(object):
         self.project_electrodes_button.setText(_translate("MainWindow", "Project Electrodes"))
         self.revert_alignment_button.setText(_translate("MainWindow", "Undo Last Transform"))
         self.label_12.setText(_translate("MainWindow", "MRI Alpha: "))
-        self.label_13.setText(_translate("MainWindow", "Headmodel Alpha: "))
         self.groupBox_3.setTitle(_translate("MainWindow", "Electrodes"))
         self.label_8.setText(_translate("MainWindow", "Sphere Size"))
         self.mri_flagposts_checkbox.setText(_translate("MainWindow", "Flagposts"))
         self.label_9.setText(_translate("MainWindow", "Flagposts Size"))
         self.label_10.setText(_translate("MainWindow", "Flagposts Height"))
+        self.groupBox_5.setTitle(_translate("MainWindow", "Headmodel"))
+        self.display_secondary_mesh_checkbox.setText(_translate("MainWindow", "Display"))
+        self.label_13.setText(_translate("MainWindow", "Headmodel Alpha: "))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "MRI"))
         self.label_display_button.setText(_translate("MainWindow", "Display / Refresh"))
         self.label_register_button.setText(_translate("MainWindow", "Register Electrodes"))

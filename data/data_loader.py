@@ -1,4 +1,4 @@
-from core.electrode import Electrode
+from model.electrode import Electrode
 from config.mappings import ElectrodesFileMapping
 import pandas as pd
 import numpy as np

@@ -1,12 +1,11 @@
 import pandas as pd
 import numpy as np
-import scipy as sp
 import vedo as vd
 
 from dataclasses import dataclass
 
-from utils.spatial_processing import (compute_unit_spherical_coordinates_from_cartesian,
-                                      compute_cartesian_coordinates_from_unit_spherical)
+from utils.spatial import (compute_unit_spherical_coordinates_from_cartesian,
+                           compute_cartesian_coordinates_from_unit_spherical)
 
 @dataclass
 class Electrode:
@@ -65,7 +64,7 @@ class Electrode:
     @unit_sphere_cartesian_coordinates.setter
     def unit_sphere_cartesian_coordinates(self, coordinates: np.ndarray):
         """Sets the electrode's cartesian coordinates in the unit sphere."""
-        self.coordinates = coordinates
+        self.coordinates = coordinates.copy()
         self._mapped_to_unit_sphere = True
     
     def _compute_unit_sphere_spherical_coordinates(self) -> tuple[float, float]:

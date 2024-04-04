@@ -1,6 +1,5 @@
-from .electrode import Electrode
-from .head_models import HeadScan
-from .cap_model import CapModel
+from model.head_models import HeadScan
+from model.cap_model import CapModel
 
 
 class Session:

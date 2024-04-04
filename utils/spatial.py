@@ -1,46 +1,9 @@
-import vedo as vd
 import numpy as np
-import vtk
+# from model.electrode import Electrode
     
 def compute_distance_between_coordinates(coordinates_1: np.ndarray, coordinates_2: np.ndarray):
     """Returns the distance between two electrodes."""
     return np.linalg.norm(coordinates_1-coordinates_2)
-    
-def normalize_mesh(mesh: vd.Mesh) -> float:
-    """Scale Mesh average size to unit."""
-    coords = mesh.points()
-    coords = np.array(mesh.points())
-    if not coords.shape[0]:
-        return 1.0
-    cm = np.mean(coords, axis=0)
-    pts = coords - cm
-    xyz2 = np.sum(pts * pts, axis=0)
-    scale = 1 / np.sqrt(np.sum(xyz2) / len(pts))
-    t = vtk.vtkTransform()
-    t.PostMultiply()
-    t.Scale(scale, scale, scale)
-    tf = vtk.vtkTransformPolyDataFilter()
-    tf.SetInputData(mesh.inputdata())
-    tf.SetTransform(t)
-    tf.Update()
-    mesh.point_locator = None
-    mesh.cell_locator = None
-    mesh._update(tf.GetOutput())
-    return scale
-
-def rescale_to_original_size(mesh: vd.Mesh, scale: float) -> float:
-    """Rescale Mesh to original size."""
-    t = vtk.vtkTransform()
-    t.PostMultiply()
-    t.Scale(1/scale, 1/scale, 1/scale)
-    tf = vtk.vtkTransformPolyDataFilter()
-    tf.SetInputData(mesh.inputdata())
-    tf.SetTransform(t)
-    tf.Update()
-    mesh.point_locator = None
-    mesh.cell_locator = None
-    mesh._update(tf.GetOutput())
-    return 1.0
 
 def compute_unit_spherical_coordinates_from_cartesian(cartesian_coordinates: list[float] | np.ndarray, origin = (0, 0, 0)) -> tuple[float, float]:
     """
@@ -110,3 +73,54 @@ def compute_umeyama_transformation_matrix(source: np.ndarray,
         T[:3, 3] = t
         
     return T
+
+def compute_angular_distance(vector_a: np.ndarray, vector_b: np.ndarray) -> float:
+    """
+    Computes the angular distance between two vectors in cartesian coordinates.
+    TODO: Implement the function to compute the angular distance between two vectors in spherical coordinates.
+    """
+    return np.arccos(np.dot(vector_a, vector_b)/(np.linalg.norm(vector_a)*np.linalg.norm(vector_b)))
+
+def compute_rotation_axis(vector_a: np.ndarray, vector_b: np.ndarray) -> np.ndarray:
+    # compute the rotation axis between the source and target vectors
+    e = np.cross(vector_a, vector_b)
+    if any(e):
+        e = e/np.linalg.norm(e)
+    return e
+
+def align_vectors(input_vector, rotation_axis: np.ndarray, rotation_angle: float, attenuation: float = 1):
+    # compute the rotation axis between the source and target vectors
+    e = rotation_axis
+    
+    # theta - rotation angle
+    theta = rotation_angle*attenuation
+
+    # Q - rotation quaternion
+    Q = (np.cos(theta/2), e[0]*np.sin(theta/2), e[1]*np.sin(theta/2), e[2]*np.sin(theta/2))
+
+    R = convert_quaternion_to_rotation_matrix(Q)
+
+    output_vector = (R @ input_vector.T).T
+    return output_vector
+
+def convert_quaternion_to_rotation_matrix(Q: tuple[float, float, float, float]) -> np.ndarray:
+    # w, x, y, z - quaternion components
+    w = Q[0]
+    x = Q[1]
+    y = Q[2]
+    z = Q[3]
+
+    # rotation matrix components
+    Rxx = 1 - 2*(y**2 + z**2)
+    Rxy = 2*(x*y - z*w)
+    Rxz = 2*(x*z + y*w)
+    Ryx = 2*(x*y + z*w)
+    Ryy = 1 - 2*(x**2 + z**2)
+    Ryz = 2*(y*z - x*w )
+    Rzx = 2*(x*z - y*w )
+    Rzy = 2*(y*z + x*w )
+    Rzz = 1 - 2 *(x**2 + y**2)
+    R = np.array([[Rxx,    Rxy,    Rxz],
+                  [Ryx,    Ryy,    Ryz],
+                  [Rzx,    Rzy,    Rzz]])
+    return R

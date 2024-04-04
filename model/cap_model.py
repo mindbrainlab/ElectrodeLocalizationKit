@@ -6,6 +6,7 @@ from collections.abc import Iterable
 from data.data_loader import load_electrodes_from_file
 
 from .electrode import Electrode
+from config.mappings import ModalitiesMapping
 
 class CapModel(QAbstractTableModel):
     """CapModel class for displaying a list of electrodes in a Qt application."""
@@ -56,7 +57,7 @@ class CapModel(QAbstractTableModel):
         self.endInsertRows()
             
     def compute_centroid(self):
-        all_measured_electrodes = self.get_electrodes_by_modality(['scan', 'mri'])
+        all_measured_electrodes = self.get_electrodes_by_modality([ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI])
         coordinates = [electrode.coordinates for electrode in all_measured_electrodes]
         centroid = np.mean(coordinates, axis=0) # type: ignore
         

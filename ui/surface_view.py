@@ -9,13 +9,13 @@ except ImportError:
 from sympy import E
 import vedo as vd
 
-from core.electrode import Electrode
-from core.cap_model import CapModel
+from model.electrode import Electrode
+from model.cap_model import CapModel
 
 import numpy as np   
 
 from config.colors import ElectrodeColors
-from config.sizes import ElectrodeSizes
+from config.mappings import ModalitiesMapping
 
 class SurfaceView(QAbstractItemView):
     """SurfaceView class for displaying a 3D surface in a Qt application."""
@@ -85,7 +85,7 @@ class SurfaceView(QAbstractItemView):
         self.secondary_mesh = mesh
         self._plotter.add(mesh)
         self._plotter.render()
-        self.modality.append("scan")
+        self.modality.append(ModalitiesMapping.HEADSCAN)
         
     def reset_secondary_mesh(self):
         self.secondary_mesh = None
@@ -127,7 +127,7 @@ class InteractiveSurfaceView(SurfaceView):
             point = self.model.get_electrode(i).coordinates
             label = self.model.get_electrode(i).label
             
-            if electrode_modality == "mri":
+            if electrode_modality == ModalitiesMapping.MRI:
                 unlabeled_color = ElectrodeColors.MRI_UNLABELED_ELECTRODES_COLOR
                 labeled_color = ElectrodeColors.MRI_LABELED_ELECTRODES_COLOR
             else:
@@ -197,10 +197,10 @@ class LabelingSurfaceView(SurfaceView):
         
     def render_correspondence_arrows(self, corresponding_electrode_pairs: list[tuple[Electrode, Electrode]]):
         for pair in corresponding_electrode_pairs:
-            if pair[0].modality == 'reference' and pair[1].modality in ['scan', 'mri']:
+            if pair[0].modality == 'reference' and pair[1].modality in [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]:
                 electrode_A = pair[1]
                 electrode_B = pair[0]
-            elif pair[1].modality == 'reference' and pair[0].modality in ['scan', 'mri']:
+            elif pair[1].modality == 'reference' and pair[0].modality in [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]:
                 electrode_A = pair[0]
                 electrode_B = pair[1]
             else:

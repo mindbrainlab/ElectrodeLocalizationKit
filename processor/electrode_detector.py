@@ -3,12 +3,13 @@ import numpy as np
 import cv2 as cv
 import vedo as vd
 
-from core.electrode import Electrode
+from model.electrode import Electrode
 
-from utils.texture_processing import compute_difference_of_gaussians, compute_hough_circles
+from utils.texture import compute_difference_of_gaussians, compute_hough_circles
 
 from config.electrode_detector import DogParameters, HoughParameters
 from config.colors import HOUGH_CIRCLES_COLOR
+from config.mappings import ModalitiesMapping
 
 class BaseElectrodeDetector(ABC):
     
@@ -26,7 +27,22 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
         self.circles = None
         self.electrodes = []
         
-        self.modality = 'scan'
+        self.modality = ModalitiesMapping.HEADSCAN
+        
+    def detect(self, mesh: vd.Mesh) -> list[Electrode]:
+        for circle in self.circles[0, :]: # type: ignore
+            vertex = self._get_vertex_from_pixels((circle[0], circle[1]), mesh, self.texture.shape[0:2])
+            self.electrodes.append(Electrode(vertex,
+                                             modality=self.modality,
+                                             label="None"))
+            
+        electrodes_to_remove = self._get_electrodes_too_close_together()
+               
+        self.electrodes = [electrode
+                           for i, electrode in enumerate(self.electrodes)
+                           if i not in electrodes_to_remove]
+            
+        return self.electrodes
 
     def get_difference_of_gaussians(self,
                                     ksize: int = DogParameters.KSIZE,
@@ -62,22 +78,6 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
             HOUGH_CIRCLES_COLOR)
         
         return circles_image
-    
-    
-    def detect(self, mesh: vd.Mesh) -> list[Electrode]:
-        for circle in self.circles[0, :]: # type: ignore
-            vertex = self._get_vertex_from_pixels((circle[0], circle[1]), mesh, self.texture.shape[0:2])
-            self.electrodes.append(Electrode(vertex,
-                                             modality=self.modality,
-                                             label="None"))
-            
-        electrodes_to_remove = self._get_electrodes_too_close_together()
-               
-        self.electrodes = [electrode
-                           for i, electrode in enumerate(self.electrodes)
-                           if i not in electrodes_to_remove]
-            
-        return self.electrodes
     
     def _get_electrodes_too_close_together(self, min_distance: float = 0.075) -> list:
         electrodes_to_remove = []

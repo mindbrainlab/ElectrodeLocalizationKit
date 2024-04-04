@@ -1,53 +1,44 @@
-from abc import ABC, abstractmethod
-import numpy as np
 import vedo as vd
 from vedo import utils
+import numpy as np
+# import vtk
 import vedo.vtkclasses as vtk
 
-class BaseSurfaceRegistrator(ABC):
-    
-    @abstractmethod
-    def register(self, source_mesh: vd.Mesh):
-        pass
-    
-    @abstractmethod
-    def undo(self):
-        pass
-    
-class LandmarkSurfaceRegistrator(BaseSurfaceRegistrator):
-    def __init__(self,
-                 source_mesh: vd.Mesh,
-                 source_landmarks: list[np.ndarray],
-                 target_landmarks: list[np.ndarray]):
-        
-        self.source_mesh = source_mesh
-        self.source_landmarks = source_landmarks
-        self.target_landmarks = target_landmarks
-        
-        self._transform_matrix = None
-        self._inverse_transform = None
-        
-    def register(self) -> np.ndarray:
-        lmt = align_with_landmarks(
-            self.source_mesh,
-            self.source_landmarks,
-            self.target_landmarks,
-            rigid=False,
-            affine=False,
-            least_squares=False
-        )
-        
-        self._transform_matrix = arrayFromVTKMatrix(lmt.GetMatrix())
-        return self._transform_matrix
-    
-    def undo(self) -> np.ndarray | None:
-        if self._transform_matrix is not None:
-            self._inverse_transform_matrix = np.linalg.inv(self._transform_matrix)
-            self.source_mesh.applyTransform(self._inverse_transform_matrix)
-        else:
-            self._inverse_transform_matrix = None
-        return self._inverse_transform_matrix
-        
+def normalize_mesh(mesh: vd.Mesh) -> float:
+    """Scale Mesh average size to unit."""
+    coords = mesh.points()
+    coords = np.array(mesh.points())
+    if not coords.shape[0]:
+        return 1.0
+    cm = np.mean(coords, axis=0)
+    pts = coords - cm
+    xyz2 = np.sum(pts * pts, axis=0)
+    scale = 1 / np.sqrt(np.sum(xyz2) / len(pts))
+    t = vtk.vtkTransform()
+    t.PostMultiply()
+    t.Scale(scale, scale, scale)
+    tf = vtk.vtkTransformPolyDataFilter()
+    tf.SetInputData(mesh.inputdata())
+    tf.SetTransform(t)
+    tf.Update()
+    mesh.point_locator = None
+    mesh.cell_locator = None
+    mesh._update(tf.GetOutput())
+    return scale
+
+def rescale_to_original_size(mesh: vd.Mesh, scale: float) -> float:
+    """Rescale Mesh to original size."""
+    t = vtk.vtkTransform()
+    t.PostMultiply()
+    t.Scale(1/scale, 1/scale, 1/scale)
+    tf = vtk.vtkTransformPolyDataFilter()
+    tf.SetInputData(mesh.inputdata())
+    tf.SetTransform(t)
+    tf.Update()
+    mesh.point_locator = None
+    mesh.cell_locator = None
+    mesh._update(tf.GetOutput())
+    return 1.0
 
 def align_with_landmarks(
     mesh,

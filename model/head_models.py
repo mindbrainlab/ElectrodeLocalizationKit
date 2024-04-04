@@ -4,9 +4,10 @@ import vedo as vd
 import numpy as np
 
 from config.colors import HeadModelColors
+from config.mappings import ModalitiesMapping
 
-from processing.surface_registrator import BaseSurfaceRegistrator
-from utils.spatial_processing import normalize_mesh, rescale_to_original_size
+from processor.surface_registrator import BaseSurfaceRegistrator
+from utils.mesh import normalize_mesh, rescale_to_original_size
 from data.data_loader import load_head_surface_mesh_from_file, load_mri_surface_mesh_from_file
 
 try:
@@ -33,7 +34,7 @@ class HeadScan(BaseHeadModel):
         
         self.mesh = load_head_surface_mesh_from_file(surface_file)
         
-        self.modality = 'scan'
+        self.modality = ModalitiesMapping.HEADSCAN
         self.fiducials = []
         
         self.normalization_scale = 1
@@ -71,7 +72,7 @@ class MRIScan(BaseHeadModel):
 
         self.mesh.color(HeadModelColors.MRI_SURFACE_COLOR) # type: ignore
         
-        self.modality = 'mri'
+        self.modality = ModalitiesMapping.MRI
         
         self.fiducials = []
         

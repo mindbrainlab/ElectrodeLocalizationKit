@@ -2,24 +2,23 @@ from PyQt6.QtWidgets import QMainWindow, QFileDialog, QApplication
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap, QResizeEvent
 
-from processing import electrode_aligner
 from ui.pyloc_main_window import Ui_MainWindow
 
 import sys
 
-from core.cap_model import CapModel
-from core.head_models import HeadScan, MRIScan, UnitSphere
-from processing.electrode_detector import DogHoughElectrodeDetector
+from model.cap_model import CapModel
+from model.head_models import HeadScan, MRIScan, UnitSphere
+from processor.electrode_detector import DogHoughElectrodeDetector
 from ui.surface_view import InteractiveSurfaceView, LabelingSurfaceView
-from processing.surface_registrator import LandmarkSurfaceRegistrator
+from processor.surface_registrator import LandmarkSurfaceRegistrator
 
+from config.mappings import ModalitiesMapping
 from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
-from processing.electrode_registrator import RigidElectrodeRegistrator
-from processing.electrode_aligner import ElectrodeAligner
+from processor.electrode_registrator import RigidElectrodeRegistrator
+from processor.electrode_aligner import ElasticElectrodeLabelingAligner
 
-import numpy as np
 
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
@@ -340,7 +339,7 @@ class StartQt6(QMainWindow):
             
     def project_electrodes_to_mri(self):
         if self.mri_surface_view is not None:
-            self.model.project_electrodes_to_mesh(self.mri_scan.mesh, 'scan')
+            self.model.project_electrodes_to_mesh(self.mri_scan.mesh, ModalitiesMapping.HEADSCAN)
             self.mri_surface_view.show()
         # if self.head_scan is not None and self.mri_surface_view is not None:
         #     self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
@@ -474,8 +473,8 @@ class StartQt6(QMainWindow):
             self.labeling_reference_surface_view.update_config(self.labeling_reference_surface_view_config)
 
     def align_scan_to_mri(self):
-        scan_labeled_electrodes = self.model.get_labeled_electrodes(['scan'])
-        mri_labeled_electrodes = self.model.get_labeled_electrodes(['mri'])
+        scan_labeled_electrodes = self.model.get_labeled_electrodes([ModalitiesMapping.HEADSCAN])
+        mri_labeled_electrodes = self.model.get_labeled_electrodes([ModalitiesMapping.MRI])
         
         scan_landmarks = []
         mri_landmarks = []
@@ -494,7 +493,7 @@ class StartQt6(QMainWindow):
         
         transformation_matrix = self.head_scan.register_mesh(self.surface_registrator)
         if transformation_matrix is not None:
-            self.model.transform_electrodes('scan', transformation_matrix)
+            self.model.transform_electrodes(ModalitiesMapping.HEADSCAN, transformation_matrix)
         
         self.ui.display_secondary_mesh_checkbox.setChecked(True)
         self.mri_surface_view.show() # type: ignore
@@ -503,7 +502,7 @@ class StartQt6(QMainWindow):
         inverse_transformation = self.head_scan.undo_registration(self.surface_registrator)
         # self.model.undo_transformation()
         # if inverse_transofrmation is not None:
-        self.model.transform_electrodes('scan', inverse_transformation) # type: ignore
+        self.model.transform_electrodes(ModalitiesMapping.HEADSCAN, inverse_transformation) # type: ignore
         self.mri_surface_view.reset_secondary_mesh() # type: ignore
         self.ui.display_secondary_mesh_checkbox.setChecked(False)
 
@@ -517,17 +516,18 @@ class StartQt6(QMainWindow):
     def register_reference_electrodes_to_measured(self):
         self.model.compute_centroid()
         
-        labeled_measured_electrodes = self.model.get_labeled_electrodes(['mri', 'scan'])
-        reference_electrodes = self.model.get_electrodes_by_modality(['reference'])
+        labeled_measured_electrodes = self.model.get_labeled_electrodes([ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN])
+        reference_electrodes = self.model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
         
         if ((not self.electrodes_registered_to_reference) and
             len(labeled_measured_electrodes) >= 3):
             self.rigid_electrode_registrator = RigidElectrodeRegistrator(
-                source_electrodes = reference_electrodes,
-                target_electrodes = labeled_measured_electrodes)
+                source_electrodes = reference_electrodes)
             
-            self.rigid_electrode_registrator.register()
+            self.rigid_electrode_registrator.register(target_electrodes = labeled_measured_electrodes)
             self.electrodes_registered_to_reference = True
+            
+            self.display_unit_sphere()
             
     def undo_labeling(self):
         if self.electrodes_registered_to_reference:
@@ -535,18 +535,27 @@ class StartQt6(QMainWindow):
             self.electrodes_registered_to_reference = False
 
     def align_reference_electrodes_to_measured(self):
-        labeled_measured_electrodes = self.model.get_labeled_electrodes(['mri', 'scan'])
-        reference_electrodes = self.model.get_electrodes_by_modality(['reference'])
-              
-        if self.electrodes_registered_to_reference:
-            electrode_aligner = ElectrodeAligner(
-                source_electrodes = reference_electrodes,
-                target_electrodes = labeled_measured_electrodes)
-            
-            for electrode in labeled_measured_electrodes:
-                electrode_aligner.align(electrode.label)
+        labeled_measured_electrodes = self.model.get_labeled_electrodes([ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN])
+        reference_electrodes = self.model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
         
-        self.display_unit_sphere()
+        measured_electrodes_matching_reference_labels = []
+        for electrode in labeled_measured_electrodes:
+            for reference_electrode in reference_electrodes:
+                if electrode.label == reference_electrode.label:
+                    measured_electrodes_matching_reference_labels.append(electrode)
+        
+        assert (len(set([e.label for e in measured_electrodes_matching_reference_labels])) ==
+               len([e.label for e in labeled_measured_electrodes]))
+              
+        if (self.electrodes_registered_to_reference and
+            len(measured_electrodes_matching_reference_labels) > 0):
+            electrode_aligner = ElasticElectrodeLabelingAligner(reference_electrodes)
+            
+            for electrode in measured_electrodes_matching_reference_labels:
+                if electrode.label is not None:
+                    electrode_aligner.align(electrode)
+        
+            self.display_unit_sphere()
         
     def autolabel_measured_electrodes(self):
         pass

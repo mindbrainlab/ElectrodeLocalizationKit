@@ -1,6 +1,7 @@
 import vedo as vd
 from abc import ABC, abstractmethod
 import vedo as vd
+import numpy as np
 
 from config.colors import HeadModelColors
 
@@ -39,8 +40,6 @@ class HeadScan(BaseHeadModel):
         
         self.normalize()
         
-        self.original_mesh = None
-        
         self.apply_texture()
             
     def normalize(self):
@@ -53,16 +52,14 @@ class HeadScan(BaseHeadModel):
         if self.texture_file is not None:
             self.mesh = self.mesh.texture(self.texture_file) # type: ignore
             
-    def register_mesh(self, surface_registrator: BaseSurfaceRegistrator):
-        self.original_mesh = self.mesh.clone()
-        lmt = surface_registrator.register(self.mesh) # type: ignore
+    def register_mesh(self, surface_registrator: BaseSurfaceRegistrator) -> np.ndarray:
+        transform_matrix = surface_registrator.register() # type: ignore
         self.apply_texture()
-        return lmt
+        return transform_matrix
     
-    def undo_registration(self):
-        if self.original_mesh is not None:
-            self.mesh = self.original_mesh.clone()
-            self.original_mesh = None
+    def undo_registration(self, surface_registrator: BaseSurfaceRegistrator) -> np.ndarray | None:
+        transform_matrix = surface_registrator.undo()
+        return transform_matrix
         
         
 class MRIScan(BaseHeadModel):

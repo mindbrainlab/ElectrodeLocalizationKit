@@ -75,3 +75,4 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
     def undo(self):
         for electrode in self.source_electrodes:
             electrode.revert_coordinates_to_snapshot()
+            electrode.registered = False

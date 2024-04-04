@@ -17,11 +17,11 @@ class LabelingSurfaceView(SurfaceView):
         self.arrows = []
         for pair in corresponding_electrode_pairs:
             if pair[0].modality == ModalitiesMapping.REFERENCE and pair[1].modality in [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]:
-                electrode_A = pair[1]
-                electrode_B = pair[0]
-            elif pair[1].modality == ModalitiesMapping.REFERENCE and pair[0].modality in [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]:
                 electrode_A = pair[0]
                 electrode_B = pair[1]
+            elif pair[1].modality == ModalitiesMapping.REFERENCE and pair[0].modality in [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]:
+                electrode_A = pair[1]
+                electrode_B = pair[0]
             else:
                 raise ValueError("Pair of electrodes must contain one reference electrode and one scan/mri electrode.")
             

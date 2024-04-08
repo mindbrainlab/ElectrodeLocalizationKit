@@ -96,7 +96,7 @@ def compute_electrode_correspondence(reference_electrodes: list[Electrode],
         
         if correspondence_factor < factor_threshold:
             correspondence_entry = {}
-            correspondence_entry['electrode_id'] = id(unlabeled_electrode)
+            correspondence_entry['electrode'] = unlabeled_electrode
             correspondence_entry['factor'] = correspondence_factor
             correspondence_entry['suggested_label'] = sorted_labels[0]
             correspondence.append(correspondence_entry)

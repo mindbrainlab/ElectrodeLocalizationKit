@@ -2,7 +2,7 @@
 Electrode labeling configuration file
 """
 
+
 class ElasticAlignmentParameters:
-    L = 1
-    x0 = 30
-    k = 0.1
+    cutoff_deg = 30
+    slope = 0.2

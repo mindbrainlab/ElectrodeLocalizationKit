@@ -85,15 +85,33 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
 
 
 def compute_electrode_correspondence(
-    reference_electrodes: list[Electrode],
-    unlabeled_electrodes: list[Electrode],
-    factor_threshold: float = 0.3,
+    labeled_reference_electrodes: list[Electrode],
+    unlabeled_measured_electrodes: list[Electrode],
+    factor_threshold: float = 1,
 ):
+
+    def remove_multiple_correspondeces(correspondence):
+        all_labels = [e["suggested_label"] for e in correspondence]
+        unique_labels = list(set(all_labels))
+
+        for label in unique_labels:
+            label_correspondence = [
+                e for e in correspondence if e["suggested_label"] == label
+            ]
+            if len(label_correspondence) > 1:
+                label_correspondence = sorted(
+                    label_correspondence, key=lambda x: x["factor"]
+                )
+                for i in range(1, len(label_correspondence)):
+                    correspondence.remove(label_correspondence[i])
+
+        return correspondence
+
     correspondence = []
-    for unlabeled_electrode in unlabeled_electrodes:
+    for unlabeled_electrode in unlabeled_measured_electrodes:
         distances = {}
 
-        for reference_electrode in reference_electrodes:
+        for reference_electrode in labeled_reference_electrodes:
             distances[reference_electrode.label] = compute_angular_distance(
                 unlabeled_electrode.unit_sphere_cartesian_coordinates,
                 reference_electrode.unit_sphere_cartesian_coordinates,
@@ -116,4 +134,4 @@ def compute_electrode_correspondence(
             correspondence_entry["suggested_label"] = sorted_labels[0]
             correspondence.append(correspondence_entry)
 
-    return correspondence
+    return remove_multiple_correspondeces(correspondence)

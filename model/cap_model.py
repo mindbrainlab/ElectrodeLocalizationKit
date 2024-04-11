@@ -4,7 +4,8 @@ import numpy as np
 import vedo as vd
 from collections.abc import Iterable
 
-from data.data_loader import load_electrodes_from_file
+from data.loader import load_electrodes_from_file
+from data.exporter import export_electrodes_to_file
 
 from .electrode import Electrode
 from config.mappings import ModalitiesMapping
@@ -48,6 +49,13 @@ class CapModel(QAbstractTableModel):
             electrode
             for electrode in self._data
             if not electrode.labeled and electrode.modality in modality
+        ]
+
+    def get_unregistered_electrodes(self, modality: list[str]) -> list[Electrode]:
+        return [
+            electrode
+            for electrode in self._data
+            if not electrode.registered and electrode.modality in modality
         ]
 
     def get_electrodes_by_modality(self, modality: list[str]) -> list[Electrode]:
@@ -95,19 +103,36 @@ class CapModel(QAbstractTableModel):
         self.endInsertRows()
 
     def compute_centroid(self):
-        all_measured_electrodes = self.get_electrodes_by_modality(
+        measured_electrodes = self.get_electrodes_by_modality(
             [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
         )
-        coordinates = [electrode.coordinates for electrode in all_measured_electrodes]
+        coordinates = [electrode.coordinates for electrode in measured_electrodes]
         centroid = np.mean(coordinates, axis=0)  # type: ignore
 
-        for electrode in all_measured_electrodes:
+        for electrode in measured_electrodes:
+            electrode.cap_centroid = centroid
+
+        reference_electrodes = self.get_electrodes_by_modality(
+            [ModalitiesMapping.REFERENCE]
+        )
+        coordinates = [electrode.coordinates for electrode in reference_electrodes]
+        centroid = np.mean(coordinates, axis=0)  # type: ignore
+
+        for electrode in reference_electrodes:
             electrode.cap_centroid = centroid
 
     def read_electrodes_from_file(self, filename: str) -> None:
         electrodes = load_electrodes_from_file(filename)
         for electrode in electrodes:
             self.insert_electrode(electrode)
+
+    def save_electrodes_to_file(self, filename: str) -> None:
+        measured_electrodes = self.get_electrodes_by_modality(
+            [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
+        )
+
+        if len(measured_electrodes) > 0:
+            export_electrodes_to_file(measured_electrodes, filename)
 
     def remove_electrode_by_id(
         self, electrode_index: int, parent=QModelIndex()

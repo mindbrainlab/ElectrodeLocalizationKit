@@ -1,7 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow, QFileDialog, QApplication
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QImage, QPixmap, QResizeEvent
-import referencing
 
 from ui.pyloc_main_window import Ui_MainWindow
 
@@ -46,11 +45,16 @@ class StartQt6(QMainWindow):
         self.dog_hough_detector = None
         self.circles = None
         self.electrodes_registered_to_reference = False
+        self.correspondence = None
 
         self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
 
         # main data model
         self.model = CapModel()
+
+        self.model.dataChanged.connect(self.refresh_count_indicators)
+        self.model.rowsInserted.connect(self.refresh_count_indicators)
+        self.model.rowsRemoved.connect(self.refresh_count_indicators)
 
         # disable tabs
         self.ui.tabWidget.setTabEnabled(1, False)
@@ -66,6 +70,8 @@ class StartQt6(QMainWindow):
         self.ui.load_texture_button.clicked.connect(self.load_texture)
         self.ui.load_mri_button.clicked.connect(self.load_mri)
         self.ui.load_locations_button.clicked.connect(self.load_locations)
+
+        self.ui.export_locations_button.clicked.connect(self.save_locations_to_file)
 
         # display texture buttons slot connections
         self.ui.display_dog_button.clicked.connect(self.display_dog)
@@ -140,6 +146,11 @@ class StartQt6(QMainWindow):
         self.ui.label_visualize_correspondence_button.clicked.connect(
             self.visualize_labeling_correspondence
         )
+
+        self.ui.label_label_correspondence_button.clicked.connect(
+            self.label_corresponding_electrodes
+        )
+
         self.ui.correspondence_slider.valueChanged.connect(
             self.update_correspondence_value
         )
@@ -289,7 +300,9 @@ class StartQt6(QMainWindow):
                 if electrode_id is not None:
                     self.model.remove_electrode_by_id(electrode_id)
 
-        self.model.read_electrodes_from_file("sample_data/BC-MR-128+REF+EXG.ced")
+        self.model.read_electrodes_from_file(
+            "sample_data/measured_reference_electrodes.ced"
+        )
 
         self.unit_sphere_surface = UnitSphere()
 
@@ -311,6 +324,20 @@ class StartQt6(QMainWindow):
 
         self.ui.statusbar.showMessage("Loaded electrode locations.")
         self.ui.tabWidget.setTabEnabled(4, True)
+
+    def save_locations_to_file(self):
+        # file_path, _ = QFileDialog.getSaveFileName(
+        #     self,
+        #     "Save Locations File",
+        #     "",
+        #     "All Files (*);;CSV Files (*.csv)"
+        #     )
+        # if file_path:
+        #     self.model.save_electrodes(file_path)
+
+        self.model.save_electrodes_to_file("sample_data/measured_electrodes.ced")
+
+        self.ui.statusbar.showMessage("Saved electrode locations.")
 
     def prepare_surface(self):
         if self.surface_file:
@@ -361,6 +388,32 @@ class StartQt6(QMainWindow):
         elif t == 4:
             self.display_labeling_surface()
             self.display_unit_sphere()
+
+    def refresh_count_indicators(self):
+        measured_electrodes = self.model.get_electrodes_by_modality(
+            [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
+        )
+        self.ui.measured_electrodes_label.setText(
+            f"Measured electrodes: {len(measured_electrodes)}"
+        )
+
+        labeled_electrodes = []
+        for electrode in measured_electrodes:
+            if not (
+                electrode.label is None
+                or electrode.label == ""
+                or electrode.label == "None"
+            ):
+                labeled_electrodes.append(electrode)
+
+        self.ui.labeled_electrodes_label.setText(
+            f"Labeled electrodes: {len(labeled_electrodes)}"
+        )
+
+        reference_electrode = self.model.get_electrodes_by_modality(["reference"])
+        self.ui.reference_electrodes_label.setText(
+            f"Reference electrodes: {len(reference_electrode)}"
+        )
 
     def display_surface(self):
         if self.surface_view is not None:
@@ -462,6 +515,13 @@ class StartQt6(QMainWindow):
             )  # type: ignore
             for electrode in self.electrodes:
                 self.model.insert_electrode(electrode)
+
+            measured_electrodes = self.model.get_electrodes_by_modality(
+                [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
+            )
+            self.ui.measured_electrodes_label.setText(
+                f"Measured electrodes: {len(measured_electrodes)}"
+            )
 
     def on_resize(self, event: QResizeEvent | None):
         scan_frame_size = self.ui.headmodel_frame.size()
@@ -703,18 +763,18 @@ class StartQt6(QMainWindow):
         pass
 
     def visualize_labeling_correspondence(self):
-        correspondence = compute_electrode_correspondence(
-            reference_electrodes=self.model.get_electrodes_by_modality(
+        self.correspondence = compute_electrode_correspondence(
+            labeled_reference_electrodes=self.model.get_unregistered_electrodes(
                 [ModalitiesMapping.REFERENCE]
             ),
-            unlabeled_electrodes=self.model.get_unlabeled_electrodes(
+            unlabeled_measured_electrodes=self.model.get_unlabeled_electrodes(
                 [ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN]
             ),
             factor_threshold=self.correspondence_value,
         )
 
         display_pairs = []
-        for entry in correspondence:
+        for entry in self.correspondence:
             # unlabeled_electrode = self.model.get_electrode_by_object_id(entry["electrode_id"])
             unlabeled_electrode = entry["electrode"]
             reference_electrode = self.model.get_electrode_by_label_and_modality(
@@ -726,6 +786,20 @@ class StartQt6(QMainWindow):
             self.labeling_reference_surface_view.generate_correspondence_arrows(
                 display_pairs
             )
+
+    def label_corresponding_electrodes(self):
+        if self.correspondence is not None:
+            for entry in self.correspondence:
+                # unlabeled_electrode = self.model.get_electrode_by_object_id(entry["electrode_id"])
+                unlabeled_electrode = entry["electrode"]
+                reference_electrode = self.model.get_electrode_by_label_and_modality(
+                    entry["suggested_label"], ModalitiesMapping.REFERENCE
+                )
+                if unlabeled_electrode is not None and reference_electrode is not None:
+                    unlabeled_electrode.label = reference_electrode.label
+
+            self.display_unit_sphere()
+            self.align_reference_electrodes_to_measured()
 
     def update_correspondence_value(self):
         def f(x: float, k: float = 0.0088, n: float = 0.05):

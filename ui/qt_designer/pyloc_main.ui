@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1581</width>
-    <height>898</height>
+    <width>1200</width>
+    <height>880</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>820</width>
-    <height>325</height>
+    <width>1200</width>
+    <height>880</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -218,14 +218,26 @@ QCheckBox {
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="selected_electrodes_label">
+        <widget class="QLabel" name="reference_electrodes_label">
          <property name="font">
           <font>
            <pointsize>12</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Selected:</string>
+          <string>Reference:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="measured_electrodes_label">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Measured:</string>
          </property>
         </widget>
        </item>
@@ -271,7 +283,7 @@ QCheckBox {
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_7">
        <attribute name="title">
@@ -310,7 +322,7 @@ QCheckBox {
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab_3">
          <attribute name="title">
@@ -532,7 +544,7 @@ QCheckBox {
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_12">
           <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="export_locations_button">
             <property name="minimumSize">
              <size>
               <width>190</width>
@@ -2156,18 +2168,18 @@ color: rgb(255, 255, 255);
              <property name="title">
               <string>Correspondence</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_2">
+              <item row="0" column="0">
                <widget class="QLabel" name="correspondence_slider_label">
                 <property name="minimumSize">
                  <size>
-                  <width>0</width>
+                  <width>120</width>
                   <height>35</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>16777215</width>
+                  <width>120</width>
                   <height>35</height>
                  </size>
                 </property>
@@ -2179,7 +2191,7 @@ color: rgb(255, 255, 255);
                 </property>
                </widget>
               </item>
-              <item alignment="Qt::AlignBottom">
+              <item row="1" column="0" colspan="2">
                <widget class="QSlider" name="correspondence_slider">
                 <property name="minimumSize">
                  <size>
@@ -2222,17 +2234,17 @@ color: rgb(255, 255, 255);
                 </property>
                </widget>
               </item>
-              <item alignment="Qt::AlignTop">
+              <item row="2" column="0">
                <widget class="QPushButton" name="label_visualize_correspondence_button">
                 <property name="minimumSize">
                  <size>
-                  <width>120</width>
+                  <width>60</width>
                   <height>30</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>120</width>
+                  <width>60</width>
                   <height>30</height>
                  </size>
                 </property>
@@ -2245,7 +2257,34 @@ color: rgb(255, 255, 255);
                  <string notr="true"/>
                 </property>
                 <property name="text">
-                 <string>Visualize/Reset</string>
+                 <string>Visualize</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="label_label_correspondence_button">
+                <property name="minimumSize">
+                 <size>
+                  <width>60</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>60</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>Label</string>
                 </property>
                </widget>
               </item>

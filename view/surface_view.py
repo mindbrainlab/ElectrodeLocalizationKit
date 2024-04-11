@@ -23,6 +23,8 @@ class SurfaceView(QAbstractItemView):
         self, frame, mesh: vd.Mesh, modality: list[str], config={}, parent=None
     ):
         super().__init__(parent)
+
+        self.frame = frame
         self._vtk_widget = QVTKRenderWindowInteractor(frame)
 
         self._plotter = vd.Plotter(qt_widget=self._vtk_widget, axes=2)

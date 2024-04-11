@@ -24,6 +24,8 @@ from config.mappings import ModalitiesMapping
 from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
+from callbacks.display import display_surface
+
 
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
@@ -78,9 +80,17 @@ class StartQt6(QMainWindow):
         self.ui.display_hough_button.clicked.connect(self.display_hough)
 
         # display surface buttons slot connections
-        self.ui.display_head_button.clicked.connect(self.display_surface)
-        self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
-        self.ui.label_display_button.clicked.connect(self.display_unit_sphere)
+        # self.ui.display_head_button.clicked.connect(self.display_surface)
+        # self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
+        self.ui.display_head_button.clicked.connect(
+            lambda: display_surface(self.surface_view)
+        )
+        self.ui.display_mri_button.clicked.connect(
+            lambda: display_surface(self.mri_surface_view)
+        )
+        self.ui.label_display_button.clicked.connect(
+            lambda: display_surface(self.labeling_main_surface_view)
+        )
 
         # surface to mri alignment buttons slot connections
         self.ui.align_scan_button.clicked.connect(self.align_scan_to_mri)
@@ -382,12 +392,12 @@ class StartQt6(QMainWindow):
         t = self.ui.tabWidget.currentIndex()
 
         if t == 2:
-            self.display_surface()
+            display_surface(self.surface_view)
         elif t == 3:
-            self.display_mri_surface()
+            display_surface(self.mri_surface_view)
         elif t == 4:
-            self.display_labeling_surface()
-            self.display_unit_sphere()
+            display_surface(self.labeling_main_surface_view)
+            display_surface(self.labeling_reference_surface_view)
 
     def refresh_count_indicators(self):
         measured_electrodes = self.model.get_electrodes_by_modality(
@@ -414,38 +424,6 @@ class StartQt6(QMainWindow):
         self.ui.reference_electrodes_label.setText(
             f"Reference electrodes: {len(reference_electrode)}"
         )
-
-    def display_surface(self):
-        if self.surface_view is not None:
-            frame_size = self.ui.headmodel_frame.size()
-            self.surface_view.resize_view(frame_size.width(), frame_size.height())
-
-            self.surface_view.show()
-
-    def display_mri_surface(self):
-        if self.mri_surface_view is not None:
-            frame_size = self.ui.mri_frame.size()
-            self.mri_surface_view.resize_view(frame_size.width(), frame_size.height())
-
-            self.mri_surface_view.show()
-
-    def display_labeling_surface(self):
-        if self.labeling_main_surface_view is not None:
-            frame_size = self.ui.labeling_main_frame.size()
-            self.labeling_main_surface_view.resize_view(
-                frame_size.width(), frame_size.height()
-            )
-
-            self.labeling_main_surface_view.show()
-
-    def display_unit_sphere(self):
-        if self.labeling_reference_surface_view is not None:
-            frame_size = self.ui.labeling_reference_frame.size()
-            self.labeling_reference_surface_view.resize_view(
-                frame_size.width(), frame_size.height()
-            )
-
-            self.labeling_reference_surface_view.show()
 
     def project_electrodes_to_mri(self):
         if self.mri_surface_view is not None:
@@ -722,7 +700,8 @@ class StartQt6(QMainWindow):
             )
             self.electrodes_registered_to_reference = True
 
-            self.display_unit_sphere()
+            # self.display_unit_sphere()
+            display_surface(self.labeling_reference_surface_view)
 
     def undo_labeling(self):
         if self.electrodes_registered_to_reference:
@@ -757,7 +736,7 @@ class StartQt6(QMainWindow):
                 if electrode.label is not None:
                     electrode_aligner.align(electrode)
 
-            self.display_unit_sphere()
+            display_surface(self.labeling_reference_surface_view)
 
     def autolabel_measured_electrodes(self):
         pass
@@ -798,7 +777,7 @@ class StartQt6(QMainWindow):
                 if unlabeled_electrode is not None and reference_electrode is not None:
                     unlabeled_electrode.label = reference_electrode.label
 
-            self.display_unit_sphere()
+            display_surface(self.labeling_reference_surface_view)
             self.align_reference_electrodes_to_measured()
 
     def update_correspondence_value(self):

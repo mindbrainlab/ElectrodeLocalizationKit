@@ -2,6 +2,7 @@ import vedo as vd
 
 from view.surface_view import SurfaceView
 
+from model.cap_model import CapModel
 from model.electrode import Electrode
 
 from config.colors import ElectrodeColors
@@ -10,9 +11,15 @@ from config.mappings import ModalitiesMapping
 
 class LabelingSurfaceView(SurfaceView):
     def __init__(
-        self, frame, mesh: vd.Mesh, modality: list[str], config={}, parent=None
+        self,
+        frame,
+        mesh: vd.Mesh,
+        modality: list[str],
+        config={},
+        model: CapModel | None = None,
+        parent=None,
     ):
-        super().__init__(frame, mesh, modality, config, parent)
+        super().__init__(frame, mesh, modality, config, model, parent)
         self.arrows = []
 
     def generate_correspondence_arrows(

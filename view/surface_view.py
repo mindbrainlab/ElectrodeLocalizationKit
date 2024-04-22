@@ -20,7 +20,13 @@ class SurfaceView(QAbstractItemView):
     """SurfaceView class for displaying a 3D surface in a Qt application."""
 
     def __init__(
-        self, frame, mesh: vd.Mesh, modality: list[str], config={}, parent=None
+        self,
+        frame,
+        mesh: vd.Mesh,
+        modality: list[str],
+        config={},
+        model: CapModel | None = None,
+        parent=None,
     ):
         super().__init__(parent)
 
@@ -43,6 +49,9 @@ class SurfaceView(QAbstractItemView):
         self.modality = modality
 
         self.config = config
+
+        if model:
+            self.setModel(model)
 
     def resize_view(self, width, height):
         self._vtk_widget.resize(width, height)

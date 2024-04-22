@@ -17,6 +17,7 @@ from processor.electrode_aligner import (
     compute_electrode_correspondence,
 )
 
+from view.surface_view import SurfaceView
 from view.interactive_surface_view import InteractiveSurfaceView
 from view.labeling_surface_view import LabelingSurfaceView
 
@@ -24,7 +25,14 @@ from config.mappings import ModalitiesMapping
 from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
-from callbacks.display import display_surface
+from callbacks.display import display_surface, display_dog, display_hough
+from callbacks.fileio import (
+    load_surface,
+    load_texture,
+    load_mri,
+    load_locations,
+    save_locations_to_file,
+)
 
 
 class StartQt6(QMainWindow):
@@ -34,17 +42,35 @@ class StartQt6(QMainWindow):
         self.ui.setupUi(self)
 
         # initialize variables
-        self.surface_file = None
-        self.texture_file = None
-        self.mri_file = None
-        self.surface_view = None
-        self.mri_surface_view = None
-        self.labeling_main_surface_view = None
-        self.labeling_reference_surface_view = None
+        # self.surface_file = None
+        # self.texture_file = None
+
+        self.files = {"scan": None, "texture": None, "mri": None, "locations": None}
+        self.views = {
+            "scan": None,
+            "mri": None,
+            "labeling_main": None,
+            "labeling_reference": None,
+        }
+        self.frames = [
+            ("scan", self.ui.headmodel_frame),
+            ("mri", self.ui.mri_frame),
+            ("labeling_main", self.ui.labeling_main_frame),
+            ("labeling_reference", self.ui.labeling_reference_frame),
+        ]
+        self.headmodels = {"scan": None, "mri": None}
+
+        self.images = {"dog": None, "hough": None}
+
+        # self.mri_file = None
+        # self.surface_view = None
+        # self.mri_surface_view = None
+        # self.labeling_main_surface_view = None
+        # self.labeling_reference_surface_view = None
         self.image = None
         self.dog = None
         self.hough = None
-        self.dog_hough_detector = None
+        # self.dog_hough_detector = None
         self.circles = None
         self.electrodes_registered_to_reference = False
         self.correspondence = None
@@ -68,28 +94,73 @@ class StartQt6(QMainWindow):
         self.ui.electrodes_table.setModel(self.model)
 
         # load buttons slot connections
-        self.ui.load_surface_button.clicked.connect(self.load_surface)
-        self.ui.load_texture_button.clicked.connect(self.load_texture)
-        self.ui.load_mri_button.clicked.connect(self.load_mri)
-        self.ui.load_locations_button.clicked.connect(self.load_locations)
+        self.ui.load_surface_button.clicked.connect(
+            lambda: load_surface(
+                self.files,
+                self.views,
+                self.headmodels,
+                [
+                    ("scan", self.ui.headmodel_frame),
+                    ("labeling_main", self.ui.labeling_main_frame),
+                ],
+                self.model,
+                self.ui,
+            )
+        )
 
-        self.ui.export_locations_button.clicked.connect(self.save_locations_to_file)
+        self.electrode_detector = DogHoughElectrodeDetector()
+        self.ui.load_texture_button.clicked.connect(
+            lambda: load_texture(
+                self.files,
+                self.views,
+                self.headmodels,
+                [
+                    ("scan", self.ui.headmodel_frame),
+                    ("labeling_main", self.ui.labeling_main_frame),
+                ],
+                self.model,
+                self.electrode_detector,
+                self.ui,
+            )
+        )
+        self.ui.load_mri_button.clicked.connect(
+            lambda: load_mri(
+                self.files,
+                self.views,
+                self.headmodels,
+                [("mri", self.ui.mri_frame)],
+                self.model,
+                self.ui,
+            )
+        )
+        self.ui.load_locations_button.clicked.connect(
+            lambda: load_locations(
+                self.files,
+                self.views,
+                [("labeling_reference", self.ui.labeling_reference_frame)],
+                self.model,
+                self.ui,
+            )
+        )
+
+        self.ui.export_locations_button.clicked.connect(
+            lambda: save_locations_to_file(self.model, self.ui)
+        )
 
         # display texture buttons slot connections
         self.ui.display_dog_button.clicked.connect(self.display_dog)
+
         self.ui.display_hough_button.clicked.connect(self.display_hough)
 
         # display surface buttons slot connections
-        # self.ui.display_head_button.clicked.connect(self.display_surface)
-        # self.ui.display_mri_button.clicked.connect(self.display_mri_surface)
         self.ui.display_head_button.clicked.connect(
-            lambda: display_surface(self.surface_view)
+            lambda: display_surface(self.views["scan"])
         )
         self.ui.display_mri_button.clicked.connect(
-            lambda: display_surface(self.mri_surface_view)
+            lambda: display_surface(self.views["mri"])
         )
         self.ui.label_display_button.clicked.connect(
-            lambda: display_surface(self.labeling_main_surface_view)
+            lambda: display_surface(self.views["labeling_main"])
         )
 
         # surface to mri alignment buttons slot connections
@@ -215,189 +286,24 @@ class StartQt6(QMainWindow):
         )
 
         # temporary calls to avoid loading files during development
-        self.load_texture()
-        self.load_surface()
-        self.load_mri()
-        self.load_locations()
+        # self.load_texture()
+        # self.load_surface()
+        # self.load_mri()
+        # self.load_locations()
 
         # set status bar
         self.ui.statusbar.showMessage("Welcome!")
-
-    # define slots (functions)
-    def load_surface(self):
-        # file_path, _ = QFileDialog.getOpenFileName(
-        #     self,
-        #     "Open Surface File",
-        #     "",
-        #     "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)"
-        #     )
-        # if file_path:
-        #     self.surface_file = file_path
-
-        self.surface_file = "/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj"
-
-        self.ui.statusbar.showMessage("Loaded surface file.")
-
-        self.prepare_surface()
-        self.ui.tabWidget.setTabEnabled(1, True)
-
-    def load_texture(self):
-        # file_path, _ = QFileDialog.getOpenFileName(
-        #     self,
-        #     "Open Texture File",
-        #     "",
-        #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
-        #     )
-        # if file_path:
-        #     self.texture_file = file_path
-
-        self.texture_file = "/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.jpg"
-        self.dog_hough_detector = DogHoughElectrodeDetector(self.texture_file)
-
-        self.ui.statusbar.showMessage("Loaded texture file.")
-
-        self.prepare_surface()
-        self.ui.tabWidget.setTabEnabled(2, True)
-
-    def load_mri(self):
-        # file_path, _ = QFileDialog.getOpenFileName(
-        #     self,
-        #     "Open MRI File",
-        #     "",
-        #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
-        #     )
-        # if file_path:
-        #     self.mri_file = file_path
-
-        self.mri_file = "sample_data/bem_outer_skin_surface.gii"
-
-        if self.mri_file:
-            self.mri_scan = MRIScan(self.mri_file)
-
-            self.mri_surface_view_config = {
-                "sphere_size": ElectrodeSizes.MRI_ELECTRODE_SIZE,
-                "draw_flagposts": False,
-                "flagpost_height": ElectrodeSizes.MRI_FLAGPOST_HEIGHT,
-                "flagpost_size": ElectrodeSizes.MRI_FLAGPOST_SIZE,
-            }
-
-            self.mri_surface_view = InteractiveSurfaceView(
-                self.ui.mri_frame,
-                self.mri_scan.mesh,
-                [self.mri_scan.modality],
-                self.mri_surface_view_config,
-            )
-
-            self.mri_surface_view.setModel(self.model)
-
-            self.ui.statusbar.showMessage("Loaded MRI file.")
-            self.ui.tabWidget.setTabEnabled(3, True)
-
-    def load_locations(self):
-        # file_path, _ = QFileDialog.getOpenFileName(
-        #     self,
-        #     "Open Locations File",
-        #     "",
-        #     "All Files (*);;CSV Files (*.csv)"
-        #     )
-        # if file_path:
-        #     self.model.load_electrodes(file_path)
-
-        reference_electrode = self.model.get_electrodes_by_modality(["reference"])
-        if len(reference_electrode) > 0:
-            for electrode in reference_electrode:
-                electrode_id = self.model.get_electrode_id(electrode)
-                if electrode_id is not None:
-                    self.model.remove_electrode_by_id(electrode_id)
-
-        self.model.read_electrodes_from_file(
-            "sample_data/measured_reference_electrodes.ced"
-        )
-
-        self.unit_sphere_surface = UnitSphere()
-
-        self.labeling_reference_surface_view_config = {
-            "sphere_size": ElectrodeSizes.LABEL_ELECTRODE_SIZE,
-            "draw_flagposts": False,
-            "flagpost_height": ElectrodeSizes.LABEL_FLAGPOST_HEIGHT,
-            "flagpost_size": ElectrodeSizes.LABEL_FLAGPOST_SIZE,
-        }
-
-        self.labeling_reference_surface_view = LabelingSurfaceView(
-            self.ui.labeling_reference_frame,
-            self.unit_sphere_surface.mesh,
-            [self.unit_sphere_surface.modality],
-            self.labeling_reference_surface_view_config,
-        )
-
-        self.labeling_reference_surface_view.setModel(self.model)
-
-        self.ui.statusbar.showMessage("Loaded electrode locations.")
-        self.ui.tabWidget.setTabEnabled(4, True)
-
-    def save_locations_to_file(self):
-        # file_path, _ = QFileDialog.getSaveFileName(
-        #     self,
-        #     "Save Locations File",
-        #     "",
-        #     "All Files (*);;CSV Files (*.csv)"
-        #     )
-        # if file_path:
-        #     self.model.save_electrodes(file_path)
-
-        self.model.save_electrodes_to_file("sample_data/measured_electrodes.ced")
-
-        self.ui.statusbar.showMessage("Saved electrode locations.")
-
-    def prepare_surface(self):
-        if self.surface_file:
-            self.head_scan = HeadScan(self.surface_file, self.texture_file)
-
-            self.surface_view_config = {
-                "sphere_size": ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE,
-                "draw_flagposts": False,
-                "flagpost_height": ElectrodeSizes.HEADSCAN_FLAGPOST_HEIGHT,
-                "flagpost_size": ElectrodeSizes.HEADSCAN_FLAGPOST_SIZE,
-            }
-
-            self.surface_view = InteractiveSurfaceView(
-                self.ui.headmodel_frame,
-                self.head_scan.mesh,  # type: ignore
-                [self.head_scan.modality],
-                self.surface_view_config,
-            )
-
-            # this is TEMPORARY, because it should also support MRI
-            self.labeling_main_surface_view_config = {
-                "sphere_size": ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE,
-                "draw_flagposts": False,
-                "flagpost_height": ElectrodeSizes.HEADSCAN_FLAGPOST_HEIGHT,
-                "flagpost_size": ElectrodeSizes.HEADSCAN_FLAGPOST_SIZE,
-            }
-
-            self.labeling_main_surface_view = InteractiveSurfaceView(
-                self.ui.labeling_main_frame,
-                self.head_scan.mesh,  # type: ignore
-                [self.head_scan.modality],
-                self.labeling_main_surface_view_config,
-            )
-
-            self.labeling_main_surface_view.setModel(self.model)
-
-            self.surface_view.setModel(self.model)
-
-            self.ui.statusbar.showMessage("Prepared headscan.")
 
     def refresh_views(self):
         t = self.ui.tabWidget.currentIndex()
 
         if t == 2:
-            display_surface(self.surface_view)
+            display_surface(self.views["scan"])
         elif t == 3:
-            display_surface(self.mri_surface_view)
+            display_surface(self.views["mri"])
         elif t == 4:
-            display_surface(self.labeling_main_surface_view)
-            display_surface(self.labeling_reference_surface_view)
+            display_surface(self.views["labeling_main"])
+            display_surface(self.views["labeling_reference"])
 
     def refresh_count_indicators(self):
         measured_electrodes = self.model.get_electrodes_by_modality(
@@ -426,71 +332,45 @@ class StartQt6(QMainWindow):
         )
 
     def project_electrodes_to_mri(self):
-        if self.mri_surface_view is not None:
+        if self.headmodels["mri"] is not None:
             self.model.project_electrodes_to_mesh(
-                self.mri_scan.mesh, ModalitiesMapping.HEADSCAN
+                self.headmodels["mri"].mesh, ModalitiesMapping.HEADSCAN
             )
-            self.mri_surface_view.show()
-        # if self.head_scan is not None and self.mri_surface_view is not None:
-        #     self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh) # type: ignore
+            self.headmodels["mri"].show()
+        # if self.head_scan is not None and self.views["mri"] is not None:
+        #     self.views["mri"].add_secondary_mesh(self.head_scan.mesh) # type: ignore
 
     def display_dog(self):
-        if self.dog_hough_detector is not None:
-            self.dog = self.dog_hough_detector.get_difference_of_gaussians(
-                ksize=self.ui.kernel_size_spinbox.value(),
-                sigma=self.ui.sigma_spinbox.value(),
-                F=self.ui.diff_factor_spinbox.value(),
+        if self.files["texture"] is not None:
+            display_dog(
+                self.images,
+                self.ui.texture_frame,
+                self.ui.photo_label,
+                self.electrode_detector,
+                self.ui.kernel_size_spinbox.value(),
+                self.ui.sigma_spinbox.value(),
+                self.ui.diff_factor_spinbox.value(),
             )
-
-            self.dog_qimage = QImage(
-                self.dog.data,
-                self.dog.shape[1],
-                self.dog.shape[0],
-                QImage.Format.Format_Grayscale8,
-            ).rgbSwapped()
-
-            label_size = self.ui.texture_frame.size()
-            self.dog_qimage = self.dog_qimage.scaled(
-                label_size.width(),
-                label_size.height(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.FastTransformation,
-            )
-
-            self.ui.photo_label.setPixmap(QPixmap.fromImage(self.dog_qimage))
 
     def display_hough(self):
-        if self.dog_hough_detector is not None:
-            self.hough = self.dog_hough_detector.get_hough_circles(
-                param1=self.ui.param1_spinbox.value(),
-                param2=self.ui.param2_spinbox.value(),
-                min_distance_between_circles=self.ui.min_dist_spinbox.value(),
-                min_radius=self.ui.min_radius_spinbox.value(),
-                max_radius=self.ui.max_radius_spinbox.value(),
+        if self.files["texture"] is not None:
+            display_hough(
+                self.images,
+                self.ui.texture_frame,
+                self.ui.photo_label,
+                self.electrode_detector,
+                self.ui.param1_spinbox.value(),
+                self.ui.param2_spinbox.value(),
+                self.ui.min_dist_spinbox.value(),
+                self.ui.min_radius_spinbox.value(),
+                self.ui.max_radius_spinbox.value(),
             )
-
-            self.hough_qimage = QImage(
-                self.hough.data,
-                self.hough.shape[1],
-                self.hough.shape[0],
-                QImage.Format.Format_RGB888,
-            ).rgbSwapped()
-
-            label_size = self.ui.texture_frame.size()
-            self.hough_qimage = self.hough_qimage.scaled(
-                label_size.width(),
-                label_size.height(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.FastTransformation,
-            )
-
-            self.ui.photo_label.setPixmap(QPixmap.fromImage(self.hough_qimage))
 
     def detect_electrodes(self):
-        if self.dog_hough_detector is not None:
-            self.electrodes = self.dog_hough_detector.detect(
-                self.head_scan.mesh
-            )  # type: ignore
+        if self.electrode_detector is not None and self.headmodels["scan"] is not None:
+            self.electrodes = self.electrode_detector.detect(
+                self.headmodels["scan"].mesh
+            )
             for electrode in self.electrodes:
                 self.model.insert_electrode(electrode)
 
@@ -507,38 +387,38 @@ class StartQt6(QMainWindow):
         label_main_frame_size = self.ui.labeling_main_frame.size()
         label_reference_frame_size = self.ui.labeling_reference_frame.size()
 
-        if self.surface_view is not None:
-            self.surface_view.resize_view(
+        if self.views["scan"] is not None:
+            self.views["scan"].resize_view(
                 scan_frame_size.width(), scan_frame_size.height()
             )
 
-        if self.mri_surface_view is not None:
-            self.mri_surface_view.resize_view(
+        if self.views["mri"] is not None:
+            self.views["mri"].resize_view(
                 mri_frame_size.width(), mri_frame_size.height()
             )
 
-        if self.labeling_main_surface_view is not None:
-            self.labeling_main_surface_view.resize_view(
+        if self.views["labeling_main"] is not None:
+            self.views["labeling_main"].resize_view(
                 label_main_frame_size.width(), label_main_frame_size.height()
             )
 
-        if self.labeling_reference_surface_view is not None:
-            self.labeling_reference_surface_view.resize_view(
+        if self.views["labeling_reference"] is not None:
+            self.views["labeling_reference"].resize_view(
                 label_reference_frame_size.width(), label_reference_frame_size.height()
             )
 
-        if self.dog is not None:
+        if self.images["dog"] is not None:
             label_size = self.ui.texture_frame.size()
-            self.dog_qimage = self.dog_qimage.scaled(
+            self.images["dog"] = self.images["dog"].scaled(
                 label_size.width(),
                 label_size.height(),
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.FastTransformation,
             )
 
-        if self.hough is not None:
+        if self.images["hough"] is not None:
             label_size = self.ui.texture_frame.size()
-            self.hough_qimage = self.hough_qimage.scaled(
+            self.images["hough"] = self.images["hough"].scaled(
                 label_size.width(),
                 label_size.height(),
                 Qt.AspectRatioMode.KeepAspectRatio,
@@ -546,86 +426,74 @@ class StartQt6(QMainWindow):
             )
 
     def set_head_surf_alpha(self):
-        if self.surface_view is not None:
-            self.surface_view.update_surf_alpha(self.ui.head_alpha_slider.value() / 100)
-
-    def set_mri_surf_alpha(self):
-        if self.mri_surface_view is not None:
-            self.mri_surface_view.update_surf_alpha(
-                self.ui.mri_alpha_slider.value() / 100
+        if self.views["scan"] is not None:
+            self.views["scan"].update_surf_alpha(
+                self.ui.head_alpha_slider.value() / 100
             )
 
+    def set_mri_surf_alpha(self):
+        if self.views["mri"] is not None:
+            self.views["mri"].update_surf_alpha(self.ui.mri_alpha_slider.value() / 100)
+
     def set_alignment_surf_alpha(self):
-        if self.mri_surface_view is not None:
-            self.mri_surface_view.update_secondary_surf_alpha(
+        if self.views["mri"] is not None:
+            self.views["mri"].update_secondary_surf_alpha(
                 self.ui.mri_head_alpha_slider.value() / 100
             )
 
-    def update_surf_config(self):
-        if self.surface_view is not None:
-            self.surface_view_config["sphere_size"] = (
-                self.ui.sphere_size_spinbox.value()
-            )
-            self.surface_view_config["draw_flagposts"] = (
-                self.ui.flagposts_checkbox.isChecked()
-            )
-            self.surface_view_config["flagpost_height"] = (
-                self.ui.flagpost_height_spinbox.value()
-            )
-            self.surface_view_config["flagpost_size"] = (
-                self.ui.flagpost_size_spinbox.value()
-            )
-            self.surface_view.update_config(self.surface_view_config)
+    def _update_view_config(
+        self,
+        view: SurfaceView,
+        sphere_size: float,
+        draw_flagposts: bool,
+        flagpost_height: float,
+        flagpost_size: float,
+    ):
+        config = {
+            "sphere_size": sphere_size,
+            "draw_flagposts": draw_flagposts,
+            "flagpost_height": flagpost_height,
+            "flagpost_size": flagpost_size,
+        }
+        view.update_config(config)
 
-        if self.labeling_main_surface_view is not None:
-            self.labeling_main_surface_view_config["sphere_size"] = (
-                self.ui.sphere_size_spinbox.value()
+    def update_surf_config(self):
+        if self.views["scan"] is not None:
+            self._update_view_config(
+                self.views["scan"],
+                self.ui.sphere_size_spinbox.value(),
+                self.ui.flagposts_checkbox.isChecked(),
+                self.ui.flagpost_height_spinbox.value(),
+                self.ui.flagpost_size_spinbox.value(),
             )
-            self.labeling_main_surface_view_config["draw_flagposts"] = (
-                self.ui.flagposts_checkbox.isChecked()
-            )
-            self.labeling_main_surface_view_config["flagpost_height"] = (
-                self.ui.flagpost_height_spinbox.value()
-            )
-            self.labeling_main_surface_view_config["flagpost_size"] = (
-                self.ui.flagpost_size_spinbox.value()
-            )
-            self.labeling_main_surface_view.update_config(
-                self.labeling_main_surface_view_config
+
+        if self.views["labeling_main"] is not None:
+            self._update_view_config(
+                self.views["labeling_main"],
+                self.ui.sphere_size_spinbox.value(),
+                self.ui.flagposts_checkbox.isChecked(),
+                self.ui.flagpost_height_spinbox.value(),
+                self.ui.flagpost_size_spinbox.value(),
             )
 
     def update_mri_config(self):
-        if self.mri_surface_view is not None:
-            self.mri_surface_view_config["sphere_size"] = (
-                self.ui.mri_sphere_size_spinbox.value()
+        if self.views["mri"] is not None:
+            self._update_view_config(
+                self.views["mri"],
+                self.ui.mri_sphere_size_spinbox.value(),
+                self.ui.mri_flagposts_checkbox.isChecked(),
+                self.ui.mri_flagpost_height_spinbox.value(),
+                self.ui.mri_flagpost_size_spinbox.value(),
             )
-            self.mri_surface_view_config["draw_flagposts"] = (
-                self.ui.mri_flagposts_checkbox.isChecked()
-            )
-            self.mri_surface_view_config["flagpost_height"] = (
-                self.ui.mri_flagpost_height_spinbox.value()
-            )
-            self.mri_surface_view_config["flagpost_size"] = (
-                self.ui.mri_flagpost_size_spinbox.value()
-            )
-            self.mri_surface_view.update_config(self.mri_surface_view_config)
 
     def update_reference_labeling_config(self):
-        if self.labeling_reference_surface_view is not None:
-            self.labeling_reference_surface_view_config["sphere_size"] = (
-                self.ui.label_sphere_size_spinbox.value()
-            )
-            self.labeling_reference_surface_view_config["draw_flagposts"] = (
-                self.ui.label_flagposts_checkbox.isChecked()
-            )
-            self.labeling_reference_surface_view_config["flagpost_height"] = (
-                self.ui.label_flagpost_height_spinbox.value()
-            )
-            self.labeling_reference_surface_view_config["flagpost_size"] = (
-                self.ui.label_flagpost_size_spinbox.value()
-            )
-            self.labeling_reference_surface_view.update_config(
-                self.labeling_reference_surface_view_config
+        if self.views["labeling_reference"] is not None:
+            self._update_view_config(
+                self.views["labeling_reference"],
+                self.ui.label_sphere_size_spinbox.value(),
+                self.ui.label_flagposts_checkbox.isChecked(),
+                self.ui.label_flagpost_height_spinbox.value(),
+                self.ui.label_flagpost_size_spinbox.value(),
             )
 
     def align_scan_to_mri(self):
@@ -644,39 +512,40 @@ class StartQt6(QMainWindow):
                     scan_landmarks.append(electrode_i.coordinates)
                     mri_landmarks.append(electrode_j.coordinates)
 
-        self.surface_registrator = LandmarkSurfaceRegistrator(
-            source_mesh=self.head_scan.mesh,
-            source_landmarks=scan_landmarks,
-            target_landmarks=mri_landmarks,
-        )
+        if self.headmodels["scan"] is not None:
+            self.surface_registrator = LandmarkSurfaceRegistrator(
+                source_mesh=self.headmodels["scan"].mesh,
+                source_landmarks=scan_landmarks,
+                target_landmarks=mri_landmarks,
+            )
 
         # add the necessary checks
 
-        transformation_matrix = self.head_scan.register_mesh(self.surface_registrator)
+        transformation_matrix = self.headmodels["scan"].register_mesh(self.surface_registrator)  # type: ignore
         if transformation_matrix is not None:
             self.model.transform_electrodes(
                 ModalitiesMapping.HEADSCAN, transformation_matrix
             )
 
         self.ui.display_secondary_mesh_checkbox.setChecked(True)
-        self.mri_surface_view.show()  # type: ignore
+        self.views["mri"].show()  # type: ignore
 
     def undo_scan2mri_transformation(self):
-        inverse_transformation = self.head_scan.undo_registration(
+        inverse_transformation = self.headmodels["scan"].undo_registration(  # type: ignore
             self.surface_registrator
         )
         # self.model.undo_transformation()
         # if inverse_transofrmation is not None:
         self.model.transform_electrodes(ModalitiesMapping.HEADSCAN, inverse_transformation)  # type: ignore
-        self.mri_surface_view.reset_secondary_mesh()  # type: ignore
+        self.views["mri"].reset_secondary_mesh()  # type: ignore
         self.ui.display_secondary_mesh_checkbox.setChecked(False)
 
     def display_secondary_mesh(self):
         if self.ui.display_secondary_mesh_checkbox.isChecked():
-            self.mri_surface_view.add_secondary_mesh(self.head_scan.mesh)  # type: ignore
+            self.views["mri"].add_secondary_mesh(self.head_scan.mesh)  # type: ignore
         else:
-            self.mri_surface_view.reset_secondary_mesh()  # type: ignore
-            self.mri_surface_view.show()  # type: ignore
+            self.views["mri"].reset_secondary_mesh()  # type: ignore
+            self.views["mri"].show()  # type: ignore
 
     def register_reference_electrodes_to_measured(self):
         self.model.compute_centroid()
@@ -701,7 +570,7 @@ class StartQt6(QMainWindow):
             self.electrodes_registered_to_reference = True
 
             # self.display_unit_sphere()
-            display_surface(self.labeling_reference_surface_view)
+            display_surface(self.views["labeling_reference"])
 
     def undo_labeling(self):
         if self.electrodes_registered_to_reference:
@@ -736,7 +605,7 @@ class StartQt6(QMainWindow):
                 if electrode.label is not None:
                     electrode_aligner.align(electrode)
 
-            display_surface(self.labeling_reference_surface_view)
+            display_surface(self.views["labeling_reference"])
 
     def autolabel_measured_electrodes(self):
         pass
@@ -761,8 +630,8 @@ class StartQt6(QMainWindow):
             )
             display_pairs.append((unlabeled_electrode, reference_electrode))
 
-        if self.labeling_reference_surface_view is not None:
-            self.labeling_reference_surface_view.generate_correspondence_arrows(
+        if self.views["labeling_reference"] is not None:
+            self.views["labeling_reference"].generate_correspondence_arrows(
                 display_pairs
             )
 
@@ -777,7 +646,7 @@ class StartQt6(QMainWindow):
                 if unlabeled_electrode is not None and reference_electrode is not None:
                     unlabeled_electrode.label = reference_electrode.label
 
-            display_surface(self.labeling_reference_surface_view)
+            display_surface(self.views["labeling_reference"])
             self.align_reference_electrodes_to_measured()
 
     def update_correspondence_value(self):
@@ -791,11 +660,11 @@ class StartQt6(QMainWindow):
         )
 
     def on_close(self):
-        if self.surface_view is not None:
-            self.surface_view.close_vtk_widget()
+        if self.views["scan"] is not None:
+            self.views["scan"].close_vtk_widget()
 
-        if self.mri_surface_view is not None:
-            self.mri_surface_view.close_vtk_widget()
+        if self.views["mri"] is not None:
+            self.views["mri"].close_vtk_widget()
 
 
 if __name__ == "__main__":

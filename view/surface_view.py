@@ -91,12 +91,8 @@ class SurfaceView(QAbstractItemView):
         self.config = config
         self.render_electrodes()
 
-    def update_surf_alpha(self, alpha: float):
-        self._plotter.actors[0].alpha(alpha)
-        self._plotter.render()
-
-    def update_secondary_surf_alpha(self, alpha: float):
-        self._plotter.actors[1].alpha(alpha)
+    def update_surf_alpha(self, alpha: float, actor_index: int = 0):
+        self._plotter.actors[actor_index].alpha(alpha)
         self._plotter.render()
 
     def add_secondary_mesh(self, mesh: vd.Mesh):

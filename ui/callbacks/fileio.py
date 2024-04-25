@@ -1,5 +1,4 @@
-from calendar import c
-from PyQt6.QtWidgets import QFrame, QStatusBar, QTabWidget
+from PyQt6.QtWidgets import QFrame, QStatusBar, QTabWidget, QFileDialog
 
 from ui.pyloc_main_window import Ui_MainWindow
 from config.sizes import ElectrodeSizes
@@ -15,17 +14,17 @@ from model.head_models import HeadScan, MRIScan, UnitSphere
 def load_surface(
     files: dict,
     views: dict,
-    head_models: dict,
+    headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
     ui: Ui_MainWindow | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
-    #     self,
+    #     None,
     #     "Open Surface File",
     #     "",
-    #     "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)"
-    #     )
+    #     "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)",
+    # )
     # if file_path:
     #     files["scan"] = file_path
 
@@ -33,11 +32,11 @@ def load_surface(
         "/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj"
     )
 
-    head_models["scan"] = HeadScan(files["scan"], files["texture"])
+    headmodels["scan"] = HeadScan(files["scan"], files["texture"])
 
     for label, frame in frames:
         views[label] = create_surface_view(
-            head_models["scan"],
+            headmodels["scan"],
             frame,
             model,
         )
@@ -50,7 +49,7 @@ def load_surface(
 def load_texture(
     files: dict,
     views: dict,
-    head_models: dict,
+    headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
     electrode_detector: BaseElectrodeDetector | None,
@@ -72,11 +71,11 @@ def load_texture(
     if electrode_detector:
         electrode_detector.apply_texture(files["texture"])
 
-    head_models["scan"] = HeadScan(files["scan"], files["texture"])
+    headmodels["scan"] = HeadScan(files["scan"], files["texture"])
 
     for label, frame in frames:
         views[label] = create_surface_view(
-            head_models["scan"],
+            headmodels["scan"],
             frame,
             model,
         )
@@ -89,7 +88,7 @@ def load_texture(
 def load_mri(
     files: dict,
     views: dict,
-    head_models: dict,
+    headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
     ui: Ui_MainWindow | None,
@@ -106,7 +105,7 @@ def load_mri(
     files["mri"] = "sample_data/bem_outer_skin_surface.gii"
 
     if files["mri"]:
-        head_models["mri"] = MRIScan(files["mri"])
+        headmodels["mri"] = MRIScan(files["mri"])
 
         config = {
             "sphere_size": ElectrodeSizes.MRI_ELECTRODE_SIZE,
@@ -118,8 +117,8 @@ def load_mri(
         for label, frame in frames:
             views[label] = InteractiveSurfaceView(
                 frame,
-                head_models["mri"].mesh,
-                [head_models["mri"].modality],
+                headmodels["mri"].mesh,
+                [headmodels["mri"].modality],
                 config,
                 model,
             )

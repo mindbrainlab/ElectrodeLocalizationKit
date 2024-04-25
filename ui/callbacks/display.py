@@ -15,6 +15,13 @@ def display_surface(surface_view: SurfaceView | None):
         surface_view.show()
 
 
+def set_surface_alpha(
+    surface_view: SurfaceView | None, alpha: float, actor_index: int = 0
+):
+    if surface_view is not None:
+        surface_view.update_surf_alpha(alpha, actor_index)
+
+
 def display_dog(
     images: dict,
     frame: QFrame,

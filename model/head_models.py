@@ -37,6 +37,7 @@ class HeadScan(BaseHeadModel):
         self.surface_file = surface_file
         self.texture_file = texture_file
 
+        self.mesh = None
         self.mesh = load_head_surface_mesh_from_file(surface_file)
 
         self.modality = ModalitiesMapping.HEADSCAN

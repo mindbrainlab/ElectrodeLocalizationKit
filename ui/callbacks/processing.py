@@ -1,0 +1,30 @@
+from ui.pyloc_main_window import Ui_MainWindow
+from config.sizes import ElectrodeSizes
+from view.surface_view import SurfaceView
+from view.interactive_surface_view import InteractiveSurfaceView
+from view.labeling_surface_view import LabelingSurfaceView
+from processor.electrode_detector import BaseElectrodeDetector
+from model.cap_model import CapModel
+from model.head_models import HeadScan, MRIScan, UnitSphere
+
+from config.mappings import ModalitiesMapping
+
+
+def detect_electrodes(
+    headmodel: HeadScan,
+    electrode_detector: BaseElectrodeDetector,
+    model: CapModel,
+    ui: Ui_MainWindow | None,
+):
+    electrodes = electrode_detector.detect(headmodel.mesh)  # type: ignore
+    for electrode in electrodes:
+        model.insert_electrode(electrode)
+
+    measured_electrodes = model.get_electrodes_by_modality(
+        [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
+    )
+
+    if ui:
+        ui.measured_electrodes_label.setText(
+            f"Measured electrodes: {len(measured_electrodes)}"
+        )

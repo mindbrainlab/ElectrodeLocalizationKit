@@ -2,6 +2,8 @@ from ui.callbacks.refresh_views import refresh_count_indicators
 
 
 def connect_model(self):
+    self.ui.electrodes_table.setModel(self.model)
+
     self.model.dataChanged.connect(
         lambda: refresh_count_indicators(
             self.model,

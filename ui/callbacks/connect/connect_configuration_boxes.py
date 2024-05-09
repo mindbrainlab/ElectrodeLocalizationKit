@@ -1,5 +1,7 @@
 from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
+
+from ui.callbacks.config import update_view_config
 from ui.callbacks.display import display_dog, display_hough
 
 
@@ -17,29 +19,118 @@ def connect_configuration_boxes(self):
     self.ui.max_radius_spinbox.valueChanged.connect(lambda: _display_hough(self))
 
     # surface configuration slot connections
-    self.ui.sphere_size_spinbox.valueChanged.connect(self.update_surf_config)
-    self.ui.flagposts_checkbox.stateChanged.connect(self.update_surf_config)
-    self.ui.flagpost_height_spinbox.valueChanged.connect(self.update_surf_config)
-    self.ui.flagpost_size_spinbox.valueChanged.connect(self.update_surf_config)
+    self.ui.sphere_size_spinbox.valueChanged.connect(
+        lambda: update_view_config(
+            self.views["scan"],
+            self.ui.sphere_size_spinbox.value(),
+            self.ui.flagposts_checkbox.isChecked(),
+            self.ui.flagpost_height_spinbox.value(),
+            self.ui.flagpost_size_spinbox.value(),
+        )
+    )
+    self.ui.flagposts_checkbox.stateChanged.connect(
+        lambda: update_view_config(
+            self.views["scan"],
+            self.ui.sphere_size_spinbox.value(),
+            self.ui.flagposts_checkbox.isChecked(),
+            self.ui.flagpost_height_spinbox.value(),
+            self.ui.flagpost_size_spinbox.value(),
+        )
+    )
+
+    self.ui.flagpost_height_spinbox.valueChanged.connect(
+        lambda: update_view_config(
+            self.views["scan"],
+            self.ui.sphere_size_spinbox.value(),
+            self.ui.flagposts_checkbox.isChecked(),
+            self.ui.flagpost_height_spinbox.value(),
+            self.ui.flagpost_size_spinbox.value(),
+        )
+    )
+    self.ui.flagpost_size_spinbox.valueChanged.connect(
+        lambda: update_view_config(
+            self.views["scan"],
+            self.ui.sphere_size_spinbox.value(),
+            self.ui.flagposts_checkbox.isChecked(),
+            self.ui.flagpost_height_spinbox.value(),
+            self.ui.flagpost_size_spinbox.value(),
+        )
+    )
 
     # mri configuration slot connections
-    self.ui.mri_sphere_size_spinbox.valueChanged.connect(self.update_mri_config)
-    self.ui.mri_flagposts_checkbox.stateChanged.connect(self.update_mri_config)
-    self.ui.mri_flagpost_height_spinbox.valueChanged.connect(self.update_mri_config)
-    self.ui.mri_flagpost_size_spinbox.valueChanged.connect(self.update_mri_config)
+    self.ui.mri_sphere_size_spinbox.valueChanged.connect(
+        lambda: update_view_config(
+            self.views["mri"],
+            self.ui.mri_sphere_size_spinbox.value(),
+            self.ui.mri_flagposts_checkbox.isChecked(),
+            self.ui.mri_flagpost_height_spinbox.value(),
+            self.ui.mri_flagpost_size_spinbox.value(),
+        )
+    )
+    self.ui.mri_flagposts_checkbox.stateChanged.connect(
+        lambda: update_view_config(
+            self.views["mri"],
+            self.ui.mri_sphere_size_spinbox.value(),
+            self.ui.mri_flagposts_checkbox.isChecked(),
+            self.ui.mri_flagpost_height_spinbox.value(),
+            self.ui.mri_flagpost_size_spinbox.value(),
+        )
+    )
+    self.ui.mri_flagpost_height_spinbox.valueChanged.connect(
+        lambda: update_view_config(
+            self.views["mri"],
+            self.ui.mri_sphere_size_spinbox.value(),
+            self.ui.mri_flagposts_checkbox.isChecked(),
+            self.ui.mri_flagpost_height_spinbox.value(),
+            self.ui.mri_flagpost_size_spinbox.value(),
+        )
+    )
+    self.ui.mri_flagpost_size_spinbox.valueChanged.connect(
+        lambda: update_view_config(
+            self.views["mri"],
+            self.ui.mri_sphere_size_spinbox.value(),
+            self.ui.mri_flagposts_checkbox.isChecked(),
+            self.ui.mri_flagpost_height_spinbox.value(),
+            self.ui.mri_flagpost_size_spinbox.value(),
+        )
+    )
 
     # label configuration slot connections
     self.ui.label_sphere_size_spinbox.valueChanged.connect(
-        self.update_reference_labeling_config
+        lambda: update_view_config(
+            self.views["labeling_reference"],
+            self.ui.label_sphere_size_spinbox.value(),
+            self.ui.label_flagposts_checkbox.isChecked(),
+            self.ui.label_flagpost_height_spinbox.value(),
+            self.ui.label_flagpost_size_spinbox.value(),
+        )
     )
     self.ui.label_flagposts_checkbox.stateChanged.connect(
-        self.update_reference_labeling_config
+        lambda: update_view_config(
+            self.views["labeling_reference"],
+            self.ui.label_sphere_size_spinbox.value(),
+            self.ui.label_flagposts_checkbox.isChecked(),
+            self.ui.label_flagpost_height_spinbox.value(),
+            self.ui.label_flagpost_size_spinbox.value(),
+        )
     )
     self.ui.label_flagpost_height_spinbox.valueChanged.connect(
-        self.update_reference_labeling_config
+        lambda: update_view_config(
+            self.views["labeling_reference"],
+            self.ui.label_sphere_size_spinbox.value(),
+            self.ui.label_flagposts_checkbox.isChecked(),
+            self.ui.label_flagpost_height_spinbox.value(),
+            self.ui.label_flagpost_size_spinbox.value(),
+        )
     )
     self.ui.label_flagpost_size_spinbox.valueChanged.connect(
-        self.update_reference_labeling_config
+        lambda: update_view_config(
+            self.views["labeling_reference"],
+            self.ui.label_sphere_size_spinbox.value(),
+            self.ui.label_flagposts_checkbox.isChecked(),
+            self.ui.label_flagpost_height_spinbox.value(),
+            self.ui.label_flagpost_size_spinbox.value(),
+        )
     )
 
     _set_defaults_to_configuration_boxes(self)

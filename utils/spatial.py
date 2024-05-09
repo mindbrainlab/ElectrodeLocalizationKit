@@ -1,7 +1,5 @@
 import numpy as np
 
-# from model.electrode import Electrode
-
 
 def compute_distance_between_coordinates(
     coordinates_1: np.ndarray, coordinates_2: np.ndarray

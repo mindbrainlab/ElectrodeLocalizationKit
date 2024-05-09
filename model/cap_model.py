@@ -1,4 +1,3 @@
-import re
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractTableModel
 import numpy as np
 import vedo as vd

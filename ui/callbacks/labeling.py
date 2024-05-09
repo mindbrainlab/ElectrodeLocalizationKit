@@ -1,5 +1,3 @@
-import re
-from weakref import ref
 from model.cap_model import CapModel
 
 from processor.electrode_registrator import BaseElectrodeRegistrator
@@ -9,8 +7,6 @@ from processor.electrode_aligner import (
 )
 
 from config.mappings import ModalitiesMapping
-
-from model.electrode import Electrode
 
 from ui.callbacks.display import display_surface
 

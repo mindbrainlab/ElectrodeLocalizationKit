@@ -90,10 +90,13 @@ def compute_angular_distance(vector_a: np.ndarray, vector_b: np.ndarray) -> floa
     Computes the angular distance between two vectors in cartesian coordinates.
     TODO: Implement the function to compute the angular distance between two vectors in spherical coordinates.
     """
-    return np.arccos(
-        np.dot(vector_a, vector_b)
-        / (np.linalg.norm(vector_a) * np.linalg.norm(vector_b))
+    val = np.dot(vector_a, vector_b) / (
+        np.linalg.norm(vector_a) * np.linalg.norm(vector_b)
     )
+    if abs(val) > 1:
+        val = 1 if val > 0 else -1
+
+    return np.arccos(val)
 
 
 def compute_rotation_axis(vector_a: np.ndarray, vector_b: np.ndarray) -> np.ndarray:

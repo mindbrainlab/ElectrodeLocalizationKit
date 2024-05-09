@@ -19,6 +19,8 @@ class CapModel(QAbstractTableModel):
         self._data = []
         self._labels = []
 
+        self.correspondence = []
+
         # define Electrode class attributes to display in the table
         self._display_keys = ("label", "modality")
 

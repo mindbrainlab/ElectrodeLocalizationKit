@@ -8,7 +8,13 @@ from utils.spatial import compute_umeyama_transformation_matrix
 class BaseElectrodeRegistrator(ABC):
 
     @abstractmethod
-    def register(self):
+    def register(
+        self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]
+    ):
+        pass
+
+    @abstractmethod
+    def undo(self):
         pass
 
 
@@ -41,10 +47,14 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
     Written by: Aleksij Kraljič, Ljubljana, 2024
     """
 
-    def __init__(self, source_electrodes: list[Electrode]):
+    def __init__(self):
+        self.source_electrodes = []
+
+    def register(
+        self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]
+    ):
         self.source_electrodes = source_electrodes
 
-    def register(self, target_electrodes: list[Electrode]):
         for electrode in self.source_electrodes:
             electrode.create_coordinates_snapshot()
 

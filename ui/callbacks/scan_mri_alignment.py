@@ -55,7 +55,7 @@ def undo_scan2mri_transformation(
 
 def project_electrodes_to_mri(headmodels: dict, model: CapModel):
     model.project_electrodes_to_mesh(headmodels["mri"].mesh, ModalitiesMapping.HEADSCAN)
-    headmodels["mri"].show()
+    # headmodels["mri"].show()
 
 
 def display_secondary_mesh(views: dict, headmodels: dict, checkbox: QCheckBox):

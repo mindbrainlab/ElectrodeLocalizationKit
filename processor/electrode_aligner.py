@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from re import A
 import numpy as np
 
 from model.electrode import Electrode
@@ -9,7 +10,11 @@ from config.electrode_labeling import ElasticAlignmentParameters
 class BaseElectrodeLabelingAligner(ABC):
 
     @abstractmethod
-    def align(self, electrode_label: str):
+    def set_source_electrodes(self, source_electrodes: list[Electrode]):
+        pass
+
+    @abstractmethod
+    def align(self, target_electrode: Electrode):
         pass
 
 
@@ -21,14 +26,16 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
 
     def __init__(
         self,
-        source_electrodes: list[Electrode],
         cutoff_deg: float = ElasticAlignmentParameters.cutoff_deg,
         slope: float = ElasticAlignmentParameters.slope,
     ):
 
-        self.source_electrodes = source_electrodes
+        self.source_electrodes = []
         self.cutoff_deg = cutoff_deg
         self.slope = slope
+
+    def set_source_electrodes(self, source_electrodes: list[Electrode]):
+        self.source_electrodes = source_electrodes
 
     def align(self, target_electrode: Electrode):
         # extract the source electrode with the given label

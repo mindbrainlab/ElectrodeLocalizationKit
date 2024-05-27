@@ -1,21 +1,16 @@
+import sys
 from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6.QtGui import QPixmap, QResizeEvent
-
 from ui.pyloc_main_window import Ui_MainWindow
-
-import sys
 
 from model.cap_model import CapModel
 
 from processor.electrode_detector import DogHoughElectrodeDetector
-
 from processor.electrode_registrator import RigidElectrodeRegistrator
 from processor.electrode_aligner import ElasticElectrodeAligner
-
 from processor.surface_registrator import LandmarkSurfaceRegistrator
 
 from ui.callbacks.refresh_views import refresh_views_on_resize
-
 from ui.callbacks.connect.connect_fileio import connect_fileio_buttons
 from ui.callbacks.connect.connect_texture import connect_texture_buttons
 from ui.callbacks.connect.connect_display import connect_display_surface_buttons

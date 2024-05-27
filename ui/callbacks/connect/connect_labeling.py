@@ -27,7 +27,9 @@ def connect_labeling_buttons(self):
     )
 
     self.ui.label_autolabel_button.clicked.connect(
-        lambda: autolabel_measured_electrodes()
+        lambda: autolabel_measured_electrodes(
+            self.model, self.views, self.status, self.electrode_aligner
+        )
     )
 
     self.ui.label_label_correspondence_button.clicked.connect(

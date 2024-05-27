@@ -1,3 +1,5 @@
+import numpy as np
+
 from model.cap_model import CapModel
 
 from processor.electrode_registrator import BaseElectrodeRegistrator
@@ -82,8 +84,26 @@ def align_reference_electrodes_to_measured(
     display_surface(views["labeling_reference"])
 
 
-def autolabel_measured_electrodes():
-    pass
+def autolabel_measured_electrodes(
+    model: CapModel,
+    views: dict,
+    status: dict,
+    electrode_aligner: BaseElectrodeLabelingAligner,
+):
+    thresholds = np.arange(0.1, 0.5, 0.05)
+
+    for threshold in thresholds:
+        model.correspondence = compute_electrode_correspondence(
+            labeled_reference_electrodes=model.get_unregistered_electrodes(
+                [ModalitiesMapping.REFERENCE]
+            ),
+            unlabeled_measured_electrodes=model.get_unlabeled_electrodes(
+                [ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN]
+            ),
+            factor_threshold=threshold,
+        )
+
+        label_corresponding_electrodes(model, views, status, electrode_aligner)
 
 
 def visualize_labeling_correspondence(

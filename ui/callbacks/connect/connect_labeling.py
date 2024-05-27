@@ -5,6 +5,7 @@ from ui.callbacks.labeling import (
     autolabel_measured_electrodes,
     visualize_labeling_correspondence,
     label_corresponding_electrodes,
+    interpolate_missing_electrodes,
 )
 
 
@@ -54,4 +55,8 @@ def connect_labeling_buttons(self):
             self.status,
             self.electrode_registrator,
         )
+    )
+
+    self.ui.label_interpolate_button.clicked.connect(
+        lambda: interpolate_missing_electrodes(self.model)
     )

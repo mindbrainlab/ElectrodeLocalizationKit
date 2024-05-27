@@ -1,12 +1,16 @@
+import re
 import numpy as np
 
 from model.cap_model import CapModel
+from model.electrode import Electrode
 
 from processor.electrode_registrator import BaseElectrodeRegistrator
 from processor.electrode_aligner import (
     BaseElectrodeLabelingAligner,
     compute_electrode_correspondence,
 )
+
+from utils.spatial import compute_distance_between_coordinates
 
 from config.mappings import ModalitiesMapping
 
@@ -155,3 +159,42 @@ def label_corresponding_electrodes(
             unlabeled_electrode.label = reference_electrode.label
 
     align_reference_electrodes_to_measured(model, views, status, electrode_aligner)
+
+
+def interpolate_missing_electrodes(model: CapModel):
+    measured_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.HEADSCAN])
+    reference_electrodes = model.get_electrodes_by_modality(
+        [ModalitiesMapping.REFERENCE]
+    )
+
+    measured_labels = set([electrode.label for electrode in measured_electrodes])
+    reference_labels = set([electrode.label for electrode in reference_electrodes])
+    missing_electrodes = set.difference(reference_labels, measured_labels)
+
+    for label in missing_electrodes:
+        reference_electrode = model.get_electrode_by_label_and_modality(
+            label, ModalitiesMapping.REFERENCE
+        )
+        closest_measured_electrodes = sorted(
+            measured_electrodes,
+            key=lambda electrode: compute_distance_between_coordinates(
+                electrode.unit_sphere_cartesian_coordinates,
+                reference_electrode.unit_sphere_cartesian_coordinates,  # type: ignore
+            ),
+        )[:3]
+
+        mean_radius = np.mean(
+            [
+                np.linalg.norm(electrode.coordinates - electrode.cap_centroid)
+                for electrode in closest_measured_electrodes
+            ]
+        )
+        interpolated_electrode_coordinates = mean_radius * reference_electrode.unit_sphere_cartesian_coordinates  # type: ignore
+        model.insert_electrode(
+            Electrode(
+                coordinates=interpolated_electrode_coordinates + closest_measured_electrodes[0].cap_centroid,  # type: ignore
+                modality=ModalitiesMapping.HEADSCAN,
+                label=label,
+                labeled=True,
+            )
+        )

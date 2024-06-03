@@ -16,6 +16,7 @@ class Electrode:
     modality: str
     label: str | None = None
     labeled: bool = False
+    interpolated: bool = False
     _cap_centroid: np.ndarray | None = None
     _mapped_to_unit_sphere: bool = False
     _registered: bool = False

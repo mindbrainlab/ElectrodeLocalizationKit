@@ -196,5 +196,6 @@ def interpolate_missing_electrodes(model: CapModel):
                 modality=ModalitiesMapping.HEADSCAN,
                 label=label,
                 labeled=True,
+                interpolated=True,
             )
         )

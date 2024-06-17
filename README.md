@@ -22,6 +22,8 @@ To address these challenges, we present an open-source Python environment for el
 
 ## Installation
 
+**Note:** This package requires Python 3.11 and above.
+
 To install the required dependencies for ELK, use the following command:
 
 ```sh

@@ -52,9 +52,9 @@ The package was tested on structural scans acquired using the Structure Sensor o
 
 ## Authors
 
-- **Aleksij Kraljič** (corresponding author) - University of Ljubljana, Department of Psychology, Faculty of Arts, MBLab
-- **Jure Demšar** - University of Ljubljana, Faculty of Computer and Information Science, Faculty of Arts
-- **Grega Repovš** - University of Ljubljana, Department of Psychology, Faculty of Arts, MBLab (Lab Director)
+- **Aleksij Kraljič** (corresponding author) - Mind and Brain Lab, Department of Psychology, Faculty of Arts, University of Ljubljana
+- **Jure Demšar** - Faculty of Computer and Information Science, University of Ljubljana, and Mind and Brain Lab, Department of Psychology, Faculty of Arts, University of Ljubljana
+- **Grega Repovš** (Lab Director) - Mind and Brain Lab, Department of Psychology, Faculty of Arts, University of Ljubljana
 
 ## Contact
 

@@ -19,18 +19,14 @@ def load_surface(
     model: CapModel,
     ui: Ui_ELK | None,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     None,
-    #     "Open Surface File",
-    #     "",
-    #     "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)",
-    # )
-    # if file_path:
-    #     files["scan"] = file_path
-
-    files["scan"] = (
-        "/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj"
+    file_path, _ = QFileDialog.getOpenFileName(
+        None,
+        "Open Surface File",
+        "",
+        "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)",
     )
+    if file_path:
+        files["scan"] = file_path
 
     headmodels["scan"] = HeadScan(files["scan"], files["texture"])
 
@@ -54,18 +50,14 @@ def load_texture(
     electrode_detector: BaseElectrodeDetector | None,
     ui: Ui_ELK | None,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     self,
-    #     "Open Texture File",
-    #     "",
-    #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
-    #     )
-    # if file_path:
-    #     files["texture"] = file_path
-
-    files["texture"] = (
-        "/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.jpg"
+    file_path, _ = QFileDialog.getOpenFileName(
+        None,
+        "Open Texture File",
+        "",
+        "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)",
     )
+    if file_path:
+        files["texture"] = file_path
 
     if electrode_detector:
         electrode_detector.apply_texture(files["texture"])
@@ -91,16 +83,14 @@ def load_mri(
     model: CapModel,
     ui: Ui_ELK | None,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     self,
-    #     "Open MRI File",
-    #     "",
-    #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
-    #     )
-    # if file_path:
-    #     files["mri"] = file_path
-
-    files["mri"] = "sample_data/bem_outer_skin_surface.gii"
+    file_path, _ = QFileDialog.getOpenFileName(
+        None,
+        "Open MRI File",
+        "",
+        "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)",
+    )
+    if file_path:
+        files["mri"] = file_path
 
     if files["mri"]:
         headmodels["mri"] = MRIScan(files["mri"])
@@ -132,22 +122,19 @@ def load_locations(
     model: CapModel,
     ui: Ui_ELK | None,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     self,
-    #     "Open Locations File",
-    #     "",
-    #     "All Files (*);;CSV Files (*.csv)"
-    #     )
-    # if file_path:
-    #     reference_electrode = model.get_electrodes_by_modality(["reference"])
-    #     if len(reference_electrode) > 0:
-    #         for electrode in reference_electrode:
-    #             electrode_id = model.get_electrode_id(electrode)
-    #             if electrode_id is not None:
-    #                 model.remove_electrode_by_id(electrode_id)
-    #
-    #     files["locations"] = file_path
-    #     model.read_electrodes_from_file(file_path)
+    file_path, _ = QFileDialog.getOpenFileName(
+        None, "Open Locations File", "", "All Files (*);;CSV Files (*.csv)"
+    )
+    if file_path:
+        reference_electrode = model.get_electrodes_by_modality(["reference"])
+        if len(reference_electrode) > 0:
+            for electrode in reference_electrode:
+                electrode_id = model.get_electrode_id(electrode)
+                if electrode_id is not None:
+                    model.remove_electrode_by_id(electrode_id)
+
+        files["locations"] = file_path
+        model.read_electrodes_from_file(file_path)
 
     # remove existing reference electrodes
     reference_electrode = model.get_electrodes_by_modality(["reference"])
@@ -158,7 +145,6 @@ def load_locations(
                 model.remove_electrode_by_id(electrode_id)
 
     # read new reference electrodes
-    files["locations"] = "sample_data/measured_reference_electrodes.ced"
     model.read_electrodes_from_file(files["locations"])
 
     unit_sphere_mesh = UnitSphere()
@@ -184,16 +170,12 @@ def load_locations(
 
 
 def save_locations_to_file(model: CapModel, ui: Ui_ELK):
-    # file_path, _ = QFileDialog.getSaveFileName(
-    #     self,
-    #     "Save Locations File",
-    #     "",
-    #     "All Files (*);;CSV Files (*.csv)"
-    #     )
-    # if file_path:
-    #     self.model.save_electrodes(file_path)
+    file_path, _ = QFileDialog.getSaveFileName(
+        None, "Save Locations File", "", "All Files (*);;CSV Files (*.csv)"
+    )
 
-    model.save_electrodes_to_file("sample_data/measured_electrodes.ced")
+    if file_path:
+        model.save_electrodes_to_file(file_path)
 
     if ui:
         ui.statusbar.showMessage("Saved electrode locations.")

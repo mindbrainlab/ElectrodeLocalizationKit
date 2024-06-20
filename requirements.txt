@@ -1,0 +1,8 @@
+nibabel==5.2.1
+numpy==1.25.0
+opencv_python==4.8.1.78
+pandas==2.2.2
+PyQt6==6.7.0
+PyQt6_sip==13.6.0
+vedo==2023.4.6
+vtk==9.2.6

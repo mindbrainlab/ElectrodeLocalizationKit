@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QFrame, QStatusBar, QTabWidget, QFileDialog
 
-from ui.pyloc_main_window import Ui_MainWindow
+from ui.pyloc_main_window import Ui_ELK
 from config.sizes import ElectrodeSizes
 from view.surface_view import SurfaceView
 from view.interactive_surface_view import InteractiveSurfaceView
@@ -17,7 +17,7 @@ def load_surface(
     headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
-    ui: Ui_MainWindow | None,
+    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     None,
@@ -43,7 +43,6 @@ def load_surface(
 
     if ui:
         ui.statusbar.showMessage("Loaded surface file.")
-        ui.tabWidget.setTabEnabled(1, True)
 
 
 def load_texture(
@@ -53,7 +52,7 @@ def load_texture(
     frames: list[tuple[str, QFrame]],
     model: CapModel,
     electrode_detector: BaseElectrodeDetector | None,
-    ui: Ui_MainWindow | None,
+    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     self,
@@ -82,7 +81,6 @@ def load_texture(
 
     if ui:
         ui.statusbar.showMessage("Loaded texture file.")
-        ui.tabWidget.setTabEnabled(2, True)
 
 
 def load_mri(
@@ -91,7 +89,7 @@ def load_mri(
     headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
-    ui: Ui_MainWindow | None,
+    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     self,
@@ -125,7 +123,6 @@ def load_mri(
 
         if ui:
             ui.statusbar.showMessage("Loaded MRI file.")
-            ui.tabWidget.setTabEnabled(3, True)
 
 
 def load_locations(
@@ -133,7 +130,7 @@ def load_locations(
     views: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
-    ui: Ui_MainWindow | None,
+    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     self,
@@ -184,10 +181,9 @@ def load_locations(
 
     if ui:
         ui.statusbar.showMessage("Loaded electrode locations.")
-        ui.tabWidget.setTabEnabled(4, True)
 
 
-def save_locations_to_file(model: CapModel, ui: Ui_MainWindow):
+def save_locations_to_file(model: CapModel, ui: Ui_ELK):
     # file_path, _ = QFileDialog.getSaveFileName(
     #     self,
     #     "Save Locations File",

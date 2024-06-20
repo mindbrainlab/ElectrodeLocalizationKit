@@ -1,4 +1,4 @@
-from ui.pyloc_main_window import Ui_MainWindow
+from ui.pyloc_main_window import Ui_ELK
 
 from PyQt6.QtWidgets import QCheckBox
 
@@ -13,7 +13,7 @@ def align_scan_to_mri(
     headmodels: dict,
     model: CapModel,
     surface_registrator: LandmarkSurfaceRegistrator,
-    ui: Ui_MainWindow | None,
+    ui: Ui_ELK | None,
 ):
     scan_labeled_electrodes = model.get_labeled_electrodes([ModalitiesMapping.HEADSCAN])
     mri_labeled_electrodes = model.get_labeled_electrodes([ModalitiesMapping.MRI])
@@ -43,7 +43,7 @@ def undo_scan2mri_transformation(
     headmodels: dict,
     model: CapModel,
     surface_registrator: LandmarkSurfaceRegistrator,
-    ui: Ui_MainWindow | None,
+    ui: Ui_ELK | None,
 ):
     inverse_transformation = headmodels["scan"].undo_registration(surface_registrator)
     model.transform_electrodes(ModalitiesMapping.HEADSCAN, inverse_transformation)

@@ -1,4 +1,4 @@
-from ui.pyloc_main_window import Ui_MainWindow
+from ui.pyloc_main_window import Ui_ELK
 from config.sizes import ElectrodeSizes
 from view.surface_view import SurfaceView
 from view.interactive_surface_view import InteractiveSurfaceView
@@ -14,7 +14,7 @@ def detect_electrodes(
     headmodel: HeadScan,
     electrode_detector: BaseElectrodeDetector,
     model: CapModel,
-    ui: Ui_MainWindow | None,
+    ui: Ui_ELK | None,
 ):
     electrodes = electrode_detector.detect(headmodel.mesh)  # type: ignore
     for electrode in electrodes:

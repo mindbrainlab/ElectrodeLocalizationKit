@@ -1,0 +1,102 @@
+QMainWindow {
+    background-color: white;
+}
+
+QGroupBox {
+    border: 1px solid gray;
+    border-color: #11356B;
+    margin-top: 0px;
+    border-radius: 15px;
+}
+
+QGroupBox::title {
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    background-color: #11356B;
+    color: rgb(255, 255, 255);
+}
+
+QPushButton {
+    color: #11356B;
+    border: 1px solid #11356B;
+    border-radius: 5px;
+    border-style: outset;
+    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+            radius: 1.35, stop: 0 #ffffff, stop: 1 #afc1db);
+}
+
+QPushButton:hover {
+    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+            radius: 1.35, stop: 0 #fff, stop: 1 #edf4ff);
+}
+
+QPushButton:pressed {
+    border-style: inset;
+    background: qradialgradient(cx: 0.4, cy: -0.1, fx: 0.4, fy: -0.1,
+            radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
+}
+
+QPushButton:disabled {
+    border-style: inset;
+    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+            radius: 1.35, stop: 0 #fff, stop: 1 #a5aab2);
+}
+
+QTabWidget::pane {
+    border: 1px solid #11356B;
+    ;
+    top: -1px;
+    background: rgb(245, 250, 255);
+    color: #11356B;
+}
+
+QTabBar::tab {
+    background: rgb(210, 230, 255);
+    border: 1px solid #11356B;
+    ;
+    padding: 5px;
+    color: #11356B;
+}
+
+QTabBar::tab:selected {
+    background: rgb(245, 250, 255);
+    margin-bottom: -1px;
+    color: #11356B;
+}
+
+QTableView {
+    color: #11356B;
+    border: 1px solid #11356B;
+    border-radius: 0px;
+    border-style: outset;
+    background-color: white;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+QHeaderView:section {
+    color: white;
+    background-color: #11356B;
+}
+
+QLabel {
+    color: #11356B;
+}
+
+QFrame {
+    color: #11356B;
+}
+
+QSpinBox {
+    background-color: white;
+    color: #11356B;
+}
+
+QDoubleSpinBox {
+    background-color: white;
+    color: #11356B;
+}
+
+QCheckBox {
+    color: #11356B;
+}

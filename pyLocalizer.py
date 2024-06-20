@@ -1,7 +1,7 @@
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTabWidget
 from PyQt6.QtGui import QPixmap, QResizeEvent
-from ui.pyloc_main_window import Ui_MainWindow
+from ui.pyloc_main_window import Ui_ELK
 
 from model.cap_model import CapModel
 
@@ -9,6 +9,11 @@ from processor.electrode_detector import DogHoughElectrodeDetector
 from processor.electrode_registrator import RigidElectrodeRegistrator
 from processor.electrode_aligner import ElasticElectrodeAligner
 from processor.surface_registrator import LandmarkSurfaceRegistrator
+
+from ui.state_machine import (
+    StateMachine,
+    initialize_states,
+)
 
 from ui.callbacks.refresh_views import refresh_views_on_resize
 from ui.callbacks.connect.connect_fileio import connect_fileio_buttons
@@ -32,7 +37,7 @@ from ui.callbacks.connect.connect_scan_mri_alignment import (
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_ELK()
         self.ui.setupUi(self)
         self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
         self.ui.statusbar.showMessage("Welcome!")
@@ -51,17 +56,15 @@ class StartQt6(QMainWindow):
         self.headmodels = {"scan": None, "mri": None}
         self.images = {"dog": None, "hough": None}
 
-        # disable tabs -> this will be refactored in the future (UI state machine)
-        self.ui.tabWidget.setTabEnabled(1, False)
-        self.ui.tabWidget.setTabEnabled(2, False)
-        self.ui.tabWidget.setTabEnabled(3, False)
-        self.ui.tabWidget.setTabEnabled(4, False)
-
         # main processing models
         self.model = CapModel()
+        # detector for 2D image electrode detection
         self.electrode_detector = DogHoughElectrodeDetector()
+        # registrator for headscan to MRI surface registration
         self.surface_registrator = LandmarkSurfaceRegistrator()
+        # registrator for reference (manufacturer) and measured locations registration
         self.electrode_registrator = RigidElectrodeRegistrator()
+        # aligner for reference electrodes to measured electrodes for automatic labeling
         self.electrode_aligner = ElasticElectrodeAligner()
 
         # connect callbacks
@@ -78,9 +81,36 @@ class StartQt6(QMainWindow):
         connect_splitter_moved(self)
         connect_labeling_buttons(self)
 
+        self.ui.tabWidget.setTabEnabled(0, True)
+        self.ui.tabWidget.setTabEnabled(1, True)
+        self.ui.tabWidget.setTabEnabled(2, True)
+        self.ui.tabWidget.setTabEnabled(3, True)
+        self.ui.tabWidget.setTabEnabled(4, True)
+
+        # self.state_machine = StateMachine()
+        # initialize_states(self)
+        # self.state_machine.set_initial_state("initial_state")
+        # self.state_machine.state_changed.connect(self.ui.statusbar.showMessage)
+        # self.state_machine.start()
+
+        # disable batch tab
+        self.ui.tabWidget_2.setTabEnabled(1, False)
+
         # connect window events
         self.ui.centralwidget.resizeEvent = self.on_window_resize  # type: ignore
         self.ui.centralwidget.closeEvent = self.on_close  # type: ignore
+
+    def update_button_states(self, **kwargs):
+        for button_name, enabled_state in kwargs.items():
+            button = self.findChild(QPushButton, button_name)
+            if button:
+                print(f"Setting {button_name} to {enabled_state}")
+                button.setEnabled(enabled_state)
+
+    def update_tab_states(self, **kwargs):
+        for tab_index, enabled_state in kwargs.items():
+            print(f"Setting tab {tab_index} to {enabled_state}")
+            self.ui.tabWidget.setTabEnabled(int(tab_index[1]), enabled_state)
 
     def on_window_resize(self, event: QResizeEvent):
         refresh_views_on_resize(

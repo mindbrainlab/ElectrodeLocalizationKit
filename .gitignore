@@ -3,3 +3,4 @@ __pycache__/
 *.py[cod]
 settings.json
 sample_data/*
+.DS_Store

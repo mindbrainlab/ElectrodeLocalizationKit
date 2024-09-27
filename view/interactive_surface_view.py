@@ -1,4 +1,5 @@
 import vedo as vd
+import time
 
 from view.surface_view import SurfaceView
 
@@ -7,6 +8,8 @@ from model.cap_model import CapModel
 
 from config.colors import ElectrodeColors
 from config.mappings import ModalitiesMapping
+
+from label_dialog import LabelingDialog
 
 
 class InteractiveSurfaceView(SurfaceView):
@@ -21,8 +24,20 @@ class InteractiveSurfaceView(SurfaceView):
     ):
         super().__init__(frame, mesh, modality, config, model, parent)
 
+        self._interaction_state = "x"
+
+        self.click_start_time = 0
         self._plotter.add_callback("LeftButtonPress", self._on_left_click)
-        self._plotter.add_callback("RightButtonPress", self._on_right_click)
+        self._plotter.add_callback("LeftButtonRelease", self._on_left_click_release)
+        self._plotter.add_callback("KeyPress", self._on_keypress)
+
+        self.text_state = vd.Text2D(
+            "View Mode",
+            c="black",
+            s=0.8,
+            pos="top-left",
+        )
+        self._plotter.add(self.text_state)
 
     def render_electrodes(self):
         self._plotter.clear()
@@ -89,18 +104,87 @@ class InteractiveSurfaceView(SurfaceView):
         self._plotter.render()
 
     def _on_left_click(self, evt):
-        point = evt.picked3d
-        if point is not None:
-            electrode = Electrode(point, modality=self.modality[0], label="None")
-            self.model.insert_electrode(electrode)
+        self.click_start_time = time.time()
 
+    def _on_left_click_release(self, evt):
+        stop_time = time.time()
+        if stop_time - self.click_start_time > 0.2:
+            return
+
+        point = evt.picked3d
+        if point is not None and evt.keyPressed is not None:
+            if self._interaction_state == "s":
+                electrode = Electrode(point, modality=self.modality[0], label="None")
+                self.model.insert_electrode(electrode)
+            elif self._interaction_state == "d":
+                self.model.remove_closest_electrode(point, self.modality[0])
+            elif self._interaction_state == "a":
+                dialog = LabelingDialog()
+                dialog.exec()
+                label = dialog.get_electrode_label()
+                self.model.label_closest_electrode(point, label, self.modality[0])
+            elif self._interaction_state == "x":
+                evt.keyPressed = None
+                evt.keypress = None
+            else:
+                return
             self.render_electrodes()
             self.model.layoutChanged.emit()
 
-    def _on_right_click(self, evt):
-        point = evt.picked3d
-        if point is not None:
-            self.model.remove_closest_electrode(point, self.modality[0])
-
+    def _on_keypress(self, evt):
+        if evt.keyPressed is not None:
+            if evt.keyPressed.lower() == "x":
+                self._interaction_state = "x"
+                self._plotter.background(c1="white", c2="white")
+                evt.keyPressed = None
+                evt.keypress = None
+                self._plotter.remove(self.text_state)
+                self.text_state = vd.Text2D(
+                    "View Mode",
+                    c="black",
+                    s=0.8,
+                    pos="top-left",
+                )
+                self._plotter.add(self.text_state)
+            elif evt.keyPressed.lower() == "s":
+                self._interaction_state = "s"
+                self._plotter.background(c1="#b1fcb3", c2="white")
+                evt.keyPressed = None
+                evt.keypress = None
+                self._plotter.remove(self.text_state)
+                self.text_state = vd.Text2D(
+                    "Selection Mode",
+                    c="green",
+                    s=0.8,
+                    pos="top-left",
+                )
+                self._plotter.add(self.text_state)
+            elif evt.keyPressed.lower() == "d":
+                self._interaction_state = "d"
+                self._plotter.background(c1="#fcb1b1", c2="white")
+                evt.keyPressed = None
+                evt.keypress = None
+                self._plotter.remove(self.text_state)
+                self.text_state = vd.Text2D(
+                    "Deletion Mode",
+                    c="red",
+                    s=0.8,
+                    pos="top-left",
+                )
+                self._plotter.add(self.text_state)
+            elif evt.keyPressed.lower() == "a":
+                self._interaction_state = "a"
+                self._plotter.background(c1="#b1e1fc", c2="white")
+                evt.keyPressed = None
+                evt.keypress = None
+                self._plotter.remove(self.text_state)
+                self.text_state = vd.Text2D(
+                    "Labeling Mode",
+                    c="blue",
+                    s=0.8,
+                    pos="top-left",
+                )
+                self._plotter.add(self.text_state)
+            else:
+                return
             self.render_electrodes()
-            self.model.layoutChanged.emit()

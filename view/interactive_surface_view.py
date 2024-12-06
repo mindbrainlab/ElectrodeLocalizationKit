@@ -119,9 +119,48 @@ class InteractiveSurfaceView(SurfaceView):
             elif self._interaction_state == "d":
                 self.model.remove_closest_electrode(point, self.modality[0])
             elif self._interaction_state == "a":
-                dialog = LabelingDialog()
+                labels = [
+                    electrode.label
+                    for electrode in self.model.get_electrodes_by_modality(
+                        [ModalitiesMapping.REFERENCE]
+                    )
+                    if electrode.label is not None and electrode.label != "None"
+                ]
+                labeled_electrode_labels = [
+                    electrode.label
+                    for electrode in self.model.get_labeled_electrodes(
+                        [self.modality[0]]
+                    )
+                ]
+                unlabeled = list(set(labels) - set(labeled_electrode_labels))
+                # sort the labels
+                unlabeled.sort()
+                dialog = LabelingDialog(unlabeled)
                 dialog.exec()
                 label = dialog.get_electrode_label()
+                self.model.label_closest_electrode(point, label, self.modality[0])
+            elif self._interaction_state == "e":
+                labels = [
+                    electrode.label
+                    for electrode in self.model.get_electrodes_by_modality(
+                        [ModalitiesMapping.REFERENCE]
+                    )
+                    if electrode.label is not None and electrode.label != "None"
+                ]
+                labeled_electrode_labels = [
+                    electrode.label
+                    for electrode in self.model.get_labeled_electrodes(
+                        [self.modality[0]]
+                    )
+                ]
+                unlabeled = list(set(labels) - set(labeled_electrode_labels))
+                # sort the labels
+                unlabeled.sort()
+                dialog = LabelingDialog(unlabeled)
+                dialog.exec()
+                label = dialog.get_electrode_label()
+                electrode = Electrode(point, modality=self.modality[0], label="None")
+                self.model.insert_electrode(electrode)
                 self.model.label_closest_electrode(point, label, self.modality[0])
             elif self._interaction_state == "x":
                 evt.keyPressed = None
@@ -153,7 +192,7 @@ class InteractiveSurfaceView(SurfaceView):
                 evt.keypress = None
                 self._plotter.remove(self.text_state)
                 self.text_state = vd.Text2D(
-                    "Selection Mode",
+                    "Select Mode",
                     c="green",
                     s=0.8,
                     pos="top-left",
@@ -166,7 +205,7 @@ class InteractiveSurfaceView(SurfaceView):
                 evt.keypress = None
                 self._plotter.remove(self.text_state)
                 self.text_state = vd.Text2D(
-                    "Deletion Mode",
+                    "Delete Mode",
                     c="red",
                     s=0.8,
                     pos="top-left",
@@ -179,12 +218,26 @@ class InteractiveSurfaceView(SurfaceView):
                 evt.keypress = None
                 self._plotter.remove(self.text_state)
                 self.text_state = vd.Text2D(
-                    "Labeling Mode",
+                    "Label Mode",
                     c="blue",
                     s=0.8,
                     pos="top-left",
                 )
                 self._plotter.add(self.text_state)
+            elif evt.keyPressed.lower() == "e":
+                self._interaction_state = "e"
+                self._plotter.background(c1="#ffc069", c2="white")
+                evt.keyPressed = None
+                evt.keypress = None
+                self._plotter.remove(self.text_state)
+                self.text_state = vd.Text2D(
+                    "Select+Label Mode",
+                    c="orange",
+                    s=0.8,
+                    pos="top-left",
+                )
+                self._plotter.add(self.text_state)
+
             else:
                 return
             self.render_electrodes()

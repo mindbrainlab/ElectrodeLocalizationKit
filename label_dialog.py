@@ -4,11 +4,12 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QLabel,
+    QComboBox,
 )
 
 
 class LabelingDialog(QDialog):
-    def __init__(self):
+    def __init__(self, possible_labels: list[str] | None = None):
         super().__init__()
 
         self.setWindowTitle("Select Electrode")
@@ -20,12 +21,18 @@ class LabelingDialog(QDialog):
         # Create layout
         layout = QVBoxLayout()
 
-        # Create label and line edit
         self.label = QLabel("Label Electrode", self)
         layout.addWidget(self.label)
 
-        self.line_edit = QLineEdit(self)
-        layout.addWidget(self.line_edit)
+        # If possible_labels is provided, use QComboBox, otherwise use QLineEdit
+        if possible_labels:
+            self.combo_box = QComboBox(self)
+            self.combo_box.addItems(possible_labels)
+            layout.addWidget(self.combo_box)
+            self.combo_box.setFocus()
+        else:
+            self.line_edit = QLineEdit(self)
+            layout.addWidget(self.line_edit)
 
         # Create buttons
         self.select_button = QPushButton("Select", self)
@@ -39,12 +46,17 @@ class LabelingDialog(QDialog):
         # Set the layout to the dialog
         self.setLayout(layout)
 
-        # Connect the Enter key
-        self.line_edit.returnPressed.connect(self.select_electrode)
+        # Connect the Enter key if QLineEdit is used
+        if not possible_labels:
+            self.line_edit.returnPressed.connect(self.select_electrode)
 
     def select_electrode(self):
-        # Store the entered electrode label
-        self.electrode_label = self.line_edit.text()
+        # Store the selected/entered electrode label
+        if hasattr(self, "combo_box"):  # If we have a combo box
+            self.electrode_label = self.combo_box.currentText()
+        else:  # If we have a line edit
+            self.electrode_label = self.line_edit.text()
+
         print(
             f"Selected Electrode: {self.electrode_label}"
         )  # Placeholder for actual selection logic

@@ -170,7 +170,7 @@ QCheckBox {
           <bool>true</bool>
          </property>
          <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
          </property>
         </widget>
        </item>
@@ -220,10 +220,10 @@ QCheckBox {
          <attribute name="horizontalHeaderMinimumSectionSize">
           <number>20</number>
          </attribute>
-         <attribute name="verticalHeaderDefaultSectionSize">
+         <attribute name="verticalHeaderMinimumSectionSize">
           <number>15</number>
          </attribute>
-         <attribute name="verticalHeaderMinimumSectionSize">
+         <attribute name="verticalHeaderDefaultSectionSize">
           <number>15</number>
          </attribute>
         </widget>
@@ -462,7 +462,7 @@ QCheckBox {
         <string>Texture</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item alignment="Qt::AlignTop">
+        <item alignment="Qt::AlignmentFlag::AlignTop">
          <widget class="QWidget" name="widget_3" native="true">
           <property name="minimumSize">
            <size>
@@ -941,10 +941,10 @@ QCheckBox {
            </size>
           </property>
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::Shape::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Shadow::Raised</enum>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
@@ -967,7 +967,7 @@ QCheckBox {
         <string>Headmodel</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item alignment="Qt::AlignTop">
+        <item alignment="Qt::AlignmentFlag::AlignTop">
          <widget class="QWidget" name="widget_2" native="true">
           <property name="minimumSize">
            <size>
@@ -987,7 +987,7 @@ QCheckBox {
            </font>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item alignment="Qt::AlignTop">
+           <item alignment="Qt::AlignmentFlag::AlignTop">
             <widget class="QPushButton" name="display_head_button">
              <property name="minimumSize">
               <size>
@@ -1054,10 +1054,10 @@ QCheckBox {
               <number>100</number>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="tickPosition">
-              <enum>QSlider::NoTicks</enum>
+              <enum>QSlider::TickPosition::NoTicks</enum>
              </property>
              <property name="tickInterval">
               <number>1</number>
@@ -1251,10 +1251,10 @@ color: rgb(255, 255, 255);
            </size>
           </property>
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::Shape::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Shadow::Raised</enum>
           </property>
          </widget>
         </item>
@@ -1265,7 +1265,7 @@ color: rgb(255, 255, 255);
         <string>MRI</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item alignment="Qt::AlignTop">
+        <item alignment="Qt::AlignmentFlag::AlignTop">
          <widget class="QWidget" name="widget_5" native="true">
           <property name="minimumSize">
            <size>
@@ -1427,7 +1427,7 @@ color: rgb(255, 255, 255);
               <number>100</number>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -1674,7 +1674,7 @@ color: rgb(255, 255, 255);
                  <number>100</number>
                 </property>
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                </widget>
               </item>
@@ -1693,10 +1693,10 @@ color: rgb(255, 255, 255);
            </size>
           </property>
           <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+           <enum>QFrame::Shape::StyledPanel</enum>
           </property>
           <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+           <enum>QFrame::Shadow::Raised</enum>
           </property>
          </widget>
         </item>
@@ -1707,7 +1707,7 @@ color: rgb(255, 255, 255);
         <string>Labeling</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item alignment="Qt::AlignTop">
+        <item alignment="Qt::AlignmentFlag::AlignTop">
          <widget class="QWidget" name="widget_11" native="true">
           <property name="minimumSize">
            <size>
@@ -2112,7 +2112,7 @@ color: rgb(255, 255, 255);
                  <number>0</number>
                 </property>
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="invertedAppearance">
                  <bool>false</bool>
@@ -2121,7 +2121,7 @@ color: rgb(255, 255, 255);
                  <bool>false</bool>
                 </property>
                 <property name="tickPosition">
-                 <enum>QSlider::TicksAbove</enum>
+                 <enum>QSlider::TickPosition::TicksAbove</enum>
                 </property>
                </widget>
               </item>
@@ -2215,7 +2215,7 @@ color: rgb(255, 255, 255);
         <item>
          <widget class="QSplitter" name="splitter">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <widget class="QFrame" name="labeling_main_frame">
            <property name="minimumSize">
@@ -2225,10 +2225,10 @@ color: rgb(255, 255, 255);
             </size>
            </property>
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::Shape::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
+            <enum>QFrame::Shadow::Raised</enum>
            </property>
           </widget>
           <widget class="QFrame" name="labeling_reference_frame">
@@ -2239,10 +2239,10 @@ color: rgb(255, 255, 255);
             </size>
            </property>
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::Shape::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
+            <enum>QFrame::Shadow::Raised</enum>
            </property>
           </widget>
          </widget>

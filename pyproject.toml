@@ -1,0 +1,19 @@
+[project]
+name = "electrodelocalizationkit"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11, <3.12"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools]
+py-modules = []
+
+[tool.black]
+line-length = 100
+
+[tool.ruff]
+line-length = 100

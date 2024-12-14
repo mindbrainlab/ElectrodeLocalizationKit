@@ -93,9 +93,6 @@ class StartQt6(QMainWindow):
         # self.state_machine.state_changed.connect(self.ui.statusbar.showMessage)
         # self.state_machine.start()
 
-        # disable batch tab
-        self.ui.tabWidget_2.setTabEnabled(1, False)
-
         # connect window events
         self.ui.centralwidget.resizeEvent = self.on_window_resize  # type: ignore
         self.ui.centralwidget.closeEvent = self.on_close  # type: ignore

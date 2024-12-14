@@ -72,6 +72,7 @@ def align_reference_electrodes_to_measured(
             if electrode.label == reference_electrode.label:
                 measured_electrodes_matching_reference_labels.append(electrode)
 
+    # check if all labels are unique
     assert len(
         set([e.label for e in measured_electrodes_matching_reference_labels])
     ) == len([e.label for e in measured_electrodes_matching_reference_labels])
@@ -189,10 +190,13 @@ def interpolate_missing_electrodes(model: CapModel):
                 for electrode in closest_measured_electrodes
             ]
         )
-        interpolated_electrode_coordinates = mean_radius * reference_electrode.unit_sphere_cartesian_coordinates  # type: ignore
+        interpolated_electrode_coordinates = (
+            mean_radius * reference_electrode.unit_sphere_cartesian_coordinates
+        )  # type: ignore
         model.insert_electrode(
             Electrode(
-                coordinates=interpolated_electrode_coordinates + closest_measured_electrodes[0].cap_centroid,  # type: ignore
+                coordinates=interpolated_electrode_coordinates
+                + closest_measured_electrodes[0].cap_centroid,  # type: ignore
                 modality=ModalitiesMapping.HEADSCAN,
                 label=label,
                 labeled=True,

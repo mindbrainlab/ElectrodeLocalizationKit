@@ -4,3 +4,5 @@ __pycache__/
 settings.json
 sample_data/*
 .DS_Store
+*.egg
+*.egg-info/

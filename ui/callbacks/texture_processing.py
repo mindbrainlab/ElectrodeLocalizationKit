@@ -3,7 +3,7 @@ from config.sizes import ElectrodeSizes
 from view.surface_view import SurfaceView
 from view.interactive_surface_view import InteractiveSurfaceView
 from view.labeling_surface_view import LabelingSurfaceView
-from processor.electrode_detector import BaseElectrodeDetector
+from processing_models.electrode_detector import BaseElectrodeDetector
 from data_models.cap_model import CapModel
 from data_models.head_models import HeadScan, MRIScan, UnitSphere
 

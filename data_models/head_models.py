@@ -6,7 +6,7 @@ import numpy as np
 from config.colors import HeadModelColors
 from config.mappings import ModalitiesMapping
 
-from processor.surface_registrator import BaseSurfaceRegistrator
+from processing_models.surface_registrator import BaseSurfaceRegistrator
 from utils.mesh import normalize_mesh, rescale_to_original_size
 from data.loader import (
     load_head_surface_mesh_from_file,
@@ -20,7 +20,6 @@ except ImportError:
 
 
 class BaseHeadModel(ABC):
-
     @abstractmethod
     def normalize(self):
         pass
@@ -64,16 +63,13 @@ class HeadScan(BaseHeadModel):
         self.apply_texture()
         return transform_matrix
 
-    def undo_registration(
-        self, surface_registrator: BaseSurfaceRegistrator
-    ) -> np.ndarray | None:
+    def undo_registration(self, surface_registrator: BaseSurfaceRegistrator) -> np.ndarray | None:
         transform_matrix = surface_registrator.undo()
         return transform_matrix
 
 
 class MRIScan(BaseHeadModel):
     def __init__(self, mri_file: str):
-
         self.mesh = load_mri_surface_mesh_from_file(mri_file)
 
         self.normalize()
@@ -88,9 +84,7 @@ class MRIScan(BaseHeadModel):
         self.normalization_scale = normalize_mesh(self.mesh)
 
     def rescale_to_original_size(self):
-        self.normalization_scale = rescale_to_original_size(
-            self.mesh, self.normalization_scale
-        )
+        self.normalization_scale = rescale_to_original_size(self.mesh, self.normalization_scale)
 
     def register_mesh(self, transformation):
         pass
@@ -98,9 +92,7 @@ class MRIScan(BaseHeadModel):
 
 class UnitSphere(BaseHeadModel):
     def __init__(self):
-        self.mesh = vd.Sphere(
-            pos=(0, 0, 0), r=1.0, res=24, c=HeadModelColors.LABELING_SPHERE_COLOR
-        )
+        self.mesh = vd.Sphere(pos=(0, 0, 0), r=1.0, res=24, c=HeadModelColors.LABELING_SPHERE_COLOR)
         self.modality = ModalitiesMapping.REFERENCE
         self.fiducials = []
 

@@ -5,10 +5,10 @@ from ui.pyloc_main_window import Ui_ELK
 
 from data_models.cap_model import CapModel
 
-from processor.electrode_detector import DogHoughElectrodeDetector
-from processor.electrode_registrator import RigidElectrodeRegistrator
-from processor.electrode_aligner import ElasticElectrodeAligner
-from processor.surface_registrator import LandmarkSurfaceRegistrator
+from processing_models.electrode_detector import DogHoughElectrodeDetector
+from processing_models.electrode_registrator import RigidElectrodeRegistrator
+from processing_models.electrode_aligner import ElasticElectrodeAligner
+from processing_models.surface_registrator import LandmarkSurfaceRegistrator
 
 from ui.state_machine import (
     StateMachine,

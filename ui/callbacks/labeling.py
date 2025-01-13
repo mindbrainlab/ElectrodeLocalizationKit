@@ -4,8 +4,8 @@ import numpy as np
 from data_models.cap_model import CapModel
 from data_models.electrode import Electrode
 
-from processor.electrode_registrator import BaseElectrodeRegistrator
-from processor.electrode_aligner import (
+from processing_models.electrode_registrator import BaseElectrodeRegistrator
+from processing_models.electrode_aligner import (
     BaseElectrodeLabelingAligner,
     compute_electrode_correspondence,
 )

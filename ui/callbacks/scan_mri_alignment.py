@@ -3,7 +3,7 @@ from ui.pyloc_main_window import Ui_ELK
 from PyQt6.QtWidgets import QCheckBox
 
 from config.mappings import ModalitiesMapping
-from processor.surface_registrator import LandmarkSurfaceRegistrator
+from processing_models.surface_registrator import LandmarkSurfaceRegistrator
 
 from data_models.cap_model import CapModel
 

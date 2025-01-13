@@ -1,4 +1,4 @@
-from ui.callbacks.labeling import (
+from processing_handlers.labeling import (
     register_reference_electrodes_to_measured,
     undo_labeling,
     align_reference_electrodes_to_measured,

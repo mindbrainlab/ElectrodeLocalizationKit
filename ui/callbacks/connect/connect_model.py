@@ -1,4 +1,4 @@
-from ui.callbacks.refresh_views import refresh_count_indicators
+from ui.callbacks.refresh import refresh_count_indicators
 
 
 def connect_model(self):

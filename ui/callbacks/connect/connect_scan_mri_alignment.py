@@ -1,4 +1,4 @@
-from ui.callbacks.scan_mri_alignment import (
+from processing_handlers.scan_mri_alignment import (
     align_scan_to_mri,
     undo_scan2mri_transformation,
     project_electrodes_to_mri,

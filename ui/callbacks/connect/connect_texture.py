@@ -1,6 +1,5 @@
 from ui.callbacks.display import display_dog, display_hough
-
-from ui.callbacks.texture_processing import detect_electrodes
+from processing_handlers.texture_processing import detect_electrodes
 
 
 def connect_texture_buttons(self):

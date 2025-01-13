@@ -1,4 +1,4 @@
-from ui.callbacks.refresh_views import (
+from ui.callbacks.refresh import (
     refresh_views_on_tab_change,
     refresh_views_on_resize,
 )

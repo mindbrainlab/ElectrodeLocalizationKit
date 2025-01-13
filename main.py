@@ -15,7 +15,7 @@ from ui.state_machine import (
     initialize_states,
 )
 
-from ui.callbacks.refresh_views import refresh_views_on_resize
+from ui.callbacks.refresh import refresh_views_on_resize
 from ui.callbacks.connect.connect_fileio import connect_fileio_buttons
 from ui.callbacks.connect.connect_texture import connect_texture_buttons
 from ui.callbacks.connect.connect_display import connect_display_surface_buttons

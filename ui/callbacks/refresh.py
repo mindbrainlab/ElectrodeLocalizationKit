@@ -1,10 +1,10 @@
-from PyQt6.QtGui import QResizeEvent
 from PyQt6.QtWidgets import QTabWidget, QLabel, QFrame
 from PyQt6.QtCore import Qt
 from ui.callbacks.display import display_surface
 from config.mappings import ModalitiesMapping
 
 from data_models.cap_model import CapModel
+from view.surface_view import SurfaceView
 
 
 def refresh_views_on_tab_change(tab_widget: QTabWidget, views: dict):
@@ -70,3 +70,20 @@ def refresh_views_on_resize(
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.FastTransformation,
         )
+
+
+def update_view_config(
+    view: SurfaceView | None,
+    sphere_size: float,
+    draw_flagposts: bool,
+    flagpost_height: float,
+    flagpost_size: float,
+):
+    if view is not None:
+        config = {
+            "sphere_size": sphere_size,
+            "draw_flagposts": draw_flagposts,
+            "flagpost_height": flagpost_height,
+            "flagpost_size": flagpost_size,
+        }
+        view.update_config(config)

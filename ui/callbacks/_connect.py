@@ -1,6 +1,16 @@
 from fileio.scan import load_surface, load_texture
 from fileio.mri import load_mri
 from fileio.locations import load_locations, save_locations_to_file
+from processing_handlers.texture_processing import detect_electrodes
+from config.electrode_detector import DogParameters, HoughParameters
+from config.sizes import ElectrodeSizes
+
+from callbacks.display import (
+    display_surface,
+    display_dog,
+    display_hough,
+    set_surface_alpha,
+)
 
 
 def connect_model(self):
@@ -63,9 +73,6 @@ def connect_fileio_buttons(self):
     )
 
 
-from ui.callbacks.texture_processing import detect_electrodes
-
-
 def connect_texture_buttons(self):
     self.ui.display_dog_button.clicked.connect(self.display_dog)
     self.ui.display_hough_button.clicked.connect(self.display_hough)
@@ -78,14 +85,6 @@ def connect_texture_buttons(self):
             self.ui,
         )
     )
-
-
-from callbacks.display import (
-    display_surface,
-    display_dog,
-    display_hough,
-    set_surface_alpha,
-)
 
 
 def connect_display_surface_buttons(self):
@@ -110,10 +109,6 @@ def connect_alpha_sliders(self):
             actor_index=1,
         )
     )
-
-
-from config.electrode_detector import DogParameters, HoughParameters
-from config.sizes import ElectrodeSizes
 
 
 def connect_configuration_boxes(self):

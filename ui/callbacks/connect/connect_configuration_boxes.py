@@ -1,7 +1,7 @@
 from config.electrode_detector import DogParameters, HoughParameters
 from config.sizes import ElectrodeSizes
 
-from ui.callbacks.config import update_view_config
+from ui.callbacks.refresh import update_view_config
 from ui.callbacks.display import display_dog, display_hough
 
 

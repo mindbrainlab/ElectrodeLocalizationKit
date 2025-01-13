@@ -1,16 +1,13 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
-from model.electrode import Electrode
+from data_models.electrode import Electrode
 from utils.spatial import compute_umeyama_transformation_matrix
 
 
 class BaseElectrodeRegistrator(ABC):
-
     @abstractmethod
-    def register(
-        self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]
-    ):
+    def register(self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]):
         pass
 
     @abstractmethod
@@ -50,9 +47,7 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
     def __init__(self):
         self.source_electrodes = []
 
-    def register(
-        self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]
-    ):
+    def register(self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]):
         self.source_electrodes = source_electrodes
 
         for electrode in self.source_electrodes:
@@ -74,16 +69,10 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
 
         T = compute_umeyama_transformation_matrix(
             source=np.array(
-                [
-                    e.unit_sphere_cartesian_coordinates
-                    for e in matching_source_electrodes
-                ]
+                [e.unit_sphere_cartesian_coordinates for e in matching_source_electrodes]
             ),
             target=np.array(
-                [
-                    e.unit_sphere_cartesian_coordinates
-                    for e in matching_target_electrodes
-                ]
+                [e.unit_sphere_cartesian_coordinates for e in matching_target_electrodes]
             ),
             translate=False,
         )

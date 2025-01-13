@@ -1,5 +1,5 @@
-from model.head_models import HeadScan
-from model.cap_model import CapModel
+from data_models.head_models import HeadScan
+from data_models.cap_model import CapModel
 
 
 class Session:
@@ -7,4 +7,3 @@ class Session:
         self.session_id = session_id
         self.head_scan = head_scan
         self.electrode_cap = electrode_cap
-        

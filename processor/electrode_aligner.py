@@ -2,13 +2,12 @@ from abc import ABC, abstractmethod
 from re import A
 import numpy as np
 
-from model.electrode import Electrode
+from data_models.electrode import Electrode
 from utils.spatial import compute_angular_distance, compute_rotation_axis, align_vectors
 from config.electrode_labeling import ElasticAlignmentParameters
 
 
 class BaseElectrodeLabelingAligner(ABC):
-
     @abstractmethod
     def set_source_electrodes(self, source_electrodes: list[Electrode]):
         pass
@@ -29,7 +28,6 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
         cutoff_deg: float = ElasticAlignmentParameters.cutoff_deg,
         slope: float = ElasticAlignmentParameters.slope,
     ):
-
         self.source_electrodes = []
         self.cutoff_deg = cutoff_deg
         self.slope = slope
@@ -50,18 +48,14 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
             source_vector = source_electrode.unit_sphere_cartesian_coordinates
             target_vector = target_electrode.unit_sphere_cartesian_coordinates
 
-            angle_between_vectors = compute_angular_distance(
-                source_vector, target_vector
-            )
+            angle_between_vectors = compute_angular_distance(source_vector, target_vector)
             rotation_axis = compute_rotation_axis(source_vector, target_vector)
 
             # compute angular distance vector to all other source electrodes
             attenuation = self._compute_alignment_attenuation_vector(source_electrode)
 
             # register the source electrode to the target electrode (simply move it there)
-            source_electrode.spherical_coordinates = (
-                target_electrode.spherical_coordinates
-            )
+            source_electrode.spherical_coordinates = target_electrode.spherical_coordinates
             source_electrode.registered = True
 
             # apply the adjustment to every non-aligned electrode
@@ -74,9 +68,7 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
                         attenuation[i],
                     )
 
-    def _compute_alignment_attenuation_vector(
-        self, target_electrode: Electrode
-    ) -> np.ndarray:
+    def _compute_alignment_attenuation_vector(self, target_electrode: Electrode) -> np.ndarray:
         # compute the angular distance from every electrode to the target electrode
         D = np.zeros(len(self.source_electrodes))
         target_vector = target_electrode.unit_sphere_cartesian_coordinates
@@ -96,19 +88,14 @@ def compute_electrode_correspondence(
     unlabeled_measured_electrodes: list[Electrode],
     factor_threshold: float = 1,
 ):
-
     def remove_multiple_correspondeces(correspondence):
         all_labels = [e["suggested_label"] for e in correspondence]
         unique_labels = list(set(all_labels))
 
         for label in unique_labels:
-            label_correspondence = [
-                e for e in correspondence if e["suggested_label"] == label
-            ]
+            label_correspondence = [e for e in correspondence if e["suggested_label"] == label]
             if len(label_correspondence) > 1:
-                label_correspondence = sorted(
-                    label_correspondence, key=lambda x: x["factor"]
-                )
+                label_correspondence = sorted(label_correspondence, key=lambda x: x["factor"])
                 for i in range(1, len(label_correspondence)):
                     correspondence.remove(label_correspondence[i])
 
@@ -124,15 +111,11 @@ def compute_electrode_correspondence(
                 reference_electrode.unit_sphere_cartesian_coordinates,
             )
 
-        sorted_distance_vector = dict(
-            sorted(distances.items(), key=lambda item: item[1])
-        )
+        sorted_distance_vector = dict(sorted(distances.items(), key=lambda item: item[1]))
         sorted_distances = list(sorted_distance_vector.values())
         sorted_labels = list(sorted_distance_vector.keys())
 
-        correspondence_factor = sorted_distances[0] / (
-            sorted_distances[0] + sorted_distances[1]
-        )
+        correspondence_factor = sorted_distances[0] / (sorted_distances[0] + sorted_distances[1])
 
         if correspondence_factor < factor_threshold:
             correspondence_entry = {}

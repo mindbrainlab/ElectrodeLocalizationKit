@@ -1,8 +1,8 @@
 import re
 import numpy as np
 
-from model.cap_model import CapModel
-from model.electrode import Electrode
+from data_models.cap_model import CapModel
+from data_models.electrode import Electrode
 
 from processor.electrode_registrator import BaseElectrodeRegistrator
 from processor.electrode_aligner import (
@@ -30,9 +30,7 @@ def register_reference_electrodes_to_measured(
     labeled_measured_electrodes = model.get_labeled_electrodes(
         [ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN]
     )
-    reference_electrodes = model.get_electrodes_by_modality(
-        [ModalitiesMapping.REFERENCE]
-    )
+    reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
     if (status["electrodes_registered_to_reference"] is False) and len(
         labeled_measured_electrodes
@@ -62,9 +60,7 @@ def align_reference_electrodes_to_measured(
     labeled_measured_electrodes = model.get_labeled_electrodes(
         [ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN]
     )
-    reference_electrodes = model.get_electrodes_by_modality(
-        [ModalitiesMapping.REFERENCE]
-    )
+    reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
     measured_electrodes_matching_reference_labels = []
     for electrode in labeled_measured_electrodes:
@@ -73,9 +69,9 @@ def align_reference_electrodes_to_measured(
                 measured_electrodes_matching_reference_labels.append(electrode)
 
     # check if all labels are unique
-    assert len(
-        set([e.label for e in measured_electrodes_matching_reference_labels])
-    ) == len([e.label for e in measured_electrodes_matching_reference_labels])
+    assert len(set([e.label for e in measured_electrodes_matching_reference_labels])) == len(
+        [e.label for e in measured_electrodes_matching_reference_labels]
+    )
 
     if (
         status["electrodes_registered_to_reference"]
@@ -164,9 +160,7 @@ def label_corresponding_electrodes(
 
 def interpolate_missing_electrodes(model: CapModel):
     measured_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.HEADSCAN])
-    reference_electrodes = model.get_electrodes_by_modality(
-        [ModalitiesMapping.REFERENCE]
-    )
+    reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
     measured_labels = set([electrode.label for electrode in measured_electrodes])
     reference_labels = set([electrode.label for electrode in reference_electrodes])

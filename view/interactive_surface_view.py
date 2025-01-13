@@ -3,8 +3,8 @@ import time
 
 from view.surface_view import SurfaceView
 
-from model.electrode import Electrode
-from model.cap_model import CapModel
+from data_models.electrode import Electrode
+from data_models.cap_model import CapModel
 
 from config.colors import ElectrodeColors
 from config.mappings import ModalitiesMapping
@@ -72,9 +72,7 @@ class InteractiveSurfaceView(SurfaceView):
                 points_labeled.append((point, label, labeled_color))
 
         for point, label, color in points_unlabeled:
-            sphere = vd.Sphere(
-                point, r=self.config["sphere_size"], res=8, c=color, alpha=1
-            )  # type: ignore
+            sphere = vd.Sphere(point, r=self.config["sphere_size"], res=8, c=color, alpha=1)  # type: ignore
             self._plotter.add(sphere)
             if self.config["draw_flagposts"]:
                 fs = self.get_flagpost(
@@ -87,9 +85,7 @@ class InteractiveSurfaceView(SurfaceView):
                 self._plotter.add(fs)
 
         for point, label, color in points_labeled:
-            sphere = vd.Sphere(
-                point, r=self.config["sphere_size"], res=8, c=color, alpha=1
-            )  # type: ignore
+            sphere = vd.Sphere(point, r=self.config["sphere_size"], res=8, c=color, alpha=1)  # type: ignore
             self._plotter.add(sphere)
             if self.config["draw_flagposts"]:
                 fs = self.get_flagpost(
@@ -128,9 +124,7 @@ class InteractiveSurfaceView(SurfaceView):
                 ]
                 labeled_electrode_labels = [
                     electrode.label
-                    for electrode in self.model.get_labeled_electrodes(
-                        [self.modality[0]]
-                    )
+                    for electrode in self.model.get_labeled_electrodes([self.modality[0]])
                 ]
                 unlabeled = list(set(labels) - set(labeled_electrode_labels))
                 # sort the labels
@@ -149,9 +143,7 @@ class InteractiveSurfaceView(SurfaceView):
                 ]
                 labeled_electrode_labels = [
                     electrode.label
-                    for electrode in self.model.get_labeled_electrodes(
-                        [self.modality[0]]
-                    )
+                    for electrode in self.model.get_labeled_electrodes([self.modality[0]])
                 ]
                 unlabeled = list(set(labels) - set(labeled_electrode_labels))
                 # sort the labels

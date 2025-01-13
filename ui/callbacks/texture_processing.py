@@ -4,8 +4,8 @@ from view.surface_view import SurfaceView
 from view.interactive_surface_view import InteractiveSurfaceView
 from view.labeling_surface_view import LabelingSurfaceView
 from processor.electrode_detector import BaseElectrodeDetector
-from model.cap_model import CapModel
-from model.head_models import HeadScan, MRIScan, UnitSphere
+from data_models.cap_model import CapModel
+from data_models.head_models import HeadScan, MRIScan, UnitSphere
 
 from config.mappings import ModalitiesMapping
 
@@ -25,6 +25,4 @@ def detect_electrodes(
     )
 
     if ui:
-        ui.measured_electrodes_label.setText(
-            f"Measured electrodes: {len(measured_electrodes)}"
-        )
+        ui.measured_electrodes_label.setText(f"Measured electrodes: {len(measured_electrodes)}")

@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt
 from ui.callbacks.display import display_surface
 from config.mappings import ModalitiesMapping
 
-from model.cap_model import CapModel
+from data_models.cap_model import CapModel
 
 
 def refresh_views_on_tab_change(tab_widget: QTabWidget, views: dict):
@@ -29,25 +29,17 @@ def refresh_count_indicators(
         [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
     )
 
-    measured_electrodes_label.setText(
-        f"Measured electrodes: {len(measured_electrodes)}"
-    )
+    measured_electrodes_label.setText(f"Measured electrodes: {len(measured_electrodes)}")
 
     labeled_electrodes = []
     for electrode in measured_electrodes:
-        if not (
-            electrode.label is None
-            or electrode.label == ""
-            or electrode.label == "None"
-        ):
+        if not (electrode.label is None or electrode.label == "" or electrode.label == "None"):
             labeled_electrodes.append(electrode)
 
     labeled_electrodes_label.setText(f"Labeled electrodes: {len(labeled_electrodes)}")
 
     reference_electrode = model.get_electrodes_by_modality(["reference"])
-    reference_electrodes_label.setText(
-        f"Reference electrodes: {len(reference_electrode)}"
-    )
+    reference_electrodes_label.setText(f"Reference electrodes: {len(reference_electrode)}")
 
 
 # def refresh_views_on_resize(self, event: QResizeEvent | None):
@@ -57,7 +49,6 @@ def refresh_views_on_resize(
     surface_frames: list[tuple[str, QFrame]],
     texture_frame: QFrame,
 ):
-
     for label, frame in surface_frames:
         if views[label] is not None:
             views[label].resize_view(frame.size().width(), frame.size().height())

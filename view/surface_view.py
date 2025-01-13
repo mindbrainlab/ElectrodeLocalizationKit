@@ -3,13 +3,11 @@ from PyQt6.QtWidgets import QAbstractItemView
 try:
     from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 except ImportError:
-    raise ImportError(
-        "Cannot find the VTK Qt bindings, make sure you have " "installed them"
-    )
+    raise ImportError("Cannot find the VTK Qt bindings, make sure you have installed them")
 
 import vedo as vd
 
-from model.cap_model import CapModel
+from data_models.cap_model import CapModel
 
 import numpy as np
 

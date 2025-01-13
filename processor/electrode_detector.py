@@ -3,7 +3,7 @@ import numpy as np
 import cv2 as cv
 import vedo as vd
 
-from model.electrode import Electrode
+from data_models.electrode import Electrode
 
 from utils.texture import compute_difference_of_gaussians, compute_hough_circles
 
@@ -13,7 +13,6 @@ from config.mappings import ModalitiesMapping
 
 
 class BaseElectrodeDetector(ABC):
-
     @abstractmethod
     def apply_texture(self, texture_file: str):
         pass
@@ -44,9 +43,7 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
             vertex = self._get_vertex_from_pixels(
                 (circle[0], circle[1]), mesh, self.texture.shape[0:2]
             )
-            self.electrodes.append(
-                Electrode(vertex, modality=self.modality, label="None")
-            )
+            self.electrodes.append(Electrode(vertex, modality=self.modality, label="None"))
 
         electrodes_to_remove = self._get_electrodes_too_close_together()
 
@@ -65,7 +62,6 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
         F: float = DogParameters.FACTOR,
         threshold_level: int = DogParameters.THRESHOLD_LEVEL,
     ) -> np.ndarray | None:
-
         if self.texture is None:
             return None
 
@@ -87,9 +83,7 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
         max_radius: int = HoughParameters.MAX_RADIUS,
     ) -> np.ndarray | None:
         if self.dog is None:
-            raise Exception(
-                "No DoG image available. Please run diff_of_gaussians() first."
-            )
+            raise Exception("No DoG image available. Please run diff_of_gaussians() first.")
 
         if self.texture is None:
             return None
@@ -112,9 +106,7 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
         for i, electrode_a in enumerate(self.electrodes):
             for j, electrode_b in enumerate(self.electrodes):
                 if i != j:
-                    dist = np.linalg.norm(
-                        electrode_a.coordinates - electrode_b.coordinates
-                    )
+                    dist = np.linalg.norm(electrode_a.coordinates - electrode_b.coordinates)
                     if dist < min_distance:
                         electrodes_to_remove.append(i)
                         electrodes_to_remove.append(j)

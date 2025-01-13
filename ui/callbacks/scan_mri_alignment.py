@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QCheckBox
 from config.mappings import ModalitiesMapping
 from processor.surface_registrator import LandmarkSurfaceRegistrator
 
-from model.cap_model import CapModel
+from data_models.cap_model import CapModel
 
 
 def align_scan_to_mri(

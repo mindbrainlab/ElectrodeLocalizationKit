@@ -6,8 +6,8 @@ from view.surface_view import SurfaceView
 from view.interactive_surface_view import InteractiveSurfaceView
 from view.labeling_surface_view import LabelingSurfaceView
 from processor.electrode_detector import BaseElectrodeDetector
-from model.cap_model import CapModel
-from model.head_models import HeadScan, MRIScan, UnitSphere
+from data_models.cap_model import CapModel
+from data_models.head_models import HeadScan, MRIScan, UnitSphere
 
 
 # define slots (functions)
@@ -28,9 +28,7 @@ def load_surface(
     # if file_path:
     #     files["scan"] = file_path
 
-    files["scan"] = (
-        "/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.obj"
-    )
+    files["scan"] = "sample_data/model_mesh.obj"
 
     headmodels["scan"] = HeadScan(files["scan"], files["texture"])
 
@@ -63,9 +61,7 @@ def load_texture(
     # if file_path:
     #     files["texture"] = file_path
 
-    files["texture"] = (
-        "/Applications/Matlab_Toolboxes/test/MMI/sessions/OP852/bids/anat/headscan/model_mesh.jpg"
-    )
+    files["texture"] = "sample_data/model_mesh.jpg"
 
     if electrode_detector:
         electrode_detector.apply_texture(files["texture"])
@@ -158,7 +154,7 @@ def load_locations(
                 model.remove_electrode_by_id(electrode_id)
 
     # read new reference electrodes
-    files["locations"] = "sample_data/measured_reference_electrodes.ced"
+    files["locations"] = "sample_data/measured_electrodes.ced"
     model.read_electrodes_from_file(files["locations"])
 
     unit_sphere_mesh = UnitSphere()

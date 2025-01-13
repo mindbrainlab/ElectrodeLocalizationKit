@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTabWidget
 from PyQt6.QtGui import QPixmap, QResizeEvent
 from ui.pyloc_main_window import Ui_ELK
 
-from model.cap_model import CapModel
+from data_models.cap_model import CapModel
 
 from processor.electrode_detector import DogHoughElectrodeDetector
 from processor.electrode_registrator import RigidElectrodeRegistrator

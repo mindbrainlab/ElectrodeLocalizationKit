@@ -1,4 +1,4 @@
-from model.electrode import Electrode
+from data_models.electrode import Electrode
 from config.mappings import ElectrodesFileMapping, ModalitiesMapping
 import pandas as pd
 import numpy as np
@@ -26,9 +26,7 @@ def load_electrodes_from_file(filename: str) -> list[Electrode]:
         df = pd.read_csv(filename, sep="\t")
         # df = df[df.type == "EEG"]
     else:
-        raise ValueError(
-            "Unsupported file format - Currently only .ced files are supported."
-        )
+        raise ValueError("Unsupported file format - Currently only .ced files are supported.")
 
     electrodes = []
     for _, row in df.iterrows():

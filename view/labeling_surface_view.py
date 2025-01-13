@@ -2,8 +2,8 @@ import vedo as vd
 
 from view.surface_view import SurfaceView
 
-from model.cap_model import CapModel
-from model.electrode import Electrode
+from data_models.cap_model import CapModel
+from data_models.electrode import Electrode
 
 from config.colors import ElectrodeColors
 from config.mappings import ModalitiesMapping
@@ -33,9 +33,10 @@ class LabelingSurfaceView(SurfaceView):
             ]:
                 electrode_A = pair[0]
                 electrode_B = pair[1]
-            elif pair[1].modality == ModalitiesMapping.REFERENCE and pair[
-                0
-            ].modality in [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]:
+            elif pair[1].modality == ModalitiesMapping.REFERENCE and pair[0].modality in [
+                ModalitiesMapping.HEADSCAN,
+                ModalitiesMapping.MRI,
+            ]:
                 electrode_A = pair[1]
                 electrode_B = pair[0]
             else:
@@ -75,12 +76,8 @@ class LabelingSurfaceView(SurfaceView):
                 labeled_color = ElectrodeColors.LABELING_REFERENCE_ELECTRODES_COLOR
                 unlabeled_color = "#000000"
             else:
-                unlabeled_color = (
-                    ElectrodeColors.LABELING_MEASURED_UNLABELED_ELECTRODES_COLOR
-                )
-                labeled_color = (
-                    ElectrodeColors.LABELING_MEASURED_LABELED_ELECTRODES_COLOR
-                )
+                unlabeled_color = ElectrodeColors.LABELING_MEASURED_UNLABELED_ELECTRODES_COLOR
+                labeled_color = ElectrodeColors.LABELING_MEASURED_LABELED_ELECTRODES_COLOR
 
             if label is None or label == "" or label == "None":
                 self.model.set_electrode_labeled_flag(i, False)
@@ -91,9 +88,7 @@ class LabelingSurfaceView(SurfaceView):
                 points_labeled.append((point, label, labeled_color))
 
         for point, label, color in points_unlabeled:
-            sphere = vd.Sphere(
-                point, r=self.config["sphere_size"], res=8, c=color, alpha=1
-            )  # type: ignore
+            sphere = vd.Sphere(point, r=self.config["sphere_size"], res=8, c=color, alpha=1)  # type: ignore
             self._plotter.add(sphere)
             if self.config["draw_flagposts"]:
                 fs = self.get_flagpost(
@@ -106,9 +101,7 @@ class LabelingSurfaceView(SurfaceView):
                 self._plotter.add(fs)
 
         for point, label, color in points_labeled:
-            sphere = vd.Sphere(
-                point, r=self.config["sphere_size"], res=8, c=color, alpha=1
-            )  # type: ignore
+            sphere = vd.Sphere(point, r=self.config["sphere_size"], res=8, c=color, alpha=1)  # type: ignore
             self._plotter.add(sphere)
             if self.config["draw_flagposts"]:
                 fs = self.get_flagpost(

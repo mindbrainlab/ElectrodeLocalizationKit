@@ -1,4 +1,4 @@
-from model.electrode import Electrode
+from data_models.electrode import Electrode
 import numpy as np
 
 

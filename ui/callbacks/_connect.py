@@ -1,16 +1,12 @@
+from fileio.scan import load_surface, load_texture
+from fileio.mri import load_mri
+from fileio.locations import load_locations, save_locations_to_file
+
+
 def connect_model(self):
     self.model.dataChanged.connect(self.refresh_count_indicators)
     self.model.rowsInserted.connect(self.refresh_count_indicators)
     self.model.rowsRemoved.connect(self.refresh_count_indicators)
-
-
-from callbacks.fileio import (
-    load_surface,
-    load_texture,
-    load_mri,
-    load_locations,
-    save_locations_to_file,
-)
 
 
 def connect_fileio_buttons(self):
@@ -93,12 +89,8 @@ from callbacks.display import (
 
 
 def connect_display_surface_buttons(self):
-    self.ui.display_head_button.clicked.connect(
-        lambda: display_surface(self.views["scan"])
-    )
-    self.ui.display_mri_button.clicked.connect(
-        lambda: display_surface(self.views["mri"])
-    )
+    self.ui.display_head_button.clicked.connect(lambda: display_surface(self.views["scan"]))
+    self.ui.display_mri_button.clicked.connect(lambda: display_surface(self.views["mri"]))
     self.ui.label_display_button.clicked.connect(
         lambda: display_surface(self.views["labeling_main"])
     )
@@ -106,14 +98,10 @@ def connect_display_surface_buttons(self):
 
 def connect_alpha_sliders(self):
     self.ui.head_alpha_slider.valueChanged.connect(
-        lambda: set_surface_alpha(
-            self.views["scan"], self.ui.head_alpha_slider.value() / 100
-        )
+        lambda: set_surface_alpha(self.views["scan"], self.ui.head_alpha_slider.value() / 100)
     )
     self.ui.mri_alpha_slider.valueChanged.connect(
-        lambda: set_surface_alpha(
-            self.views["mri"], self.ui.mri_alpha_slider.value() / 100
-        )
+        lambda: set_surface_alpha(self.views["mri"], self.ui.mri_alpha_slider.value() / 100)
     )
     self.ui.mri_head_alpha_slider.valueChanged.connect(
         lambda: set_surface_alpha(
@@ -154,18 +142,12 @@ def connect_configuration_boxes(self):
     self.ui.mri_flagpost_size_spinbox.valueChanged.connect(self.update_mri_config)
 
     # label configuration slot connections
-    self.ui.label_sphere_size_spinbox.valueChanged.connect(
-        self.update_reference_labeling_config
-    )
-    self.ui.label_flagposts_checkbox.stateChanged.connect(
-        self.update_reference_labeling_config
-    )
+    self.ui.label_sphere_size_spinbox.valueChanged.connect(self.update_reference_labeling_config)
+    self.ui.label_flagposts_checkbox.stateChanged.connect(self.update_reference_labeling_config)
     self.ui.label_flagpost_height_spinbox.valueChanged.connect(
         self.update_reference_labeling_config
     )
-    self.ui.label_flagpost_size_spinbox.valueChanged.connect(
-        self.update_reference_labeling_config
-    )
+    self.ui.label_flagpost_size_spinbox.valueChanged.connect(self.update_reference_labeling_config)
 
 
 def set_defaults_to_configuration_boxes(self):

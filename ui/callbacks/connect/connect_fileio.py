@@ -1,10 +1,6 @@
-from ui.callbacks.fileio import (
-    load_surface,
-    load_texture,
-    load_mri,
-    load_locations,
-    save_locations_to_file,
-)
+from fileio.scan import load_surface, load_texture
+from fileio.mri import load_mri
+from fileio.locations import load_locations, save_locations_to_file
 
 
 def connect_fileio_buttons(self):

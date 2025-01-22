@@ -87,11 +87,11 @@ class StartQt6(QMainWindow):
         self.ui.tabWidget.setTabEnabled(3, True)
         self.ui.tabWidget.setTabEnabled(4, True)
 
-        # self.state_machine = StateMachine()
-        # initialize_states(self)
-        # self.state_machine.set_initial_state("initial_state")
-        # self.state_machine.state_changed.connect(self.ui.statusbar.showMessage)
-        # self.state_machine.start()
+        self.state_machine = StateMachine()
+        initialize_states(self)
+        self.state_machine.set_initial_state("initial_state")
+        self.state_machine.state_changed.connect(self.ui.statusbar.showMessage)
+        self.state_machine.start()
 
         # connect window events
         self.ui.centralwidget.resizeEvent = self.on_window_resize  # type: ignore
@@ -108,6 +108,17 @@ class StartQt6(QMainWindow):
         for tab_index, enabled_state in kwargs.items():
             print(f"Setting tab {tab_index} to {enabled_state}")
             self.ui.tabWidget.setTabEnabled(int(tab_index[1]), enabled_state)
+
+    def update_texture_tab_states(self, **kwargs):
+        for tab_index, enabled_state in kwargs.items():
+            print(f"Setting texture tab {tab_index} to {enabled_state}")
+            self.ui.tabWidget_texture.setTabEnabled(int(tab_index[1]), enabled_state)
+
+    def switch_tab(self, tab_index):
+        self.ui.tabWidget.setCurrentIndex(tab_index)
+
+    def switch_texture_tab(self, tab_index):
+        self.ui.tabWidget_texture.setCurrentIndex(tab_index)
 
     def on_window_resize(self, event: QResizeEvent):
         refresh_views_on_resize(

@@ -50,12 +50,6 @@ def connect_labeling_buttons(self):
             self.ui.correspondence_slider_label,
         )
     )
-    self.ui.label_revert_button.clicked.connect(
-        lambda: undo_labeling(
-            self.status,
-            self.electrode_registrator,
-        )
-    )
 
     self.ui.label_interpolate_button.clicked.connect(
         lambda: interpolate_missing_electrodes(self.model)

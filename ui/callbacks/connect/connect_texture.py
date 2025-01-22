@@ -28,7 +28,7 @@ def connect_texture_buttons(self):
         )
     )
 
-    self.ui.compute_electrodes_button.clicked.connect(
+    self.ui.proceed_button_1.clicked.connect(
         lambda: detect_electrodes(
             self.headmodels["scan"],
             self.electrode_detector,

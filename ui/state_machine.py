@@ -80,32 +80,16 @@ class StateMachine(QObject):
 
 
 def initialize_states(self):
+    # initial states
+
     state_name = "initial_state"
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
         lambda: self.update_button_states(
-            display_mri_button=False,
-            align_scan_button=False,
-            project_electrodes_button=False,
-            revert_alignment_button=False,
-            display_head_button=False,
-            display_hough_button=False,
-            compute_electrodes_button=False,
-            display_dog_button=False,
-            label_display_button=False,
-            label_register_button=False,
-            label_align_button=False,
-            label_autolabel_button=False,
-            label_revert_button=False,
-            label_visualize_correspondence_button=False,
-            label_label_correspondence_button=False,
-            label_interpolate_button=False,
-            load_batchfile_button=True,
-            load_surface_button=True,
+            load_surface_button=False,
             load_texture_button=False,
-            load_mri_button=True,
+            load_mri_button=False,
             load_locations_button=True,
-            export_locations_button=False,
         )
     )
     self.state_machine[state_name].add_callback(
@@ -115,171 +99,405 @@ def initialize_states(self):
             t2=False,
             t3=False,
             t4=False,
+            t5=False,
         )
     )
 
-    state_name = "mri_loaded"
+    state_name = "locations_loaded"
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
         lambda: self.update_button_states(
-            display_mri_button=True,
-            align_scan_button=False,
-            project_electrodes_button=False,
-            revert_alignment_button=False,
-            display_head_button=False,
-            display_hough_button=False,
-            compute_electrodes_button=False,
-            display_dog_button=False,
-            label_display_button=False,
-            label_register_button=False,
-            label_align_button=False,
-            label_autolabel_button=False,
-            label_revert_button=False,
-            label_visualize_correspondence_button=False,
-            label_label_correspondence_button=False,
-            label_interpolate_button=False,
-            load_batchfile_button=True,
             load_surface_button=True,
-            load_texture_button=True,
-            load_mri_button=True,
-            load_locations_button=True,
-            export_locations_button=False,
-        )
-    )
-    self.state_machine[state_name].add_callback(
-        lambda: self.update_tab_states(
-            t3=True,
-        )
-    )
-
-    state_name = "surface_loaded"
-    self.state_machine.add_state(State(state_name))
-    self.state_machine[state_name].add_callback(
-        lambda: self.update_button_states(
-            display_mri_button=False,
-            align_scan_button=False,
-            project_electrodes_button=False,
-            revert_alignment_button=False,
-            display_head_button=True,
-            display_hough_button=False,
-            compute_electrodes_button=False,
-            display_dog_button=False,
-            label_display_button=False,
-            label_register_button=False,
-            label_align_button=False,
-            label_autolabel_button=False,
-            label_revert_button=False,
-            label_visualize_correspondence_button=False,
-            label_label_correspondence_button=False,
-            label_interpolate_button=False,
-            load_batchfile_button=True,
-            load_surface_button=True,
-            load_texture_button=True,
-            load_mri_button=True,
-            load_locations_button=True,
-            export_locations_button=False,
-        )
-    )
-    self.state_machine[state_name].add_callback(
-        lambda: self.update_tab_states(
-            t2=True,
-        )
-    )
-
-    state_name = "texture_loaded"
-    self.state_machine.add_state(State(state_name))
-    self.state_machine[state_name].add_callback(
-        lambda: self.update_button_states(
-            display_dog_button=True,
-            load_batchfile_button=True,
-            load_surface_button=True,
-            load_texture_button=True,
+            load_texture_button=False,
             load_mri_button=True,
             load_locations_button=True,
         )
     )
+
+    state_name = "surface_ready"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            load_texture_button=True,
+        )
+    )
+
+    state_name = "surface_texture_ready"
+    self.state_machine.add_state(State(state_name))
+
+    state_name = "mri_ready"
+    self.state_machine.add_state(State(state_name))
+
+    state_name = "surface_mri_ready"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            load_texture_button=True,
+        )
+    )
+
+    state_name = "surface_texture_mri_ready"
+    self.state_machine.add_state(State(state_name))
+
+    # processing mode states
+
+    state_name = "texture_processing_dog"
+    self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
         lambda: self.update_tab_states(
+            t0=True,
+            t1=True,
+            t2=False,
+            t3=False,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_texture_tab_states(
+            t0=True,
+            t1=False,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(1))
+
+    state_name = "texture_with_mri_processing_dog"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=True,
+            t2=False,
+            t3=False,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_texture_tab_states(
+            t0=True,
+            t1=False,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(1))
+
+    state_name = "texture_processing_hough"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=True,
+            t2=False,
+            t3=False,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_texture_tab_states(
+            t0=True,
             t1=True,
         )
     )
+    self.state_machine[state_name].add_callback(lambda: self.switch_texture_tab(1))
+    self.state_machine[state_name].add_callback(lambda: self.switch_texture_tab(0))
 
-    state_name = "dog_computed"
+    state_name = "texture_with_mri_processing_hough"
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
-        lambda: self.update_button_states(
-            display_hough_button=True,
-            compute_electrodes_button=False,
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=True,
+            t2=False,
+            t3=False,
+            t4=False,
+            t5=True,
         )
     )
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_texture_tab_states(
+            t0=True,
+            t1=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_texture_tab(1))
+    self.state_machine[state_name].add_callback(lambda: self.switch_texture_tab(0))
 
-    state_name = "hough_displayed"
+    state_name = "surface_processing"
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
-        lambda: self.update_button_states(
-            compute_electrodes_button=True,
-            export_locations_button=True,
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=True,
+            t3=False,
+            t4=False,
+            t5=True,
         )
     )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
 
-    state_name = "hough_computed"
+    state_name = "surface_with_mri_processing"
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
-        lambda: self.update_button_states(
-            export_locations_button=True,
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=True,
+            t3=False,
+            t4=False,
+            t5=True,
         )
     )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
 
-    # transitions
+    state_name = "mri_processing"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=False,
+            t3=True,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(3))
+
+    state_name = "labeling_surface"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=False,
+            t3=False,
+            t4=True,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(4))
+
+    state_name = "labeling_mri"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=False,
+            t3=False,
+            t4=True,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(4))
+
+    state_name = "labeling_surface_with_mri"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=False,
+            t3=False,
+            t4=True,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(4))
+
+    state_name = "mri_alignment"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=False,
+            t3=True,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(3))
+
+    state_name = "qc_surface"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=True,
+            t3=False,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+
+    state_name = "qc_mri"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=False,
+            t3=True,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(3))
+
+    # transitions from initial state
 
     self.state_machine["initial_state"].add_transition(
+        self.ui.load_locations_button.clicked,
+        self.state_machine["locations_loaded"],
+    )
+
+    # transitions to data ready states
+
+    self.state_machine["locations_loaded"].add_transition(
         self.ui.load_surface_button.clicked,
-        self.state_machine["surface_loaded"],
+        self.state_machine["surface_ready"],
     )
 
-    self.state_machine["initial_state"].add_transition(
-        self.ui.load_mri_button.clicked,
-        self.state_machine["mri_loaded"],
-    )
-
-    self.state_machine["surface_loaded"].add_transition(
+    self.state_machine["surface_ready"].add_transition(
         self.ui.load_texture_button.clicked,
-        self.state_machine["texture_loaded"],
+        self.state_machine["surface_texture_ready"],
     )
 
-    self.state_machine["surface_loaded"].add_transition(
+    self.state_machine["surface_texture_ready"].add_transition(
         self.ui.load_mri_button.clicked,
-        self.state_machine["mri_loaded"],
+        self.state_machine["surface_texture_mri_ready"],
     )
 
-    self.state_machine["texture_loaded"].add_transition(
+    self.state_machine["locations_loaded"].add_transition(
+        self.ui.load_mri_button.clicked,
+        self.state_machine["mri_ready"],
+    )
+
+    self.state_machine["mri_ready"].add_transition(
+        self.ui.load_surface_button.clicked,
+        self.state_machine["surface_mri_ready"],
+    )
+
+    self.state_machine["surface_mri_ready"].add_transition(
+        self.ui.load_texture_button.clicked,
+        self.state_machine["surface_texture_mri_ready"],
+    )
+
+    # transitions to initial state
+    for state_name in [
+        "surface_ready",
+        "surface_texture_ready",
+        "mri_ready",
+        "surface_mri_ready",
+        "surface_texture_mri_ready",
+        "locations_loaded",
+        "surface_processing",
+        "surface_with_mri_processing",
+        "texture_processing_dog",
+        "texture_with_mri_processing_dog",
+        "texture_processing_hough",
+        "texture_with_mri_processing_hough",
+        "mri_processing",
+    ]:
+        self.state_machine[state_name].add_transition(
+            self.ui.restart_button_0.clicked,
+            self.state_machine["initial_state"],
+        )
+
+    # transitions to texture processing
+    self.state_machine["surface_texture_ready"].add_transition(
+        self.ui.proceed_button_0.clicked,
+        self.state_machine["texture_processing_dog"],
+    )
+
+    self.state_machine["surface_texture_mri_ready"].add_transition(
+        self.ui.proceed_button_0.clicked,
+        self.state_machine["texture_with_mri_processing_dog"],
+    )
+
+    self.state_machine["texture_processing_dog"].add_transition(
         self.ui.display_dog_button.clicked,
-        self.state_machine["dog_computed"],
+        self.state_machine["texture_processing_hough"],
     )
 
-    self.state_machine["mri_loaded"].add_transition(
+    self.state_machine["texture_with_mri_processing_dog"].add_transition(
         self.ui.display_dog_button.clicked,
-        self.state_machine["dog_computed"],
+        self.state_machine["texture_with_mri_processing_hough"],
     )
 
-    self.state_machine["dog_computed"].add_transition(
-        self.ui.display_hough_button.clicked,
-        self.state_machine["hough_displayed"],
+    # transitions to surface processing
+    self.state_machine["surface_ready"].add_transition(
+        self.ui.proceed_button_0.clicked,
+        self.state_machine["surface_processing"],
     )
 
-    self.state_machine["dog_computed"].add_transition(
-        self.ui.load_mri_button.clicked,
-        self.state_machine["mri_loaded"],
+    self.state_machine["texture_processing_hough"].add_transition(
+        self.ui.proceed_button_1.clicked,
+        self.state_machine["surface_processing"],
     )
 
-    self.state_machine["hough_displayed"].add_transition(
-        self.ui.compute_electrodes_button.clicked,
-        self.state_machine["hough_computed"],
+    self.state_machine["texture_with_mri_processing_hough"].add_transition(
+        self.ui.proceed_button_1.clicked,
+        self.state_machine["surface_with_mri_processing"],
     )
 
-    self.state_machine["hough_displayed"].add_transition(
-        self.ui.load_mri_button.clicked,
-        self.state_machine["mri_loaded"],
+    self.state_machine["surface_mri_ready"].add_transition(
+        self.ui.proceed_button_0.clicked,
+        self.state_machine["surface_with_mri_processing"],
+    )
+
+    # transitions to mri processing
+    self.state_machine["mri_ready"].add_transition(
+        self.ui.proceed_button_0.clicked,
+        self.state_machine["mri_processing"],
+    )
+
+    self.state_machine["labeling_mri"].add_transition(
+        self.ui.proceed_button_2.clicked,
+        self.state_machine["mri_processing"],
+    )
+
+    # transitions to labeling
+    self.state_machine["mri_processing"].add_transition(
+        self.ui.proceed_button_3.clicked,
+        self.state_machine["labeling_mri"],
+    )
+
+    self.state_machine["surface_processing"].add_transition(
+        self.ui.proceed_button_2.clicked,
+        self.state_machine["labeling_surface"],
+    )
+
+    self.state_machine["surface_with_mri_processing"].add_transition(
+        self.ui.proceed_button_2.clicked,
+        self.state_machine["labeling_surface_with_mri"],
+    )
+
+    # transitions from labeling to mri
+    self.state_machine["labeling_surface_with_mri"].add_transition(
+        self.ui.proceed_button_4.clicked,
+        self.state_machine["mri_alignment"],
+    )
+
+    # transitions from labeling to qc
+    self.state_machine["labeling_surface"].add_transition(
+        self.ui.proceed_button_4.clicked,
+        self.state_machine["qc_surface"],
+    )
+
+    self.state_machine["labeling_mri"].add_transition(
+        self.ui.proceed_button_4.clicked,
+        self.state_machine["qc_mri"],
+    )
+
+    self.state_machine["mri_alignment"].add_transition(
+        self.ui.proceed_button_3.clicked,
+        self.state_machine["qc_surface"],
     )
 
     # state_name = "surface_loaded"

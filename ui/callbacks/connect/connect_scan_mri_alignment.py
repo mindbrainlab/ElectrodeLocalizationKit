@@ -21,16 +21,6 @@ def connect_scan_mri_alignment_buttons(self):
         lambda: project_electrodes_to_mri(self.headmodels, self.model)
     )
 
-    self.ui.revert_alignment_button.clicked.connect(
-        lambda: undo_scan2mri_transformation(
-            self.views,
-            self.headmodels,
-            self.model,
-            self.surface_registrator,
-            self.ui,
-        )
-    )
-
 
 def connect_display_secondary_mesh_checkbox(self):
     self.ui.display_secondary_mesh_checkbox.stateChanged.connect(

@@ -423,20 +423,6 @@ class Ui_ELK(object):
         self.gridLayout.addWidget(self.min_dist_spinbox, 3, 1, 1, 1)
         self.tabWidget_texture.addTab(self.tab_11, "")
         self.verticalLayout_7.addWidget(self.tabWidget_texture)
-        self.restart_button_1 = QtWidgets.QPushButton(parent=self.widget_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.restart_button_1.sizePolicy().hasHeightForWidth())
-        self.restart_button_1.setSizePolicy(sizePolicy)
-        self.restart_button_1.setMinimumSize(QtCore.QSize(170, 30))
-        self.restart_button_1.setMaximumSize(QtCore.QSize(170, 30))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.restart_button_1.setFont(font)
-        self.restart_button_1.setStyleSheet("")
-        self.restart_button_1.setObjectName("restart_button_1")
-        self.verticalLayout_7.addWidget(self.restart_button_1)
         self.proceed_button_1 = QtWidgets.QPushButton(parent=self.widget_3)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -822,8 +808,8 @@ class Ui_ELK(object):
         self.label_autolabel_button.setObjectName("label_autolabel_button")
         self.verticalLayout_6.addWidget(self.label_autolabel_button)
         self.groupBox_2 = QtWidgets.QGroupBox(parent=self.widget_11)
-        self.groupBox_2.setMinimumSize(QtCore.QSize(150, 300))
-        self.groupBox_2.setMaximumSize(QtCore.QSize(150, 300))
+        self.groupBox_2.setMinimumSize(QtCore.QSize(150, 280))
+        self.groupBox_2.setMaximumSize(QtCore.QSize(150, 280))
         self.groupBox_2.setStyleSheet("QGroupBox::title {\n"
 "border-top-left-radius: 9px;\n"
 "border-top-right-radius: 9px;\n"
@@ -878,8 +864,8 @@ class Ui_ELK(object):
         self.verticalLayout_10.addWidget(self.label_flagpost_height_spinbox)
         self.verticalLayout_6.addWidget(self.groupBox_2)
         self.groupBox = QtWidgets.QGroupBox(parent=self.widget_11)
-        self.groupBox.setMinimumSize(QtCore.QSize(150, 150))
-        self.groupBox.setMaximumSize(QtCore.QSize(150, 150))
+        self.groupBox.setMinimumSize(QtCore.QSize(150, 130))
+        self.groupBox.setMaximumSize(QtCore.QSize(130, 150))
         self.groupBox.setStyleSheet("QGroupBox::title {\n"
 "border-top-left-radius: 9px;\n"
 "border-top-right-radius: 9px;\n"
@@ -995,7 +981,7 @@ class Ui_ELK(object):
 
         self.retranslateUi(ELK)
         self.tabWidget.setCurrentIndex(1)
-        self.tabWidget_texture.setCurrentIndex(1)
+        self.tabWidget_texture.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(ELK)
 
     def retranslateUi(self, ELK):
@@ -1024,7 +1010,6 @@ class Ui_ELK(object):
         self.label_20.setText(_translate("ELK", "Radius Range"))
         self.display_hough_button.setText(_translate("ELK", "Display"))
         self.tabWidget_texture.setTabText(self.tabWidget_texture.indexOf(self.tab_11), _translate("ELK", "Hough"))
-        self.restart_button_1.setText(_translate("ELK", "Restart"))
         self.proceed_button_1.setText(_translate("ELK", "Proceed"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("ELK", "Texture"))
         self.display_head_button.setText(_translate("ELK", "Display / Refresh"))

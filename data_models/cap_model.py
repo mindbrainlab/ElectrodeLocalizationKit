@@ -63,16 +63,12 @@ class CapModel(QAbstractTableModel):
         return [electrode for electrode in self._data if electrode.modality in modality]
 
     def get_electrode_by_object_id(self, object_id: int) -> Electrode | None:
-        electrodes = [
-            electrode for electrode in self._data if id(electrode) == object_id
-        ]
+        electrodes = [electrode for electrode in self._data if id(electrode) == object_id]
         if len(electrodes) == 1:
             return electrodes[0]
         return None
 
-    def get_electrode_by_label_and_modality(
-        self, label: str, modality: str
-    ) -> Electrode | None:
+    def get_electrode_by_label_and_modality(self, label: str, modality: str) -> Electrode | None:
         electrodes = [
             electrode
             for electrode in self._data
@@ -88,13 +84,8 @@ class CapModel(QAbstractTableModel):
                 value = self._data[index.row()][self._display_keys[index.column()]]
                 return str(value)
 
-    def headerData(
-        self, section, orientation, role=Qt.ItemDataRole.DisplayRole
-    ) -> str | None:
-        if (
-            orientation == Qt.Orientation.Horizontal
-            and role == Qt.ItemDataRole.DisplayRole
-        ):
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole) -> str | None:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return str(self._display_keys[section])
         return super().headerData(section, orientation, role)
 
@@ -113,9 +104,7 @@ class CapModel(QAbstractTableModel):
         for electrode in measured_electrodes:
             electrode.cap_centroid = centroid
 
-        reference_electrodes = self.get_electrodes_by_modality(
-            [ModalitiesMapping.REFERENCE]
-        )
+        reference_electrodes = self.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
         coordinates = [electrode.coordinates for electrode in reference_electrodes]
         centroid = np.mean(coordinates, axis=0)  # type: ignore
 
@@ -135,9 +124,7 @@ class CapModel(QAbstractTableModel):
         if len(measured_electrodes) > 0:
             export_electrodes_to_file(measured_electrodes, filename)
 
-    def remove_electrode_by_id(
-        self, electrode_index: int, parent=QModelIndex()
-    ) -> None:
+    def remove_electrode_by_id(self, electrode_index: int, parent=QModelIndex()) -> None:
         self.beginRemoveRows(parent, self.rowCount(), self.rowCount())
         self._data.pop(electrode_index)
         self.endRemoveRows()
@@ -161,9 +148,7 @@ class CapModel(QAbstractTableModel):
             distances.append((idx, dist))
         return distances
 
-    def remove_closest_electrode(
-        self, target_coordinates: Iterable[float], modality: str
-    ) -> None:
+    def remove_closest_electrode(self, target_coordinates: Iterable[float], modality: str) -> None:
         """Removes the point in the electrode cap closest to the given point."""
         distances = self._calculate_distances(target_coordinates, modality)
 
@@ -202,6 +187,11 @@ class CapModel(QAbstractTableModel):
         for electrode in self._data:
             electrode.revert_coordinates_to_snapshot()
 
+    def clear(self) -> None:
+        self.beginResetModel()
+        self._data = []
+        self.endResetModel()
+
     def setData(self, index, value, role) -> bool:
         if role == Qt.ItemDataRole.EditRole:
             self._data[index.row()][self._display_keys[index.column()]] = value
@@ -210,8 +200,4 @@ class CapModel(QAbstractTableModel):
         return False
 
     def flags(self, index) -> Qt.ItemFlag:
-        return (
-            Qt.ItemFlag.ItemIsSelectable
-            | Qt.ItemFlag.ItemIsEnabled
-            | Qt.ItemFlag.ItemIsEditable
-        )
+        return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable

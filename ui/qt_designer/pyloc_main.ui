@@ -572,7 +572,7 @@ QCheckBox {
               </font>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_9">
               <attribute name="title">
@@ -975,39 +975,6 @@ QCheckBox {
                </item>
               </layout>
              </widget>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="restart_button_1">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>170</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>170</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Restart</string>
-             </property>
             </widget>
            </item>
            <item>
@@ -2055,13 +2022,13 @@ color: rgb(255, 255, 255);
              <property name="minimumSize">
               <size>
                <width>150</width>
-               <height>300</height>
+               <height>280</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
                <width>150</width>
-               <height>300</height>
+               <height>280</height>
               </size>
              </property>
              <property name="styleSheet">
@@ -2224,12 +2191,12 @@ color: rgb(255, 255, 255);
              <property name="minimumSize">
               <size>
                <width>150</width>
-               <height>150</height>
+               <height>130</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
+               <width>130</width>
                <height>150</height>
               </size>
              </property>

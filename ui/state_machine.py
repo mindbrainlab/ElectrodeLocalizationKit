@@ -102,6 +102,7 @@ def initialize_states(self):
             t5=False,
         )
     )
+    self.state_machine[state_name].add_callback(lambda: self.model.clear())
 
     state_name = "locations_loaded"
     self.state_machine.add_state(State(state_name))
@@ -159,6 +160,11 @@ def initialize_states(self):
             t1=False,
         )
     )
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            proceed_button_1=False,
+        )
+    )
     self.state_machine[state_name].add_callback(lambda: self.switch_tab(1))
 
     state_name = "texture_with_mri_processing_dog"
@@ -177,6 +183,11 @@ def initialize_states(self):
         lambda: self.update_texture_tab_states(
             t0=True,
             t1=False,
+        )
+    )
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            proceed_button_1=False,
         )
     )
     self.state_machine[state_name].add_callback(lambda: self.switch_tab(1))
@@ -222,6 +233,22 @@ def initialize_states(self):
     )
     self.state_machine[state_name].add_callback(lambda: self.switch_texture_tab(1))
     self.state_machine[state_name].add_callback(lambda: self.switch_texture_tab(0))
+
+    state_name = "texture_hough_computed"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            proceed_button_1=True,
+        )
+    )
+
+    state_name = "texture_with_mri_hough_computed"
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            proceed_button_1=True,
+        )
+    )
 
     state_name = "surface_processing"
     self.state_machine.add_state(State(state_name))
@@ -430,18 +457,28 @@ def initialize_states(self):
         self.state_machine["texture_with_mri_processing_hough"],
     )
 
+    self.state_machine["texture_processing_hough"].add_transition(
+        self.ui.display_hough_button.clicked,
+        self.state_machine["texture_hough_computed"],
+    )
+
+    self.state_machine["texture_with_mri_processing_hough"].add_transition(
+        self.ui.display_hough_button.clicked,
+        self.state_machine["texture_with_mri_hough_computed"],
+    )
+
     # transitions to surface processing
     self.state_machine["surface_ready"].add_transition(
         self.ui.proceed_button_0.clicked,
         self.state_machine["surface_processing"],
     )
 
-    self.state_machine["texture_processing_hough"].add_transition(
+    self.state_machine["texture_hough_computed"].add_transition(
         self.ui.proceed_button_1.clicked,
         self.state_machine["surface_processing"],
     )
 
-    self.state_machine["texture_with_mri_processing_hough"].add_transition(
+    self.state_machine["texture_with_mri_hough_computed"].add_transition(
         self.ui.proceed_button_1.clicked,
         self.state_machine["surface_with_mri_processing"],
     )

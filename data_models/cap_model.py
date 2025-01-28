@@ -1,3 +1,7 @@
+import os
+import pickle
+import tempfile
+
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractTableModel
 import numpy as np
 import vedo as vd
@@ -132,11 +136,6 @@ class CapModel(QAbstractTableModel):
     def get_electrode_id(self, electrode: Electrode) -> int:
         return self._data.index(electrode)
 
-    def remove_electrodes_by_modality(self, modality: list[str]) -> None:
-        for electrode in self._data:
-            if electrode.modality in modality:
-                self.remove_electrode_by_id(self._data.index(electrode))
-
     def _calculate_distances(
         self, target_coordinates: Iterable[float], modality
     ) -> list[tuple[int, float]]:
@@ -191,6 +190,23 @@ class CapModel(QAbstractTableModel):
         self.beginResetModel()
         self._data = []
         self.endResetModel()
+
+    def clear_electrodes_by_modality(self, modality: str) -> None:
+        self.beginResetModel()
+        self._data = [electrode for electrode in self._data if electrode.modality != modality]
+        self.endResetModel()
+
+    def make_data_snapshot(self) -> None:
+        # save pickle file with current data
+        with tempfile.NamedTemporaryFile(delete=False) as temp:
+            pickle.dump(self._data, temp)
+            self.snapshot_filename = temp.name
+
+    def restore_data_snapshot(self) -> None:
+        # load pickle file with previous data
+        with open(self.snapshot_filename, "rb") as temp:
+            self._data = pickle.load(temp)
+        os.remove(self.snapshot_filename)
 
     def setData(self, index, value, role) -> bool:
         if role == Qt.ItemDataRole.EditRole:

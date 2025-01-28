@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTabWidget
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton
 from PyQt6.QtGui import QPixmap, QResizeEvent
 from ui.pyloc_main_window import Ui_ELK
 
@@ -10,10 +10,9 @@ from processing_models.electrode_registrator import RigidElectrodeRegistrator
 from processing_models.electrode_aligner import ElasticElectrodeAligner
 from processing_models.surface_registrator import LandmarkSurfaceRegistrator
 
-from ui.state_machine import (
-    StateMachine,
-    initialize_states,
-)
+from ui.state_manager.state_machine import StateMachine
+from ui.state_manager.states import initialize_states
+from ui.state_manager.transitions import initialize_transitions
 
 from ui.callbacks.refresh import refresh_views_on_resize
 from ui.callbacks.connect.connect_fileio import connect_fileio_buttons
@@ -89,6 +88,7 @@ class StartQt6(QMainWindow):
 
         self.state_machine = StateMachine()
         initialize_states(self)
+        initialize_transitions(self)
         self.state_machine.set_initial_state("initial_state")
         self.state_machine.state_changed.connect(self.ui.statusbar.showMessage)
         self.state_machine.start()

@@ -13,5 +13,4 @@ def test_electrode():
     assert electrode.labeled == False
     assert electrode._cap_centroid == None
     assert electrode._mapped_to_unit_sphere == False
-    assert electrode._registered == False
-    assert electrode._undo_coordinates == None
+    assert electrode._aligned == False

@@ -42,8 +42,8 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
                 source_electrode = electrode
                 break
 
-        # if the source (reference) electrode has not yet been registered, register it
-        if not source_electrode.registered:
+        # if the source (reference) electrode has not yet been aligned, register it
+        if not source_electrode.aligned:
             # extract the spherical coordinates of the source and target electrodes
             source_vector = source_electrode.unit_sphere_cartesian_coordinates
             target_vector = target_electrode.unit_sphere_cartesian_coordinates
@@ -56,11 +56,11 @@ class ElasticElectrodeAligner(BaseElectrodeLabelingAligner):
 
             # register the source electrode to the target electrode (simply move it there)
             source_electrode.spherical_coordinates = target_electrode.spherical_coordinates
-            source_electrode.registered = True
+            source_electrode.aligned = True
 
             # apply the adjustment to every non-aligned electrode
             for i, electrode in enumerate(self.source_electrodes):
-                if not electrode.registered:
+                if not electrode.aligned:
                     electrode.unit_sphere_cartesian_coordinates = align_vectors(
                         electrode.unit_sphere_cartesian_coordinates,
                         rotation_axis,

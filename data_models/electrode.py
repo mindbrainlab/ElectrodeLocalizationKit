@@ -19,8 +19,7 @@ class Electrode:
     interpolated: bool = False
     _cap_centroid: np.ndarray | None = None
     _mapped_to_unit_sphere: bool = False
-    _registered: bool = False
-    _undo_coordinates: np.ndarray | None = None
+    _aligned: bool = False
 
     @property
     def keys(self):
@@ -37,20 +36,18 @@ class Electrode:
         """Returns the electrode's cartesian coordinates in the unit sphere."""
         if not self._mapped_to_unit_sphere:
             theta, phi = self._compute_unit_sphere_spherical_coordinates()
-            unit_sphere_coordinates = self._compute_unit_sphere_cartesian_coordinates(
-                theta, phi
-            )
+            unit_sphere_coordinates = self._compute_unit_sphere_cartesian_coordinates(theta, phi)
         else:
             unit_sphere_coordinates = self.coordinates
         return unit_sphere_coordinates
 
     @property
-    def registered(self) -> bool:
-        return self._registered
+    def aligned(self) -> bool:
+        return self._aligned
 
-    @registered.setter
-    def registered(self, value: bool):
-        self._registered = value
+    @aligned.setter
+    def aligned(self, value: bool):
+        self._aligned = value
 
     @property
     def cap_centroid(self):
@@ -85,24 +82,10 @@ class Electrode:
         )
         return (theta, phi)
 
-    def _compute_unit_sphere_cartesian_coordinates(
-        self, theta: float, phi: float
-    ) -> np.ndarray:
+    def _compute_unit_sphere_cartesian_coordinates(self, theta: float, phi: float) -> np.ndarray:
         """Computes the cartesian coordinates of the electrode."""
         (x, y, z) = compute_cartesian_coordinates_from_unit_spherical((theta, phi))
         return np.array([x, y, z])
-
-    @property
-    def undo_coordinates(self) -> np.ndarray | None:
-        return self._undo_coordinates
-
-    def create_coordinates_snapshot(self):
-        self._undo_coordinates = self.coordinates.copy()
-
-    def revert_coordinates_to_snapshot(self):
-        if self._undo_coordinates is not None:
-            self.coordinates = self._undo_coordinates
-            self._undo_coordinates = None
 
     def apply_transformation(self, A: np.matrix):
         x = np.array([self.coordinates[0], self.coordinates[1], self.coordinates[2], 1])

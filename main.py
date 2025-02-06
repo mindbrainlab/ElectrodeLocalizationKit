@@ -42,18 +42,7 @@ class StartQt6(QMainWindow):
         self.ui.statusbar.showMessage("Welcome!")
 
         # main data containers
-        self.files = {"scan": None, "texture": None, "mri": None, "locations": None}
-        self.views = {
-            "scan": None,
-            "mri": None,
-            "labeling_main": None,
-            "labeling_reference": None,
-        }
-        self.status = {
-            "electrodes_registered_to_reference": False,
-        }
-        self.headmodels = {"scan": None, "mri": None}
-        self.images = {"dog": None, "hough": None}
+        self.set_data_containers()
 
         # main processing models
         self.model = CapModel()
@@ -96,6 +85,26 @@ class StartQt6(QMainWindow):
         # connect window events
         self.ui.centralwidget.resizeEvent = self.on_window_resize  # type: ignore
         self.ui.centralwidget.closeEvent = self.on_close  # type: ignore
+
+    def set_data_containers(self):
+        self.files = {
+            "scan": None,
+            "texture": None,
+            "mri": None,
+            "locations": None,
+        }
+        self.views = {
+            "scan": None,
+            "mri": None,
+            "labeling_main": None,
+            "labeling_reference": None,
+        }
+        self.headmodels = {
+            "scan": None,
+            "mri": None,
+        }
+
+        self.images = {"dog": None, "hough": None}
 
     def update_button_states(self, **kwargs):
         for button_name, enabled_state in kwargs.items():

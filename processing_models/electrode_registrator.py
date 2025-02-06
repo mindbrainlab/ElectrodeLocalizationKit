@@ -10,10 +10,6 @@ class BaseElectrodeRegistrator(ABC):
     def register(self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]):
         pass
 
-    @abstractmethod
-    def undo(self):
-        pass
-
 
 class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
     """
@@ -50,8 +46,8 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
     def register(self, source_electrodes: list[Electrode], target_electrodes: list[Electrode]):
         self.source_electrodes = source_electrodes
 
-        for electrode in self.source_electrodes:
-            electrode.create_coordinates_snapshot()
+        # for electrode in self.source_electrodes:
+        #     electrode.create_coordinates_snapshot()
 
         matching_source_electrodes = []
         for target_electrode in target_electrodes:
@@ -82,8 +78,3 @@ class RigidElectrodeRegistrator(BaseElectrodeRegistrator):
             source_vector = np.append(source_vector, 1)
             transformed_vector = np.dot(T, source_vector)
             electrode.coordinates = transformed_vector[:3]
-
-    def undo(self):
-        for electrode in self.source_electrodes:
-            electrode.revert_coordinates_to_snapshot()
-            electrode.registered = False

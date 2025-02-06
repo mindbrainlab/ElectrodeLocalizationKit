@@ -21,7 +21,6 @@ from PyQt6.QtWidgets import QSlider, QLabel
 
 def register_reference_electrodes_to_measured(
     views: dict,
-    status: dict,
     model: CapModel,
     electrode_registrator: BaseElectrodeRegistrator,
 ):
@@ -32,29 +31,17 @@ def register_reference_electrodes_to_measured(
     )
     reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
-    if (status["electrodes_registered_to_reference"] is False) and len(
-        labeled_measured_electrodes
-    ) >= 3:
-        electrode_registrator.register(
-            source_electrodes=reference_electrodes,
-            target_electrodes=labeled_measured_electrodes,
-        )
-        status["electrodes_registered_to_reference"] = True
+    electrode_registrator.register(
+        source_electrodes=reference_electrodes,
+        target_electrodes=labeled_measured_electrodes,
+    )
 
-        # self.display_unit_sphere()
-        display_surface(views["labeling_reference"])
-
-
-def undo_labeling(status: dict, electrode_registrator: BaseElectrodeRegistrator):
-    if status["electrodes_registered_to_reference"]:
-        electrode_registrator.undo()
-        status["electrodes_registered_to_reference"] = False
+    display_surface(views["labeling_reference"])
 
 
 def align_reference_electrodes_to_measured(
     model: CapModel,
     views: dict,
-    status: dict,
     electrode_aligner: BaseElectrodeLabelingAligner,
 ):
     labeled_measured_electrodes = model.get_labeled_electrodes(
@@ -63,24 +50,21 @@ def align_reference_electrodes_to_measured(
     reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
     measured_electrodes_matching_reference_labels = []
-    for electrode in labeled_measured_electrodes:
+    for labeled_electrode in labeled_measured_electrodes:
         for reference_electrode in reference_electrodes:
-            if electrode.label == reference_electrode.label:
-                measured_electrodes_matching_reference_labels.append(electrode)
+            if labeled_electrode.label == reference_electrode.label:
+                # TODO: missing a check for unique labels
+                measured_electrodes_matching_reference_labels.append(labeled_electrode)
 
     # check if all labels are unique
-    assert len(set([e.label for e in measured_electrodes_matching_reference_labels])) == len(
-        [e.label for e in measured_electrodes_matching_reference_labels]
-    )
+    assert len(
+        set([electrode.label for electrode in measured_electrodes_matching_reference_labels])
+    ) == len([electrode.label for electrode in measured_electrodes_matching_reference_labels])
 
-    if (
-        status["electrodes_registered_to_reference"]
-        and len(measured_electrodes_matching_reference_labels) > 0
-    ):
-        electrode_aligner.set_source_electrodes(reference_electrodes)
-        for electrode in measured_electrodes_matching_reference_labels:
-            if electrode.label is not None:
-                electrode_aligner.align(electrode)
+    electrode_aligner.set_source_electrodes(reference_electrodes)
+    for electrode in measured_electrodes_matching_reference_labels:
+        if electrode.label is not None:
+            electrode_aligner.align(electrode)
 
     display_surface(views["labeling_reference"])
 
@@ -88,14 +72,13 @@ def align_reference_electrodes_to_measured(
 def autolabel_measured_electrodes(
     model: CapModel,
     views: dict,
-    status: dict,
     electrode_aligner: BaseElectrodeLabelingAligner,
 ):
     thresholds = np.arange(0.1, 0.5, 0.05)
 
     for threshold in thresholds:
         model.correspondence = compute_electrode_correspondence(
-            labeled_reference_electrodes=model.get_unregistered_electrodes(
+            labeled_reference_electrodes=model.get_unaligned_electrodes(
                 [ModalitiesMapping.REFERENCE]
             ),
             unlabeled_measured_electrodes=model.get_unlabeled_electrodes(
@@ -104,7 +87,7 @@ def autolabel_measured_electrodes(
             factor_threshold=threshold,
         )
 
-        label_corresponding_electrodes(model, views, status, electrode_aligner)
+        label_corresponding_electrodes(model, views, electrode_aligner)
 
 
 def visualize_labeling_correspondence(
@@ -118,9 +101,7 @@ def visualize_labeling_correspondence(
     slider_label.setText(f"Value: {correspondence_value:.2f}")
 
     model.correspondence = compute_electrode_correspondence(
-        labeled_reference_electrodes=model.get_unregistered_electrodes(
-            [ModalitiesMapping.REFERENCE]
-        ),
+        labeled_reference_electrodes=model.get_unaligned_electrodes([ModalitiesMapping.REFERENCE]),
         unlabeled_measured_electrodes=model.get_unlabeled_electrodes(
             [ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN]
         ),
@@ -143,7 +124,6 @@ def visualize_labeling_correspondence(
 def label_corresponding_electrodes(
     model: CapModel,
     views: dict,
-    status: dict,
     electrode_aligner: BaseElectrodeLabelingAligner,
 ):
     for entry in model.correspondence:
@@ -154,8 +134,9 @@ def label_corresponding_electrodes(
         )
         if unlabeled_electrode is not None and reference_electrode is not None:
             unlabeled_electrode.label = reference_electrode.label
+            unlabeled_electrode.labeled = True
 
-    align_reference_electrodes_to_measured(model, views, status, electrode_aligner)
+    align_reference_electrodes_to_measured(model, views, electrode_aligner)
 
 
 def interpolate_missing_electrodes(model: CapModel):
@@ -185,7 +166,7 @@ def interpolate_missing_electrodes(model: CapModel):
             ]
         )
         interpolated_electrode_coordinates = (
-            mean_radius * reference_electrode.unit_sphere_cartesian_coordinates
+            mean_radius * reference_electrode.unit_sphere_cartesian_coordinates  # type: ignore
         )  # type: ignore
         model.insert_electrode(
             Electrode(

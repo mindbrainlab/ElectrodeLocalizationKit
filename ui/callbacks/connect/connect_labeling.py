@@ -1,6 +1,5 @@
 from processing_handlers.labeling import (
     register_reference_electrodes_to_measured,
-    undo_labeling,
     align_reference_electrodes_to_measured,
     autolabel_measured_electrodes,
     visualize_labeling_correspondence,
@@ -13,7 +12,6 @@ def connect_labeling_buttons(self):
     self.ui.label_register_button.clicked.connect(
         lambda: register_reference_electrodes_to_measured(
             self.views,
-            self.status,
             self.model,
             self.electrode_registrator,
         )
@@ -22,22 +20,18 @@ def connect_labeling_buttons(self):
         lambda: align_reference_electrodes_to_measured(
             self.model,
             self.views,
-            self.status,
             self.electrode_aligner,
         )
     )
 
     self.ui.label_autolabel_button.clicked.connect(
-        lambda: autolabel_measured_electrodes(
-            self.model, self.views, self.status, self.electrode_aligner
-        )
+        lambda: autolabel_measured_electrodes(self.model, self.views, self.electrode_aligner)
     )
 
     self.ui.label_label_correspondence_button.clicked.connect(
         lambda: label_corresponding_electrodes(
             self.model,
             self.views,
-            self.status,
             self.electrode_aligner,
         )
     )

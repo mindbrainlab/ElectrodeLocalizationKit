@@ -1,11 +1,9 @@
-import os
-import pickle
-import tempfile
-
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractTableModel
 import numpy as np
 import vedo as vd
 from collections.abc import Iterable
+
+import copy
 
 from data.loader import load_electrodes_from_file
 from data.exporter import export_electrodes_to_file
@@ -56,11 +54,11 @@ class CapModel(QAbstractTableModel):
             if not electrode.labeled and electrode.modality in modality
         ]
 
-    def get_unregistered_electrodes(self, modality: list[str]) -> list[Electrode]:
+    def get_unaligned_electrodes(self, modality: list[str]) -> list[Electrode]:
         return [
             electrode
             for electrode in self._data
-            if not electrode.registered and electrode.modality in modality
+            if not electrode.aligned and electrode.modality in modality
         ]
 
     def get_electrodes_by_modality(self, modality: list[str]) -> list[Electrode]:
@@ -171,20 +169,15 @@ class CapModel(QAbstractTableModel):
         """Applies a transformation to all electrodes in the cap."""
         for electrode in self._data:
             if electrode.modality == modality:
-                electrode.create_coordinates_snapshot()
+                # electrode.create_coordinates_snapshot()
                 electrode.apply_transformation(A)
 
     def project_electrodes_to_mesh(self, mesh: vd.Mesh, modality: str) -> None:
         """Projects all electrodes in the cap to the given mesh."""
         for electrode in self._data:
             if electrode.modality == modality:
-                electrode.create_coordinates_snapshot()
+                # electrode.create_coordinates_snapshot()
                 electrode.project_to_mesh(mesh)
-
-    def undo_transformation(self) -> None:
-        """Undoes the last transformation step."""
-        for electrode in self._data:
-            electrode.revert_coordinates_to_snapshot()
 
     def clear(self) -> None:
         self.beginResetModel()
@@ -197,16 +190,12 @@ class CapModel(QAbstractTableModel):
         self.endResetModel()
 
     def make_data_snapshot(self) -> None:
-        # save pickle file with current data
-        with tempfile.NamedTemporaryFile(delete=False) as temp:
-            pickle.dump(self._data, temp)
-            self.snapshot_filename = temp.name
+        self._data_snapshot = copy.deepcopy(self._data)
 
     def restore_data_snapshot(self) -> None:
-        # load pickle file with previous data
-        with open(self.snapshot_filename, "rb") as temp:
-            self._data = pickle.load(temp)
-        os.remove(self.snapshot_filename)
+        self.beginResetModel()
+        self._data = copy.deepcopy(self._data_snapshot)
+        self.endResetModel()
 
     def setData(self, index, value, role) -> bool:
         if role == Qt.ItemDataRole.EditRole:

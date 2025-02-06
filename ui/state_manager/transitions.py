@@ -9,6 +9,16 @@ def initialize_transitions(self):
         self.state_machine[States.LOCATIONS_LOADED.value],
     )
 
+    self.state_machine[States.INITIAL.value].add_transition(
+        self.ui.load_surface_button.clicked,
+        self.state_machine[States.SURFACE_READY.value],
+    )
+
+    self.state_machine[States.INITIAL.value].add_transition(
+        self.ui.load_mri_button.clicked,
+        self.state_machine[States.MRI_READY.value],
+    )
+
     # transitions to data ready states
 
     self.state_machine[States.LOCATIONS_LOADED.value].add_transition(
@@ -144,7 +154,7 @@ def initialize_transitions(self):
     # transitions from labeling to mri
     self.state_machine[States.LABELING_SURFACE_WITH_MRI.value].add_transition(
         self.ui.proceed_button_4.clicked,
-        self.state_machine[States.MRI_ALIGNMENT.value],
+        self.state_machine[States.SURFACE_TO_MRI_ALIGNMENT.value],
     )
 
     # transitions from labeling to qc
@@ -158,24 +168,55 @@ def initialize_transitions(self):
         self.state_machine[States.QC_MRI.value],
     )
 
-    self.state_machine[States.MRI_ALIGNMENT.value].add_transition(
+    self.state_machine[States.SURFACE_TO_MRI_ALIGNMENT.value].add_transition(
         self.ui.proceed_button_3.clicked,
-        self.state_machine[States.QC_SURFACE.value],
+        self.state_machine[States.QC_SURFACE_WITH_MRI.value],
     )
 
     # transition from surface states back to appropriate texture state on restart_button_2
     self.state_machine[States.SURFACE_PROCESSING.value].add_transition(
         self.ui.restart_button_2.clicked,
+        self.state_machine[States.SURFACE_READY.value],
+    )
+
+    self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value].add_transition(
+        self.ui.restart_button_2.clicked,
         self.state_machine[States.TEXTURE_PROCESSING_DOG.value],
+    )
+
+    self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_DOG.value],
     )
 
     self.state_machine[States.SURFACE_WITH_MRI_PROCESSING.value].add_transition(
         self.ui.restart_button_2.clicked,
-        self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_DOG.value],
+        self.state_machine[States.SURFACE_MRI_READY.value],
     )
 
     # transition from labeling states back to appropriate surface state on restart_button_4
     self.state_machine[States.LABELING_SURFACE.value].add_transition(
         self.ui.restart_button_4.clicked,
         self.state_machine[States.SURFACE_PROCESSING.value],
+    )
+
+    self.state_machine[States.LABELING_SURFACE_WITH_MRI.value].add_transition(
+        self.ui.restart_button_4.clicked,
+        self.state_machine[States.SURFACE_WITH_MRI_PROCESSING.value],
+    )
+
+    # transition from QC states back to appropriate labeling state on restart_button_2 and restart_button_3
+    self.state_machine[States.QC_SURFACE.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.LABELING_SURFACE.value],
+    )
+
+    self.state_machine[States.QC_SURFACE_WITH_MRI.value].add_transition(
+        self.ui.restart_button_3.clicked,
+        self.state_machine[States.LABELING_SURFACE_WITH_MRI.value],
+    )
+
+    self.state_machine[States.QC_MRI.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.LABELING_MRI.value],
     )

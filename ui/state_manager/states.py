@@ -8,9 +8,9 @@ def initialize_states(self):
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
         lambda: self.update_button_states(
-            load_surface_button=False,
+            load_surface_button=True,
             load_texture_button=False,
-            load_mri_button=False,
+            load_mri_button=True,
             load_locations_button=True,
         )
     )
@@ -24,6 +24,7 @@ def initialize_states(self):
             t5=False,
         )
     )
+    self.state_machine[state_name].add_callback(lambda: self.set_data_containers())
     self.state_machine[state_name].add_callback(lambda: self.model.clear())
 
     state_name = States.LOCATIONS_LOADED.value
@@ -41,26 +42,44 @@ def initialize_states(self):
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
         lambda: self.update_button_states(
+            load_surface_button=False,
             load_texture_button=True,
         )
     )
 
     state_name = States.SURFACE_TEXTURE_READY.value
     self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            load_texture_button=False,
+        )
+    )
 
     state_name = States.MRI_READY.value
     self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            load_mri_button=False,
+        )
+    )
 
     state_name = States.SURFACE_MRI_READY.value
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
         lambda: self.update_button_states(
+            load_surface_button=False,
+            load_mri_button=False,
             load_texture_button=True,
         )
     )
 
     state_name = States.SURFACE_TEXTURE_MRI_READY.value
     self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            load_texture_button=True,
+        )
+    )
 
     # processing mode states
     for state_name in [
@@ -131,7 +150,9 @@ def initialize_states(self):
 
     for state_name in [
         States.SURFACE_PROCESSING.value,
+        States.SURFACE_TEXTURE_PROCESSING.value,
         States.SURFACE_WITH_MRI_PROCESSING.value,
+        States.SURFACE_TEXTURE_WITH_MRI_PROCESSING.value,
     ]:
         self.state_machine.add_state(State(state_name))
         self.state_machine[state_name].add_callback(
@@ -145,6 +166,11 @@ def initialize_states(self):
             )
         )
         self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+        self.state_machine[state_name].add_callback(
+            lambda: self.update_button_states(
+                restart_button_2=False,
+            )
+        )
 
     state_name = States.MRI_PROCESSING.value
     self.state_machine.add_state(State(state_name))
@@ -178,7 +204,7 @@ def initialize_states(self):
         )
         self.state_machine[state_name].add_callback(lambda: self.switch_tab(4))
 
-    state_name = States.MRI_ALIGNMENT.value
+    state_name = States.SURFACE_TO_MRI_ALIGNMENT.value
     self.state_machine.add_state(State(state_name))
     self.state_machine[state_name].add_callback(
         lambda: self.update_tab_states(
@@ -205,6 +231,11 @@ def initialize_states(self):
         )
     )
     self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            proceed_button_2=False,
+        )
+    )
 
     state_name = States.QC_MRI.value
     self.state_machine.add_state(State(state_name))
@@ -219,3 +250,27 @@ def initialize_states(self):
         )
     )
     self.state_machine[state_name].add_callback(lambda: self.switch_tab(3))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            proceed_button_3=False,
+        )
+    )
+
+    state_name = States.QC_SURFACE_WITH_MRI.value
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(
+            t0=True,
+            t1=False,
+            t2=True,
+            t3=False,
+            t4=False,
+            t5=True,
+        )
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(
+            proceed_button_2=False,
+        )
+    )

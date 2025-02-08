@@ -3,36 +3,65 @@ from enum import Enum
 
 
 class States(Enum):
-    INITIAL = "initial_state"
-    LOCATIONS_LOADED = "locations_loaded"
-    SURFACE_READY = "surface_ready"
-    SURFACE_TEXTURE_READY = "surface_texture_ready"
-    SURFACE_MRI_READY = "surface_mri_ready"
-    SURFACE_TEXTURE_MRI_READY = "surface_texture_mri_ready"
-    MRI_READY = "mri_ready"
-    TEXTURE_PROCESSING_DOG = "texture_processing_dog"
-    TEXTURE_WITH_MRI_PROCESSING_DOG = "texture_with_mri_processing_dog"
-    TEXTURE_PROCESSING_HOUGH = "texture_processing_hough"
-    TEXTURE_WITH_MRI_PROCESSING_HOUGH = "texture_with_mri_processing_hough"
-    TEXTURE_HOUGH_COMPUTED = "texture_hough_computed"
-    TEXTURE_WITH_MRI_HOUGH_COMPUTED = "texture_with_mri_hough_computed"
-    SURFACE_PROCESSING = "surface_processing"
-    SURFACE_TEXTURE_PROCESSING = "surface_texture_processing"
-    SURFACE_TEXTURE_WITH_MRI_PROCESSING = "surface_texture_with_mri_processing"
-    SURFACE_WITH_MRI_PROCESSING = "surface_with_mri_processing"
-    MRI_PROCESSING = "mri_processing"
-    LABELING_SURFACE = "labeling_surface"
-    LABELING_SURFACE_TEXTURE = "labeling_surface_texture"
-    LABELING_SURFACE_TEXTURE_WITH_MRI = "labeling_surface_texture_with_mri"
-    LABELING_SURFACE_WITH_MRI = "labeling_surface_with_mri"
-    LABELING_MRI = "labeling_mri"
-    SURFACE_TO_MRI_ALIGNMENT = "surface_to_mri_alignment"
-    SURFACE_TEXTURE_TO_MRI_ALIGNMENT = "surface_texture_to_mri_alignment"
-    QC_SURFACE = "qc_surface"
-    QC_SURFACE_TEXTURE = "qc_surface_texture"
-    QC_SURFACE_TEXTURE_WITH_MRI = "qc_surface_texture_with_mri"
-    QC_SURFACE_WITH_MRI = "qc_surface_with_mri"
-    QC_MRI = "qc_mri"
+    # File I/O states
+    INITIAL = "INITIAL"
+    LOCATIONS_LOADED = "LOCATIONS_LOADED"
+    SURFACE_LOADED = "SURFACE_LOADED"
+    SURFACE_TEXTURE_LOADED = "SURFACE_TEXTURE_LOADED"
+    MRI_LOADED = "MRI_LOADED"
+    SURFACE_WITH_MRI_LOADED = "SURFACE_WITH_MRI_LOADED"
+    SURFACE_LOADED_NO_LOCS = "SURFACE_LOADED_NO_LOCS"
+    SURFACE_TEXTURE_LOADED_NO_LOCS = "SURFACE_TEXTURE_LOADED_NO_LOCS"
+    MRI_LOADED_NO_LOCS = "MRI_LOADED_NO_LOCS"
+    SURFACE_WITH_MRI_LOADED_NO_LOCS = "SURFACE_WITH_MRI_LOADED_NO_LOCS"
+    SURFACE_TEXTURE_WITH_MRI_LOADED = "SURFACE_TEXTURE_WITH_MRI_LOADED"
+    SURFACE_TEXTURE_WITH_MRI_LOADED_NO_LOCS = "SURFACE_TEXTURE_WITH_MRI_LOADED_NO_LOCS"
+
+    # Processing states (existing)
+    TEXTURE_PROCESSING_DOG = "TEXTURE_PROCESSING_DOG"
+    TEXTURE_WITH_MRI_PROCESSING_DOG = "TEXTURE_WITH_MRI_PROCESSING_DOG"
+    TEXTURE_PROCESSING_HOUGH = "TEXTURE_PROCESSING_HOUGH"
+    TEXTURE_WITH_MRI_PROCESSING_HOUGH = "TEXTURE_WITH_MRI_PROCESSING_HOUGH"
+    TEXTURE_HOUGH_COMPUTED = "TEXTURE_HOUGH_COMPUTED"
+    TEXTURE_WITH_MRI_HOUGH_COMPUTED = "TEXTURE_WITH_MRI_HOUGH_COMPUTED"
+    SURFACE_PROCESSING = "SURFACE_PROCESSING"
+    SURFACE_PROCESSING_NO_LOCS = "SURFACE_PROCESSING_NO_LOCS"
+    MRI_PROCESSING = "MRI_PROCESSING"
+    MRI_PROCESSING_NO_LOCS = "MRI_PROCESSING_NO_LOCS"
+    SURFACE_WITH_MRI_PROCESSING = "SURFACE_WITH_MRI_PROCESSING"
+
+    # New generic texture processing states (for paths 6 & 7)
+    TEXTURE_PROCESSING = "TEXTURE_PROCESSING"
+    SURFACE_TEXTURE_PROCESSING = "SURFACE_TEXTURE_PROCESSING"
+    TEXTURE_WITH_MRI_PROCESSING = "TEXTURE_WITH_MRI_PROCESSING"
+    SURFACE_TEXTURE_WITH_MRI_PROCESSING = "SURFACE_TEXTURE_WITH_MRI_PROCESSING"
+
+    # New processing states for no locations (paths 8, 9, 10)
+    TEXTURE_PROCESSING_NO_LOCS = "TEXTURE_PROCESSING_NO_LOCS"
+    SURFACE_TEXTURE_PROCESSING_NO_LOCS = "SURFACE_TEXTURE_PROCESSING_NO_LOCS"
+    TEXTURE_WITH_MRI_PROCESSING_NO_LOCS = "TEXTURE_WITH_MRI_PROCESSING_NO_LOCS"
+    SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS = "SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS"
+    SURFACE_WITH_MRI_PROCESSING_NO_LOCS = "SURFACE_WITH_MRI_PROCESSING_NO_LOCS"
+
+    # New alignment and QC states for texture with MRI and surface with MRI (paths 7, 9, 10)
+    SURFACE_TEXTURE_TO_MRI_ALIGNMENT = "SURFACE_TEXTURE_TO_MRI_ALIGNMENT"
+    QC_SURFACE_TEXTURE_WITH_MRI = "QC_SURFACE_TEXTURE_WITH_MRI"
+    SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS = "SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS"
+    QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS = "QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS"
+    SURFACE_TO_MRI_ALIGNMENT_NO_LOCS = "SURFACE_TO_MRI_ALIGNMENT_NO_LOCS"
+    QC_SURFACE_WITH_MRI_NO_LOCS = "QC_SURFACE_WITH_MRI_NO_LOCS"
+
+    # Labeling and QC states (existing)
+    LABELING_MRI = "LABELING_MRI"
+    LABELING_SURFACE = "LABELING_SURFACE"
+    LABELING_SURFACE_TEXTURE = "LABELING_SURFACE_TEXTURE"
+    LABELING_SURFACE_WITH_MRI = "LABELING_SURFACE_WITH_MRI"
+    LABELING_SURFACE_TEXTURE_WITH_MRI = "LABELING_SURFACE_TEXTURE_WITH_MRI"
+    QC_SURFACE = "QC_SURFACE"
+    QC_MRI = "QC_MRI"
+    QC_SURFACE_WITH_MRI = "QC_SURFACE_WITH_MRI"
+    QC_SURFACE_TEXTURE = "QC_SURFACE_TEXTURE"
+    SURFACE_TO_MRI_ALIGNMENT = "SURFACE_TO_MRI_ALIGNMENT"
 
 
 class State(QObject):
@@ -57,11 +86,13 @@ class State(QObject):
 class StateMachine(QObject):
     state_changed = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, statusbar):
         super().__init__()
         self.states = {}
         self.initial_state = None
         self.current_state = None
+
+        self.statusbar = statusbar
 
     def add_state(self, state):
         self.states[state.name] = state
@@ -88,11 +119,12 @@ class StateMachine(QObject):
                 ]
                 self.current_state.apply_callbacks()
                 print(f"Transitioning to {self.current_state.name} as callback.")
+                self.statusbar.showMessage(f"State: {self.current_state.name}")
         elif state:
             self.current_state = state
             self.current_state.apply_callbacks()
             print(f"Transitioning to {self.current_state.name} from argument.")
-        # self.state_changed.emit(self.current_state.name)
+            self.statusbar.showMessage(f"State: {self.current_state.name}")
 
     def connect_signals(self):
         for state in self.states.values():

@@ -10,9 +10,22 @@ from processing_models.electrode_registrator import RigidElectrodeRegistrator
 from processing_models.electrode_aligner import ElasticElectrodeAligner
 from processing_models.surface_registrator import LandmarkSurfaceRegistrator
 
-from ui.state_manager.state_machine import StateMachine
-from ui.state_manager.states import initialize_states
-from ui.state_manager.transitions import initialize_transitions
+from ui.state_manager.state_machine import States, StateMachine
+from ui.state_manager.states import initialize_fileio_states, initialize_processing_states
+from ui.state_manager.transitions import (
+    initialize_fileio_transitions,
+    setup_master_state_reset,
+    setup_mri_processing_no_locs_transitions,
+    setup_mri_processing_transitions,
+    setup_surface_processing_no_locs_transitions,
+    setup_surface_processing_transitions,
+    setup_surface_with_mri_processing_transitions,
+    setup_surface_with_mri_processing_no_locs_transitions,
+    setup_texture_processing_no_locs_transitions,
+    setup_texture_processing_transitions,
+    setup_texture_with_mri_processing_no_locs_transitions,
+    setup_texture_with_mri_processing_transitions,
+)
 
 from ui.callbacks.refresh import refresh_views_on_resize
 from ui.callbacks.connect.connect_fileio import connect_fileio_buttons
@@ -39,7 +52,6 @@ class StartQt6(QMainWindow):
         self.ui = Ui_ELK()
         self.ui.setupUi(self)
         self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
-        self.ui.statusbar.showMessage("Welcome!")
 
         # main data containers
         self.set_data_containers()
@@ -75,10 +87,24 @@ class StartQt6(QMainWindow):
         self.ui.tabWidget.setTabEnabled(3, True)
         self.ui.tabWidget.setTabEnabled(4, True)
 
-        self.state_machine = StateMachine()
-        initialize_states(self)
-        initialize_transitions(self)
-        self.state_machine.set_initial_state("initial_state")
+        self.state_machine = StateMachine(self.ui.statusbar)
+        initialize_fileio_states(self)
+        initialize_fileio_transitions(self)
+        initialize_processing_states(self)
+
+        setup_master_state_reset(self)
+        setup_surface_processing_transitions(self)
+        setup_surface_with_mri_processing_transitions(self)
+        setup_surface_processing_no_locs_transitions(self)
+        setup_mri_processing_transitions(self)
+        setup_mri_processing_no_locs_transitions(self)
+        setup_surface_with_mri_processing_no_locs_transitions(self)
+        setup_texture_processing_transitions(self)
+        setup_texture_processing_no_locs_transitions(self)
+        setup_texture_with_mri_processing_transitions(self)
+        setup_texture_with_mri_processing_no_locs_transitions(self)
+
+        self.state_machine.set_initial_state(States.INITIAL.value)
         self.state_machine.state_changed.connect(self.ui.statusbar.showMessage)
         self.state_machine.start()
 

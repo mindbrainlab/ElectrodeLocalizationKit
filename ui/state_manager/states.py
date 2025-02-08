@@ -157,8 +157,10 @@ def initialize_processing_states(self):
     # -------------------------------
     # Texture Processing – DOG
     for state_name in [
-        States.TEXTURE_PROCESSING_DOG.value,
-        States.TEXTURE_WITH_MRI_PROCESSING_DOG.value,
+        States.TEXTURE_DOG.value,
+        States.TEXTURE_WITH_MRI_DOG.value,
+        States.TEXTURE_DOG_NO_LOCS.value,
+        States.TEXTURE_WITH_MRI_DOG_NO_LOCS.value,
     ]:
         self.state_machine.add_state(State(state_name))
         self.state_machine[state_name].add_callback(
@@ -177,10 +179,10 @@ def initialize_processing_states(self):
 
     # Texture Processing – HOUGH
     for state_name in [
-        States.TEXTURE_PROCESSING_HOUGH.value,
-        States.TEXTURE_WITH_MRI_PROCESSING_HOUGH.value,
-        States.TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value,
-        States.TEXTURE_PROCESSING_NO_LOCS.value,
+        States.TEXTURE_HOUGH.value,
+        States.TEXTURE_WITH_MRI_HOUGH.value,
+        States.TEXTURE_HOUGH_NO_LOCS.value,
+        States.TEXTURE_WITH_MRI_HOUGH_NO_LOCS.value,
     ]:
         self.state_machine.add_state(State(state_name))
         self.state_machine[state_name].add_callback(
@@ -195,6 +197,8 @@ def initialize_processing_states(self):
     for state_name in [
         States.TEXTURE_HOUGH_COMPUTED.value,
         States.TEXTURE_WITH_MRI_HOUGH_COMPUTED.value,
+        States.TEXTURE_HOUGH_COMPUTED_NO_LOCS.value,
+        States.TEXTURE_WITH_MRI_HOUGH_COMPUTED_NO_LOCS.value,
     ]:
         self.state_machine.add_state(State(state_name))
         self.state_machine[state_name].add_callback(
@@ -202,26 +206,9 @@ def initialize_processing_states(self):
         )
 
     # -------------------------------
-    # Generic Texture Processing (with locations) for paths 6 & 7
-    for state_name in [
-        States.TEXTURE_PROCESSING.value,
-        States.TEXTURE_WITH_MRI_PROCESSING.value,
-    ]:
-        self.state_machine.add_state(State(state_name))
-        self.state_machine[state_name].add_callback(
-            lambda: self.update_tab_states(t0=True, t1=True, t2=False, t3=False, t4=False, t5=True)
-        )
-        self.state_machine[state_name].add_callback(
-            lambda: self.update_texture_tab_states(t0=True, t1=False)
-        )
-        self.state_machine[state_name].add_callback(lambda: self.switch_tab(1))
-
-    # -------------------------------
     # Surface Processing (with locations)
     for state_name in [
-        States.SURFACE_PROCESSING.value,
         States.SURFACE_TEXTURE_PROCESSING.value,
-        States.SURFACE_WITH_MRI_PROCESSING.value,
         States.SURFACE_TEXTURE_WITH_MRI_PROCESSING.value,
     ]:
         self.state_machine.add_state(State(state_name))
@@ -230,7 +217,20 @@ def initialize_processing_states(self):
         )
         self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
         self.state_machine[state_name].add_callback(
-            lambda: self.update_button_states(restart_button_2=False)
+            lambda: self.update_button_states(restart_button_2=True, proceed_button_2=True)
+        )
+
+    for state_name in [
+        States.SURFACE_PROCESSING.value,
+        States.SURFACE_WITH_MRI_PROCESSING.value,
+    ]:
+        self.state_machine.add_state(State(state_name))
+        self.state_machine[state_name].add_callback(
+            lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
+        )
+        self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+        self.state_machine[state_name].add_callback(
+            lambda: self.update_button_states(restart_button_2=False, proceed_button_2=True)
         )
 
     # Surface Processing (no locations)
@@ -252,6 +252,9 @@ def initialize_processing_states(self):
         lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
     )
     self.state_machine[state_name].add_callback(lambda: self.switch_tab(3))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(restart_button_3=True, proceed_button_3=True)
+    )
 
     # MRI Processing (no locations)
     state_name = States.MRI_PROCESSING_NO_LOCS.value
@@ -261,27 +264,22 @@ def initialize_processing_states(self):
     )
     self.state_machine[state_name].add_callback(lambda: self.switch_tab(3))
     self.state_machine[state_name].add_callback(
-        lambda: self.update_button_states(restart_button_3=True, proceed_button_3=False)
+        lambda: self.update_button_states(restart_button_3=False, proceed_button_3=False)
     )
 
-    # -------------------------------
-    # Processing states (no locations) for generic texture processing
-    for state_name in [
-        States.TEXTURE_PROCESSING_NO_LOCS.value,
-        States.TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value,
-    ]:
-        self.state_machine.add_state(State(state_name))
-        self.state_machine[state_name].add_callback(
-            lambda: self.update_tab_states(t0=True, t1=True, t2=False, t3=False, t4=False, t5=True)
-        )
-        self.state_machine[state_name].add_callback(
-            lambda: self.update_texture_tab_states(t0=True, t1=False)
-        )
-        self.state_machine[state_name].add_callback(lambda: self.switch_tab(1))
+    # Processing states (no locations) for surface texture processing
+    state_name = States.SURFACE_TEXTURE_PROCESSING_NO_LOCS.value
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(proceed_button_2=False)
+    )
 
     # Processing states (no locations) for surface texture processing
     for state_name in [
-        States.SURFACE_TEXTURE_PROCESSING_NO_LOCS.value,
         States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value,
         States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS.value,
     ]:
@@ -314,6 +312,7 @@ def initialize_processing_states(self):
     for state in [
         States.QC_SURFACE.value,
         States.QC_SURFACE_TEXTURE.value,
+        States.QC_SURFACE_WITH_MRI.value,
     ]:
         self.state_machine.add_state(State(state))
         self.state_machine[state].add_callback(
@@ -321,39 +320,29 @@ def initialize_processing_states(self):
         )
         self.state_machine[state].add_callback(lambda: self.switch_tab(2))
         self.state_machine[state].add_callback(
-            lambda: self.update_button_states(proceed_button_2=False)
+            lambda: self.update_button_states(proceed_button_2=False, restart_button_2=True)
         )
 
     # QC States for MRI – update the MRI tab (tab index 3)
+    state = States.QC_MRI.value
+    self.state_machine.add_state(State(state))
+    self.state_machine[state].add_callback(
+        lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
+    )
+    self.state_machine[state].add_callback(lambda: self.switch_tab(3))
+    self.state_machine[state].add_callback(
+        lambda: self.update_button_states(proceed_button_3=False)
+    )
+
     for state in [
-        States.QC_MRI.value,
-        States.QC_SURFACE_WITH_MRI.value,
+        States.SURFACE_TO_MRI_ALIGNMENT.value,
+        States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT.value,
     ]:
         self.state_machine.add_state(State(state))
         self.state_machine[state].add_callback(
             lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
         )
         self.state_machine[state].add_callback(lambda: self.switch_tab(3))
-        self.state_machine[state].add_callback(
-            lambda: self.update_button_states(proceed_button_3=False)
-        )
-
-    # Alignment State (with locations) – update the MRI tab (tab index 3)
-    state = States.SURFACE_TO_MRI_ALIGNMENT.value
-    self.state_machine.add_state(State(state))
-    self.state_machine[state].add_callback(
-        lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
-    )
-    self.state_machine[state].add_callback(lambda: self.switch_tab(3))
-
-    # -------------------------------
-    # New Alignment & QC States for Texture with MRI (with locations)
-    state = States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT.value
-    self.state_machine.add_state(State(state))
-    self.state_machine[state].add_callback(
-        lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
-    )
-    self.state_machine[state].add_callback(lambda: self.switch_tab(3))
 
     state = States.QC_SURFACE_TEXTURE_WITH_MRI.value
     self.state_machine.add_state(State(state))

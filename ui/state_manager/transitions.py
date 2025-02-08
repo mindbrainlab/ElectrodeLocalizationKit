@@ -116,42 +116,55 @@ def initialize_fileio_transitions(self):
 def setup_master_state_reset(self):
     # Transition from all states (except INITIAL) to the initial state
     states_to_reset = [
-        # File I/O states (excluding INITIAL)
         States.LOCATIONS_LOADED,
         States.SURFACE_LOADED,
-        States.SURFACE_TEXTURE_LOADED,
-        States.SURFACE_TEXTURE_LOADED_NO_LOCS,
         States.MRI_LOADED,
-        States.MRI_LOADED_NO_LOCS,
         States.SURFACE_WITH_MRI_LOADED,
-        States.SURFACE_WITH_MRI_LOADED_NO_LOCS,
+        States.SURFACE_TEXTURE_LOADED,
         States.SURFACE_TEXTURE_WITH_MRI_LOADED,
+        States.SURFACE_LOADED_NO_LOCS,
+        States.SURFACE_TEXTURE_LOADED_NO_LOCS,
         States.SURFACE_TEXTURE_WITH_MRI_LOADED_NO_LOCS,
-        # Processing states
-        States.TEXTURE_PROCESSING_DOG,
-        States.TEXTURE_WITH_MRI_PROCESSING_DOG,
-        States.TEXTURE_PROCESSING_HOUGH,
-        States.TEXTURE_WITH_MRI_PROCESSING_HOUGH,
-        States.TEXTURE_HOUGH_COMPUTED,
-        States.TEXTURE_WITH_MRI_HOUGH_COMPUTED,
-        States.SURFACE_PROCESSING,
-        States.SURFACE_TEXTURE_PROCESSING,
-        States.SURFACE_WITH_MRI_PROCESSING,
-        States.SURFACE_TEXTURE_WITH_MRI_PROCESSING,
+        States.MRI_LOADED_NO_LOCS,
+        States.SURFACE_WITH_MRI_LOADED_NO_LOCS,
         States.SURFACE_PROCESSING_NO_LOCS,
-        States.MRI_PROCESSING,
         States.MRI_PROCESSING_NO_LOCS,
-        # Labeling and QC states
-        States.LABELING_MRI,
+        States.SURFACE_PROCESSING,
         States.LABELING_SURFACE,
-        States.LABELING_SURFACE_TEXTURE,
-        States.LABELING_SURFACE_WITH_MRI,
-        States.LABELING_SURFACE_TEXTURE_WITH_MRI,
         States.QC_SURFACE,
+        States.MRI_PROCESSING,
+        States.LABELING_MRI,
         States.QC_MRI,
-        States.QC_SURFACE_WITH_MRI,
-        States.QC_SURFACE_TEXTURE,
+        States.SURFACE_WITH_MRI_PROCESSING,
+        States.LABELING_SURFACE_WITH_MRI,
         States.SURFACE_TO_MRI_ALIGNMENT,
+        States.QC_SURFACE_WITH_MRI,
+        States.TEXTURE_DOG,
+        States.TEXTURE_HOUGH,
+        States.TEXTURE_HOUGH_COMPUTED,
+        States.SURFACE_TEXTURE_PROCESSING,
+        States.LABELING_SURFACE_TEXTURE,
+        States.QC_SURFACE_TEXTURE,
+        States.TEXTURE_WITH_MRI_DOG,
+        States.TEXTURE_WITH_MRI_HOUGH,
+        States.TEXTURE_WITH_MRI_HOUGH_COMPUTED,
+        States.SURFACE_TEXTURE_WITH_MRI_PROCESSING,
+        States.LABELING_SURFACE_TEXTURE_WITH_MRI,
+        States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT,
+        States.QC_SURFACE_TEXTURE_WITH_MRI,
+        States.TEXTURE_DOG_NO_LOCS,
+        States.TEXTURE_HOUGH_NO_LOCS,
+        States.TEXTURE_HOUGH_COMPUTED_NO_LOCS,
+        States.SURFACE_TEXTURE_PROCESSING_NO_LOCS,
+        States.TEXTURE_WITH_MRI_DOG_NO_LOCS,
+        States.TEXTURE_WITH_MRI_HOUGH_NO_LOCS,
+        States.TEXTURE_WITH_MRI_HOUGH_COMPUTED_NO_LOCS,
+        States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS,
+        States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS,
+        States.QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS,
+        States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS,
+        States.SURFACE_TO_MRI_ALIGNMENT_NO_LOCS,
+        States.QC_SURFACE_WITH_MRI_NO_LOCS,
     ]
 
     for state in states_to_reset:
@@ -246,7 +259,7 @@ def setup_mri_processing_transitions(self):
         self.state_machine[States.MRI_PROCESSING.value],
     )
     self.state_machine[States.QC_MRI.value].add_transition(
-        self.ui.restart_button_2.clicked,
+        self.ui.restart_button_3.clicked,
         self.state_machine[States.LABELING_MRI.value],
     )
 
@@ -282,30 +295,34 @@ def setup_surface_with_mri_processing_transitions(self):
         self.ui.restart_button_4.clicked,
         self.state_machine[States.SURFACE_WITH_MRI_PROCESSING.value],
     )
-    self.state_machine[States.QC_SURFACE_WITH_MRI.value].add_transition(
+    self.state_machine[States.SURFACE_TO_MRI_ALIGNMENT.value].add_transition(
         self.ui.restart_button_3.clicked,
+        self.state_machine[States.LABELING_SURFACE_WITH_MRI.value],
+    )
+    self.state_machine[States.QC_SURFACE_WITH_MRI.value].add_transition(
+        self.ui.restart_button_2.clicked,
         self.state_machine[States.SURFACE_TO_MRI_ALIGNMENT.value],
     )
 
 
 def setup_texture_processing_transitions(self):
     # Path 6:
-    # SURFACE_TEXTURE_LOADED -- proceed_button_0 --> TEXTURE_PROCESSING_DOG
-    # TEXTURE_PROCESSING_DOG -- display_dog_button --> TEXTURE_PROCESSING_HOUGH
-    # TEXTURE_PROCESSING_HOUGH -- display_hough_button --> TEXTURE_HOUGH_COMPUTED
+    # SURFACE_TEXTURE_LOADED -- proceed_button_0 --> TEXTURE_DOG
+    # TEXTURE_DOG -- display_dog_button --> TEXTURE_HOUGH
+    # TEXTURE_HOUGH -- display_hough_button --> TEXTURE_HOUGH_COMPUTED
     # TEXTURE_HOUGH_COMPUTED -- proceed_button_1 --> SURFACE_TEXTURE_PROCESSING
     # SURFACE_TEXTURE_PROCESSING -- proceed_button_2 --> LABELING_SURFACE_TEXTURE
     # LABELING_SURFACE_TEXTURE -- proceed_button_4 --> QC_SURFACE_TEXTURE
 
     # Example implementation (replace with actual transition setup code):
     self.state_machine[States.SURFACE_TEXTURE_LOADED.value].add_transition(
-        self.ui.proceed_button_0.clicked, self.state_machine[States.TEXTURE_PROCESSING_DOG.value]
+        self.ui.proceed_button_0.clicked, self.state_machine[States.TEXTURE_DOG.value]
     )
-    self.state_machine[States.TEXTURE_PROCESSING_DOG.value].add_transition(
+    self.state_machine[States.TEXTURE_DOG.value].add_transition(
         self.ui.display_dog_button.clicked,
-        self.state_machine[States.TEXTURE_PROCESSING_HOUGH.value],
+        self.state_machine[States.TEXTURE_HOUGH.value],
     )
-    self.state_machine[States.TEXTURE_PROCESSING_HOUGH.value].add_transition(
+    self.state_machine[States.TEXTURE_HOUGH.value].add_transition(
         self.ui.display_hough_button.clicked,
         self.state_machine[States.TEXTURE_HOUGH_COMPUTED.value],
     )
@@ -320,25 +337,31 @@ def setup_texture_processing_transitions(self):
         self.ui.proceed_button_4.clicked, self.state_machine[States.QC_SURFACE_TEXTURE.value]
     )
 
+    # Reverse transitions:
+    self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value].add_transition(
+        self.ui.restart_button_2.clicked, self.state_machine[States.TEXTURE_DOG.value]
+    )
+    self.state_machine[States.LABELING_SURFACE_TEXTURE.value].add_transition(
+        self.ui.restart_button_4.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+    self.state_machine[States.QC_SURFACE_TEXTURE.value].add_transition(
+        self.ui.restart_button_2.clicked, self.state_machine[States.LABELING_SURFACE_TEXTURE.value]
+    )
+
 
 def setup_texture_with_mri_processing_transitions(self):
     # Path 7:
-    # SURFACE_TEXTURE_WITH_MRI_LOADED -- proceed_button_0 --> TEXTURE_WITH_MRI_PROCESSING_DOG
-    # TEXTURE_WITH_MRI_PROCESSING_DOG -- display_dog_button --> TEXTURE_WITH_MRI_PROCESSING_HOUGH
-    # TEXTURE_WITH_MRI_PROCESSING_HOUGH -- display_hough_button --> TEXTURE_WITH_MRI_HOUGH_COMPUTED
-    # TEXTURE_WITH_MRI_HOUGH_COMPUTED -- proceed_button_1 --> SURFACE_TEXTURE_WITH_MRI_PROCESSING
-    # SURFACE_TEXTURE_WITH_MRI_PROCESSING -- proceed_button_2 --> LABELING_SURFACE_TEXTURE_WITH_MRI
-    # LABELING_SURFACE_TEXTURE_WITH_MRI -- proceed_button_4 --> QC_SURFACE_TEXTURE_WITH_MRI
 
     self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_LOADED.value].add_transition(
         self.ui.proceed_button_0.clicked,
-        self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_DOG.value],
+        self.state_machine[States.TEXTURE_WITH_MRI_DOG.value],
     )
-    self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_DOG.value].add_transition(
+    self.state_machine[States.TEXTURE_WITH_MRI_DOG.value].add_transition(
         self.ui.display_dog_button.clicked,
-        self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_HOUGH.value],
+        self.state_machine[States.TEXTURE_WITH_MRI_HOUGH.value],
     )
-    self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_HOUGH.value].add_transition(
+    self.state_machine[States.TEXTURE_WITH_MRI_HOUGH.value].add_transition(
         self.ui.display_hough_button.clicked,
         self.state_machine[States.TEXTURE_WITH_MRI_HOUGH_COMPUTED.value],
     )
@@ -352,37 +375,75 @@ def setup_texture_with_mri_processing_transitions(self):
     )
     self.state_machine[States.LABELING_SURFACE_TEXTURE_WITH_MRI.value].add_transition(
         self.ui.proceed_button_4.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT.value],
+    )
+    self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT.value].add_transition(
+        self.ui.proceed_button_3.clicked,
         self.state_machine[States.QC_SURFACE_TEXTURE_WITH_MRI.value],
+    )
+
+    # Reverse transitions:
+    self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.TEXTURE_WITH_MRI_DOG.value],
+    )
+    self.state_machine[States.LABELING_SURFACE_TEXTURE_WITH_MRI.value].add_transition(
+        self.ui.restart_button_4.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING.value],
+    )
+    self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT.value].add_transition(
+        self.ui.restart_button_3.clicked,
+        self.state_machine[States.LABELING_SURFACE_TEXTURE_WITH_MRI.value],
+    )
+    self.state_machine[States.QC_SURFACE_TEXTURE_WITH_MRI.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT.value],
     )
 
 
 def setup_texture_processing_no_locs_transitions(self):
     # Path 8:
-    # SURFACE_TEXTURE_LOADED_NO_LOCS -- proceed_button_0 --> TEXTURE_PROCESSING_NO_LOCS
-    # TEXTURE_PROCESSING_NO_LOCS -- proceed_button_1 --> SURFACE_TEXTURE_PROCESSING_NO_LOCS
 
     self.state_machine[States.SURFACE_TEXTURE_LOADED_NO_LOCS.value].add_transition(
         self.ui.proceed_button_0.clicked,
-        self.state_machine[States.TEXTURE_PROCESSING_NO_LOCS.value],
+        self.state_machine[States.TEXTURE_DOG_NO_LOCS.value],
     )
-    self.state_machine[States.TEXTURE_PROCESSING_NO_LOCS.value].add_transition(
+    self.state_machine[States.TEXTURE_DOG_NO_LOCS.value].add_transition(
+        self.ui.display_dog_button.clicked,
+        self.state_machine[States.TEXTURE_HOUGH_NO_LOCS.value],
+    )
+    self.state_machine[States.TEXTURE_HOUGH_NO_LOCS.value].add_transition(
+        self.ui.display_hough_button.clicked,
+        self.state_machine[States.TEXTURE_HOUGH_COMPUTED_NO_LOCS.value],
+    )
+    self.state_machine[States.TEXTURE_HOUGH_COMPUTED_NO_LOCS.value].add_transition(
         self.ui.proceed_button_1.clicked,
         self.state_machine[States.SURFACE_TEXTURE_PROCESSING_NO_LOCS.value],
+    )
+
+    # Reverse transitions:
+    self.state_machine[States.SURFACE_TEXTURE_PROCESSING_NO_LOCS.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.TEXTURE_DOG_NO_LOCS.value],
     )
 
 
 def setup_texture_with_mri_processing_no_locs_transitions(self):
     # Path 9:
-    # SURFACE_TEXTURE_WITH_MRI_LOADED_NO_LOCS -- proceed_button_0 --> TEXTURE_WITH_MRI_PROCESSING_NO_LOCS
-    # TEXTURE_WITH_MRI_PROCESSING_NO_LOCS -- proceed_button_1 --> SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS
-    # SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS -- proceed_button_2 --> SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS
-    # SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS -- proceed_button_3 --> QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS
 
     self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_LOADED_NO_LOCS.value].add_transition(
         self.ui.proceed_button_0.clicked,
-        self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value],
+        self.state_machine[States.TEXTURE_WITH_MRI_DOG_NO_LOCS.value],
     )
-    self.state_machine[States.TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value].add_transition(
+    self.state_machine[States.TEXTURE_WITH_MRI_DOG_NO_LOCS.value].add_transition(
+        self.ui.display_dog_button.clicked,
+        self.state_machine[States.TEXTURE_WITH_MRI_HOUGH_NO_LOCS.value],
+    )
+    self.state_machine[States.TEXTURE_WITH_MRI_HOUGH_NO_LOCS.value].add_transition(
+        self.ui.display_hough_button.clicked,
+        self.state_machine[States.TEXTURE_WITH_MRI_HOUGH_COMPUTED_NO_LOCS.value],
+    )
+    self.state_machine[States.TEXTURE_WITH_MRI_HOUGH_COMPUTED_NO_LOCS.value].add_transition(
         self.ui.proceed_button_1.clicked,
         self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value],
     )
@@ -395,12 +456,23 @@ def setup_texture_with_mri_processing_no_locs_transitions(self):
         self.state_machine[States.QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS.value],
     )
 
+    # Reverse transitions:
+    self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.TEXTURE_WITH_MRI_DOG_NO_LOCS.value],
+    )
+    self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS.value].add_transition(
+        self.ui.restart_button_3.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value],
+    )
+    self.state_machine[States.QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS.value].add_transition(
+        self.ui.restart_button_2.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS.value],
+    )
+
 
 def setup_surface_with_mri_processing_no_locs_transitions(self):
     # Path 10:
-    # SURFACE_WITH_MRI_LOADED_NO_LOCS -- proceed_button_0 --> SURFACE_WITH_MRI_PROCESSING_NO_LOCS
-    # SURFACE_WITH_MRI_PROCESSING_NO_LOCS -- proceed_button_2 --> SURFACE_TO_MRI_ALIGNMENT_NO_LOCS
-    # SURFACE_TO_MRI_ALIGNMENT_NO_LOCS -- proceed_button_3 --> QC_SURFACE_WITH_MRI_NO_LOCS
 
     self.state_machine[States.SURFACE_WITH_MRI_LOADED_NO_LOCS.value].add_transition(
         self.ui.proceed_button_0.clicked,
@@ -414,22 +486,15 @@ def setup_surface_with_mri_processing_no_locs_transitions(self):
         self.ui.proceed_button_3.clicked,
         self.state_machine[States.QC_SURFACE_WITH_MRI_NO_LOCS.value],
     )
-    self.state_machine[States.SURFACE_WITH_MRI_LOADED_NO_LOCS.value].add_transition(
-        self.ui.proceed_button_0.clicked,
-        self.state_machine[States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS.value],
-    )
-    self.state_machine[States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS.value].add_transition(
-        self.ui.proceed_button_2.clicked,
-        self.state_machine[States.SURFACE_TO_MRI_ALIGNMENT_NO_LOCS.value],
-    )
-    self.state_machine[States.SURFACE_TO_MRI_ALIGNMENT_NO_LOCS.value].add_transition(
-        self.ui.proceed_button_3.clicked,
-        self.state_machine[States.QC_SURFACE_WITH_MRI_NO_LOCS.value],
-    )
+
     # Reverse transitions:
     self.state_machine[States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS.value].add_transition(
         self.ui.restart_button_2.clicked,
         self.state_machine[States.SURFACE_WITH_MRI_LOADED_NO_LOCS.value],
+    )
+    self.state_machine[States.SURFACE_TO_MRI_ALIGNMENT_NO_LOCS.value].add_transition(
+        self.ui.restart_button_3.clicked,
+        self.state_machine[States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS.value],
     )
     self.state_machine[States.QC_SURFACE_WITH_MRI_NO_LOCS.value].add_transition(
         self.ui.restart_button_2.clicked,

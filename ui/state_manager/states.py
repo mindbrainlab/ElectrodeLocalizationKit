@@ -289,7 +289,7 @@ def initialize_processing_states(self):
         )
         self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
         self.state_machine[state_name].add_callback(
-            lambda: self.update_button_states(restart_button_2=False)
+            lambda: self.update_button_states(proceed_button_2=True, restart_button_2=False)
         )
 
     # -------------------------------
@@ -386,5 +386,5 @@ def initialize_processing_states(self):
     )
     self.state_machine[state].add_callback(lambda: self.switch_tab(2))
     self.state_machine[state].add_callback(
-        lambda: self.update_button_states(proceed_button_2=False)
+        lambda: self.update_button_states(proceed_button_2=False, restart_button_2=True)
     )

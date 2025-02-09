@@ -91,7 +91,6 @@ class StartQt6(QMainWindow):
         initialize_fileio_states(self)
         initialize_fileio_transitions(self)
         initialize_processing_states(self)
-
         setup_master_state_reset(self)
         setup_surface_processing_transitions(self)
         setup_surface_with_mri_processing_transitions(self)
@@ -103,7 +102,6 @@ class StartQt6(QMainWindow):
         setup_texture_processing_no_locs_transitions(self)
         setup_texture_with_mri_processing_transitions(self)
         setup_texture_with_mri_processing_no_locs_transitions(self)
-
         self.state_machine.set_initial_state(States.INITIAL.value)
         self.state_machine.state_changed.connect(self.ui.statusbar.showMessage)
         self.state_machine.start()

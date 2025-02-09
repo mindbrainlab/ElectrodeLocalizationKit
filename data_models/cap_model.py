@@ -44,25 +44,39 @@ class CapModel(QAbstractTableModel):
         return [
             electrode
             for electrode in self._data
-            if electrode.labeled and electrode.modality in modality
+            if electrode.labeled and electrode.modality in modality and ~electrode.fiducial
         ]
 
     def get_unlabeled_electrodes(self, modality: list[str]) -> list[Electrode]:
         return [
             electrode
             for electrode in self._data
-            if not electrode.labeled and electrode.modality in modality
+            if not electrode.labeled and electrode.modality in modality and ~electrode.fiducial
         ]
 
     def get_unaligned_electrodes(self, modality: list[str]) -> list[Electrode]:
         return [
             electrode
             for electrode in self._data
-            if not electrode.aligned and electrode.modality in modality
+            if not electrode.aligned and electrode.modality in modality and ~electrode.fiducial
         ]
 
     def get_electrodes_by_modality(self, modality: list[str]) -> list[Electrode]:
-        return [electrode for electrode in self._data if electrode.modality in modality]
+        return [
+            electrode
+            for electrode in self._data
+            if electrode.modality in modality and not electrode.fiducial
+        ]
+
+    def get_fiducials(self, modality: str) -> list[Electrode]:
+        return [
+            electrode
+            for electrode in self._data
+            if electrode.modality == modality and electrode.fiducial
+        ]
+
+    def get_interpolated_electrodes(self) -> list[Electrode]:
+        return [electrode for electrode in self._data if electrode.interpolated]
 
     def get_electrode_by_object_id(self, object_id: int) -> Electrode | None:
         electrodes = [electrode for electrode in self._data if id(electrode) == object_id]
@@ -74,7 +88,7 @@ class CapModel(QAbstractTableModel):
         electrodes = [
             electrode
             for electrode in self._data
-            if electrode.label == label and electrode.modality == modality
+            if electrode.label == label and electrode.modality == modality and ~electrode.fiducial
         ]
         if len(electrodes) == 1:
             return electrodes[0]
@@ -100,7 +114,9 @@ class CapModel(QAbstractTableModel):
         measured_electrodes = self.get_electrodes_by_modality(
             [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
         )
-        coordinates = [electrode.coordinates for electrode in measured_electrodes]
+        coordinates = [
+            electrode.coordinates for electrode in measured_electrodes if not electrode.fiducial
+        ]
         centroid = np.mean(coordinates, axis=0)  # type: ignore
 
         for electrode in measured_electrodes:

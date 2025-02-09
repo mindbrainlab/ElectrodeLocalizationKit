@@ -12,7 +12,6 @@ def load_mri(
     headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
-    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     self,
@@ -43,6 +42,3 @@ def load_mri(
                 config,
                 model,
             )
-
-        if ui:
-            ui.statusbar.showMessage("Loaded MRI file.")

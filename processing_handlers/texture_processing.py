@@ -25,4 +25,4 @@ def detect_electrodes(
     )
 
     if ui:
-        ui.measured_electrodes_label.setText(f"Measured electrodes: {len(measured_electrodes)}")
+        ui.measured_electrodes_label.setText(f"Measured: {len(measured_electrodes)}")

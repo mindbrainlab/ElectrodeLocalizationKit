@@ -1,8 +1,10 @@
 import vedo as vd
 from vedo import utils
 import numpy as np
+
 # import vtk
 import vedo.vtkclasses as vtk
+
 
 def normalize_mesh(mesh: vd.Mesh) -> float:
     """Scale Mesh average size to unit."""
@@ -26,11 +28,12 @@ def normalize_mesh(mesh: vd.Mesh) -> float:
     mesh._update(tf.GetOutput())
     return scale
 
+
 def rescale_to_original_size(mesh: vd.Mesh, scale: float) -> float:
     """Rescale Mesh to original size."""
     t = vtk.vtkTransform()
     t.PostMultiply()
-    t.Scale(1/scale, 1/scale, 1/scale)
+    t.Scale(1 / scale, 1 / scale, 1 / scale)
     tf = vtk.vtkTransformPolyDataFilter()
     tf.SetInputData(mesh.inputdata())
     tf.SetTransform(t)
@@ -40,14 +43,10 @@ def rescale_to_original_size(mesh: vd.Mesh, scale: float) -> float:
     mesh._update(tf.GetOutput())
     return 1.0
 
+
 def align_with_landmarks(
-    mesh,
-    source_landmarks,
-    target_landmarks,
-    rigid=False,
-    affine=False,
-    least_squares=False
-    ):
+    mesh, source_landmarks, target_landmarks, rigid=False, affine=False, least_squares=False
+):
     """
     Transform mesh orientation and position based on a set of landmarks points.
     The algorithm finds the best matching of source points to target points
@@ -87,9 +86,7 @@ def align_with_landmarks(
         raise RuntimeError()
 
     if int(rigid) + int(affine) + int(least_squares) > 1:
-        vd.logger.error(
-            "only one of rigid, affine, least_squares can be True at a time"
-        )
+        vd.logger.error("only one of rigid, affine, least_squares can be True at a time")
         raise RuntimeError()
 
     lmt = vtk.vtkLandmarkTransform()
@@ -131,13 +128,14 @@ def arrayFromVTKMatrix(vmatrix):
     The returned array is just a copy and so any modification in the array will not affect the input matrix.
     To set VTK matrix from a numpy array, use :py:meth:`vtkMatrixFromArray` or
     :py:meth:`updateVTKMatrixFromArray`.
-    
+
     Function retrieved from
     https://github.com/Slicer/Slicer/blob/e53e8af9c4a0b60adee28b5eca5fc1b5ff2da9ea/Base/Python/slicer/util.py#L1114-L1151
     """
     from vtk import vtkMatrix4x4
     from vtk import vtkMatrix3x3
     import numpy as np
+
     if isinstance(vmatrix, vtkMatrix4x4):
         matrixSize = 4
     elif isinstance(vmatrix, vtkMatrix3x3):
@@ -145,7 +143,7 @@ def arrayFromVTKMatrix(vmatrix):
     else:
         raise RuntimeError("Input must be vtk.vtkMatrix3x3 or vtk.vtkMatrix4x4")
     narray = np.eye(matrixSize)
-    
-    vmatrix.DeepCopy(narray.ravel(), vmatrix) # type: ignore
-    
+
+    vmatrix.DeepCopy(narray.ravel(), vmatrix)  # type: ignore
+
     return narray

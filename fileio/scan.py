@@ -15,7 +15,6 @@ def load_surface(
     headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
-    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     None,
@@ -37,9 +36,6 @@ def load_surface(
             model,
         )
 
-    if ui:
-        ui.statusbar.showMessage("Loaded surface file.")
-
 
 def load_texture(
     files: dict,
@@ -48,7 +44,6 @@ def load_texture(
     frames: list[tuple[str, QFrame]],
     model: CapModel,
     electrode_detector: BaseElectrodeDetector | None,
-    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     self,
@@ -72,9 +67,6 @@ def load_texture(
             frame,
             model,
         )
-
-    if ui:
-        ui.statusbar.showMessage("Loaded texture file.")
 
 
 def create_surface_view(

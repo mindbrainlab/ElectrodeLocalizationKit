@@ -14,7 +14,6 @@ def connect_fileio_buttons(self):
                 ("labeling_main", self.ui.labeling_main_frame),
             ],
             self.model,
-            self.ui,
         )
     )
 
@@ -29,7 +28,6 @@ def connect_fileio_buttons(self):
             ],
             self.model,
             self.electrode_detector,
-            self.ui,
         )
     )
     self.ui.load_mri_button.clicked.connect(
@@ -39,7 +37,6 @@ def connect_fileio_buttons(self):
             self.headmodels,
             [("mri", self.ui.mri_frame)],
             self.model,
-            self.ui,
         )
     )
     self.ui.load_locations_button.clicked.connect(
@@ -48,10 +45,7 @@ def connect_fileio_buttons(self):
             self.views,
             [("labeling_reference", self.ui.labeling_reference_frame)],
             self.model,
-            self.ui,
         )
     )
 
-    self.ui.export_locations_button.clicked.connect(
-        lambda: save_locations_to_file(self.model, self.ui)
-    )
+    self.ui.export_locations_button.clicked.connect(lambda: save_locations_to_file(self.model))

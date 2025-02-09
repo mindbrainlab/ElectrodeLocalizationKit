@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 import numpy as np
 import vedo as vd
 from utils.mesh import align_with_landmarks, arrayFromVTKMatrix
+from data_models.electrode import Electrode
 
 
 class BaseSurfaceRegistrator(ABC):
-
     @abstractmethod
     def register(self, source_mesh: vd.Mesh):
         pass
@@ -17,7 +17,6 @@ class BaseSurfaceRegistrator(ABC):
 
 class LandmarkSurfaceRegistrator(BaseSurfaceRegistrator):
     def __init__(self):
-
         self.source_mesh = None
         self.source_landmarks = None
         self.target_landmarks = None
@@ -28,9 +27,7 @@ class LandmarkSurfaceRegistrator(BaseSurfaceRegistrator):
     def set_mesh(self, source_mesh: vd.Mesh):
         self.source_mesh = source_mesh
 
-    def set_landmarks(
-        self, source_landmarks: list[np.ndarray], target_landmarks: list[np.ndarray]
-    ):
+    def set_landmarks(self, source_landmarks: list[Electrode], target_landmarks: list[Electrode]):
         self.source_landmarks = source_landmarks
         self.target_landmarks = target_landmarks
 

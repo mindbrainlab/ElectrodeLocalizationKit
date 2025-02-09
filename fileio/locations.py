@@ -11,7 +11,6 @@ def load_locations(
     views: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
-    ui: Ui_ELK | None,
 ):
     # file_path, _ = QFileDialog.getOpenFileName(
     #     self,
@@ -60,11 +59,8 @@ def load_locations(
             model,
         )
 
-    if ui:
-        ui.statusbar.showMessage("Loaded electrode locations.")
 
-
-def save_locations_to_file(model: CapModel, ui: Ui_ELK):
+def save_locations_to_file(model: CapModel):
     # file_path, _ = QFileDialog.getSaveFileName(
     #     self,
     #     "Save Locations File",
@@ -75,6 +71,3 @@ def save_locations_to_file(model: CapModel, ui: Ui_ELK):
     #     self.model.save_electrodes(file_path)
 
     model.save_electrodes_to_file("sample_data/measured_electrodes.ced")
-
-    if ui:
-        ui.statusbar.showMessage("Saved electrode locations.")

@@ -10,6 +10,7 @@ def connect_model(self):
             self.ui.measured_electrodes_label,
             self.ui.labeled_electrodes_label,
             self.ui.reference_electrodes_label,
+            self.ui.interpolated_electrodes_label,
         )
     )
     self.model.rowsInserted.connect(
@@ -18,6 +19,7 @@ def connect_model(self):
             self.ui.measured_electrodes_label,
             self.ui.labeled_electrodes_label,
             self.ui.reference_electrodes_label,
+            self.ui.interpolated_electrodes_label,
         )
     )
     self.model.rowsRemoved.connect(
@@ -26,5 +28,6 @@ def connect_model(self):
             self.ui.measured_electrodes_label,
             self.ui.labeled_electrodes_label,
             self.ui.reference_electrodes_label,
+            self.ui.interpolated_electrodes_label,
         )
     )

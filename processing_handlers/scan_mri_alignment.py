@@ -1,3 +1,4 @@
+from fileio import mri
 from ui.pyloc_main_window import Ui_ELK
 
 from PyQt6.QtWidgets import QCheckBox
@@ -6,6 +7,7 @@ from config.mappings import ModalitiesMapping
 from processing_models.surface_registrator import LandmarkSurfaceRegistrator
 
 from data_models.cap_model import CapModel
+from utils.warnings import throw_fiducials_warning
 
 
 def align_scan_to_mri(
@@ -15,16 +17,29 @@ def align_scan_to_mri(
     surface_registrator: LandmarkSurfaceRegistrator,
     ui: Ui_ELK | None,
 ):
-    scan_labeled_electrodes = model.get_labeled_electrodes([ModalitiesMapping.HEADSCAN])
-    mri_labeled_electrodes = model.get_labeled_electrodes([ModalitiesMapping.MRI])
+    scan_fiducials = model.get_fiducials(ModalitiesMapping.HEADSCAN)
+    mri_fiducials = model.get_fiducials(ModalitiesMapping.MRI)
+
+    scan_fiducials_labels = [fid.label for fid in scan_fiducials]
+    mri_fiducials_labels = [fid.label for fid in mri_fiducials]
+
+    fiducials_labels_intersection = set(scan_fiducials_labels).intersection(
+        set(mri_fiducials_labels)
+    )
+
+    if len(fiducials_labels_intersection) < 3:
+        throw_fiducials_warning()
+        return
 
     scan_landmarks = []
     mri_landmarks = []
-    for electrode_i in scan_labeled_electrodes:
-        for electrode_j in mri_labeled_electrodes:
-            if electrode_i.label == electrode_j.label:
-                scan_landmarks.append(electrode_i.coordinates)
-                mri_landmarks.append(electrode_j.coordinates)
+    for scan_fiducial_label in scan_fiducials_labels:
+        scan_landmarks.append(
+            [fid.coordinates for fid in scan_fiducials if fid.label == scan_fiducial_label][0]
+        )
+        mri_landmarks.append(
+            [fid.coordinates for fid in mri_fiducials if fid.label == scan_fiducial_label][0]
+        )
 
     surface_registrator.set_mesh(headmodels["scan"].mesh)
     surface_registrator.set_landmarks(scan_landmarks, mri_landmarks)

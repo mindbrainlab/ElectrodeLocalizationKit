@@ -48,20 +48,26 @@ class InteractiveSurfaceView(SurfaceView):
         points_unlabeled = []
         points_labeled = []
         for i in range(self.model.rowCount()):
-            electrode_modality = self.model.get_electrode(i).modality
+            electrode = self.model.get_electrode(i)
 
-            if electrode_modality not in self.modality:
+            if electrode.modality not in self.modality:
                 continue
 
             point = self.model.get_electrode(i).coordinates
             label = self.model.get_electrode(i).label
 
-            if electrode_modality == ModalitiesMapping.MRI:
+            if electrode.modality == ModalitiesMapping.MRI:
                 unlabeled_color = ElectrodeColors.MRI_UNLABELED_ELECTRODES_COLOR
                 labeled_color = ElectrodeColors.MRI_LABELED_ELECTRODES_COLOR
+                if electrode.fiducial:
+                    unlabeled_color = ElectrodeColors.MRI_FIDUCIALS_COLOR
+                    labeled_color = ElectrodeColors.MRI_FIDUCIALS_COLOR
             else:
                 unlabeled_color = ElectrodeColors.HEADSCAN_UNLABELED_ELECTRODES_COLOR
                 labeled_color = ElectrodeColors.HEADSCAN_LABELED_ELECTRODES_COLOR
+                if electrode.fiducial:
+                    unlabeled_color = ElectrodeColors.HEADSCAN_FIDUCIALS_COLOR
+                    labeled_color = ElectrodeColors.HEADSCAN_FIDUCIALS_COLOR
 
             if label is None or label == "" or label == "None":
                 self.model.set_electrode_labeled_flag(i, False)
@@ -151,9 +157,14 @@ class InteractiveSurfaceView(SurfaceView):
                 dialog = LabelingDialog(unlabeled)
                 dialog.exec()
                 label = dialog.get_electrode_label()
-                electrode = Electrode(point, modality=self.modality[0], label="None")
+                electrode = Electrode(point, modality=self.modality[0], label=label)
                 self.model.insert_electrode(electrode)
-                self.model.label_closest_electrode(point, label, self.modality[0])
+            elif self._interaction_state == "E":
+                dialog = LabelingDialog()
+                dialog.exec()
+                label = dialog.get_electrode_label()
+                electrode = Electrode(point, modality=self.modality[0], label=label, fiducial=True)
+                self.model.insert_electrode(electrode)
             elif self._interaction_state == "x":
                 evt.keyPressed = None
                 evt.keypress = None
@@ -164,7 +175,7 @@ class InteractiveSurfaceView(SurfaceView):
 
     def _on_keypress(self, evt):
         if evt.keyPressed is not None:
-            if evt.keyPressed.lower() == "x":
+            if evt.keyPressed == "x":
                 self._interaction_state = "x"
                 self._plotter.background(c1="white", c2="white")
                 evt.keyPressed = None
@@ -177,7 +188,7 @@ class InteractiveSurfaceView(SurfaceView):
                     pos="top-left",
                 )
                 self._plotter.add(self.text_state)
-            elif evt.keyPressed.lower() == "s":
+            elif evt.keyPressed == "s":
                 self._interaction_state = "s"
                 self._plotter.background(c1="#b1fcb3", c2="white")
                 evt.keyPressed = None
@@ -190,7 +201,7 @@ class InteractiveSurfaceView(SurfaceView):
                     pos="top-left",
                 )
                 self._plotter.add(self.text_state)
-            elif evt.keyPressed.lower() == "d":
+            elif evt.keyPressed == "d":
                 self._interaction_state = "d"
                 self._plotter.background(c1="#fcb1b1", c2="white")
                 evt.keyPressed = None
@@ -203,7 +214,7 @@ class InteractiveSurfaceView(SurfaceView):
                     pos="top-left",
                 )
                 self._plotter.add(self.text_state)
-            elif evt.keyPressed.lower() == "a":
+            elif evt.keyPressed == "a":
                 self._interaction_state = "a"
                 self._plotter.background(c1="#b1e1fc", c2="white")
                 evt.keyPressed = None
@@ -216,7 +227,7 @@ class InteractiveSurfaceView(SurfaceView):
                     pos="top-left",
                 )
                 self._plotter.add(self.text_state)
-            elif evt.keyPressed.lower() == "e":
+            elif evt.keyPressed == "e":
                 self._interaction_state = "e"
                 self._plotter.background(c1="#ffc069", c2="white")
                 evt.keyPressed = None
@@ -225,6 +236,19 @@ class InteractiveSurfaceView(SurfaceView):
                 self.text_state = vd.Text2D(
                     "Select+Label Mode",
                     c="orange",
+                    s=0.8,
+                    pos="top-left",
+                )
+                self._plotter.add(self.text_state)
+            elif evt.keyPressed == "E":
+                self._interaction_state = "E"
+                self._plotter.background(c1="#9ab8a0", c2="white")
+                evt.keyPressed = None
+                evt.keypress = None
+                self._plotter.remove(self.text_state)
+                self.text_state = vd.Text2D(
+                    "Fiducials Mode",
+                    c="#006e16",
                     s=0.8,
                     pos="top-left",
                 )

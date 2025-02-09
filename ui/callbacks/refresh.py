@@ -24,22 +24,26 @@ def refresh_count_indicators(
     measured_electrodes_label: QLabel,
     labeled_electrodes_label: QLabel,
     reference_electrodes_label: QLabel,
+    interpolated_electrodes_label: QLabel,
 ):
     measured_electrodes = model.get_electrodes_by_modality(
         [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
     )
 
-    measured_electrodes_label.setText(f"Measured electrodes: {len(measured_electrodes)}")
+    measured_electrodes_label.setText(f"Measured: {len(measured_electrodes)}")
 
     labeled_electrodes = []
     for electrode in measured_electrodes:
         if not (electrode.label is None or electrode.label == "" or electrode.label == "None"):
             labeled_electrodes.append(electrode)
 
-    labeled_electrodes_label.setText(f"Labeled electrodes: {len(labeled_electrodes)}")
+    labeled_electrodes_label.setText(f"Labeled: {len(labeled_electrodes)}")
 
-    reference_electrode = model.get_electrodes_by_modality(["reference"])
-    reference_electrodes_label.setText(f"Reference electrodes: {len(reference_electrode)}")
+    reference_electrodes = model.get_electrodes_by_modality(["reference"])
+    reference_electrodes_label.setText(f"Reference: {len(reference_electrodes)}")
+
+    interpolated_electrodes = model.get_interpolated_electrodes()
+    interpolated_electrodes_label.setText(f"Interpolated: {len(interpolated_electrodes)}")
 
 
 # def refresh_views_on_resize(self, event: QResizeEvent | None):

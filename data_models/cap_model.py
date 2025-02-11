@@ -185,14 +185,12 @@ class CapModel(QAbstractTableModel):
         """Applies a transformation to all electrodes in the cap."""
         for electrode in self._data:
             if electrode.modality == modality:
-                # electrode.create_coordinates_snapshot()
                 electrode.apply_transformation(A)
 
     def project_electrodes_to_mesh(self, mesh: vd.Mesh, modality: str) -> None:
         """Projects all electrodes in the cap to the given mesh."""
         for electrode in self._data:
             if electrode.modality == modality:
-                # electrode.create_coordinates_snapshot()
                 electrode.project_to_mesh(mesh)
 
     def clear(self) -> None:

@@ -139,7 +139,7 @@ def label_corresponding_electrodes(
     align_reference_electrodes_to_measured(model, views, electrode_aligner)
 
 
-def interpolate_missing_electrodes(model: CapModel):
+def interpolate_missing_electrodes(model: CapModel, views: dict):
     measured_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.HEADSCAN])
     reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
@@ -168,13 +168,16 @@ def interpolate_missing_electrodes(model: CapModel):
         interpolated_electrode_coordinates = (
             mean_radius * reference_electrode.unit_sphere_cartesian_coordinates  # type: ignore
         )  # type: ignore
-        model.insert_electrode(
-            Electrode(
-                coordinates=interpolated_electrode_coordinates
-                + closest_measured_electrodes[0].cap_centroid,  # type: ignore
-                modality=ModalitiesMapping.HEADSCAN,
-                label=label,
-                labeled=True,
-                interpolated=True,
-            )
+        electrode = Electrode(
+            coordinates=interpolated_electrode_coordinates
+            + closest_measured_electrodes[0].cap_centroid,  # type: ignore
+            modality=ModalitiesMapping.HEADSCAN,
+            label=label,
+            labeled=True,
+            interpolated=True,
         )
+        electrode.interpolated_unit_sphere_coordinates = (
+            reference_electrode.unit_sphere_cartesian_coordinates  # type: ignore
+        )
+        model.insert_electrode(electrode)
+    display_surface(views["labeling_reference"])

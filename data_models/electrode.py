@@ -21,6 +21,7 @@ class Electrode:
     _cap_centroid: np.ndarray | None = None
     _mapped_to_unit_sphere: bool = False
     _aligned: bool = False
+    _interpolated_unit_sphere_coordinates: np.ndarray | None = None
 
     @property
     def keys(self):
@@ -35,6 +36,10 @@ class Electrode:
     @property
     def unit_sphere_cartesian_coordinates(self) -> np.ndarray:
         """Returns the electrode's cartesian coordinates in the unit sphere."""
+
+        if self._interpolated_unit_sphere_coordinates is not None:
+            return self._interpolated_unit_sphere_coordinates
+
         if not self._mapped_to_unit_sphere:
             theta, phi = self._compute_unit_sphere_spherical_coordinates()
             unit_sphere_coordinates = self._compute_unit_sphere_cartesian_coordinates(theta, phi)
@@ -119,6 +124,14 @@ class Electrode:
             index=[0],
         )
         return df
+
+    @property
+    def interpolated_unit_sphere_coordinates(self):
+        return self._interpolated_unit_sphere_coordinates
+
+    @interpolated_unit_sphere_coordinates.setter
+    def interpolated_unit_sphere_coordinates(self, value):
+        self._interpolated_unit_sphere_coordinates = value
 
     def __getitem__(self, item):
         return getattr(self, item)

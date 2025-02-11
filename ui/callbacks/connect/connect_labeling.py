@@ -46,7 +46,5 @@ def connect_labeling_buttons(self):
     )
 
     self.ui.label_interpolate_button.clicked.connect(
-        lambda: interpolate_missing_electrodes(self.model)
+        lambda: interpolate_missing_electrodes(self.model, self.views)
     )
-
-    self.ui.restart_button_4.clicked.connect(lambda: self.model.restore_data_snapshot())

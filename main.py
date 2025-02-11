@@ -35,6 +35,10 @@ from ui.callbacks.connect.connect_configuration_boxes import connect_configurati
 from ui.callbacks.connect.connect_sliders import connect_alpha_sliders
 from ui.callbacks.connect.connect_model import connect_model
 from ui.callbacks.connect.connect_labeling import connect_labeling_buttons
+from ui.callbacks.connect.connect_state_transition_buttons import (
+    connect_proceed_buttons,
+    connect_back_buttons,
+)
 from ui.callbacks.connect.connect_resize import (
     connect_splitter_moved,
     connect_tab_changed,
@@ -80,6 +84,8 @@ class StartQt6(QMainWindow):
         connect_tab_changed(self)
         connect_splitter_moved(self)
         connect_labeling_buttons(self)
+        connect_proceed_buttons(self)
+        connect_back_buttons(self)
 
         self.ui.tabWidget.setTabEnabled(0, True)
         self.ui.tabWidget.setTabEnabled(1, True)

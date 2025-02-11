@@ -18,7 +18,7 @@ def connect_scan_mri_alignment_buttons(self):
     )
 
     self.ui.project_electrodes_button.clicked.connect(
-        lambda: project_electrodes_to_mri(self.headmodels, self.model)
+        lambda: project_electrodes_to_mri(self.headmodels, self.model, self.views)
     )
 
 

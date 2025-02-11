@@ -8,6 +8,7 @@ from processing_models.surface_registrator import LandmarkSurfaceRegistrator
 
 from data_models.cap_model import CapModel
 from utils.warnings import throw_fiducials_warning
+from ui.callbacks.display import display_surface
 
 
 def align_scan_to_mri(
@@ -68,14 +69,15 @@ def undo_scan2mri_transformation(
         ui.display_secondary_mesh_checkbox.setChecked(False)
 
 
-def project_electrodes_to_mri(headmodels: dict, model: CapModel):
+def project_electrodes_to_mri(headmodels: dict, model: CapModel, views: dict):
     model.project_electrodes_to_mesh(headmodels["mri"].mesh, ModalitiesMapping.HEADSCAN)
-    # headmodels["mri"].show()
+    display_surface(views["mri"])
 
 
 def display_secondary_mesh(views: dict, headmodels: dict, checkbox: QCheckBox):
     if checkbox.isChecked():
         views["mri"].add_secondary_mesh(headmodels["scan"].mesh)  # type: ignore
+        views["mri"].show()  # type: ignore
     else:
         views["mri"].reset_secondary_mesh()  # type: ignore
         views["mri"].show()  # type: ignore

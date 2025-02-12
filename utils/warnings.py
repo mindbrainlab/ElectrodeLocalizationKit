@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMessageBox
 
 def throw_fiducials_warning():
     msg = QMessageBox()
-    msg.setIcon(QMessageBox.Icon.Warning)
+    msg.setIcon(QMessageBox.Icon.Critical)
     msg.setText("The fiducials in the scan and MRI do not match.")
     msg.setInformativeText(
         "Please ensure that the same set of fiducials are present in both modalities."

@@ -44,6 +44,8 @@ class HeadScan(BaseHeadModel):
 
         self.normalization_scale = 1
 
+        self._registered = False
+
         self.normalize()
 
         self.apply_texture()
@@ -61,9 +63,12 @@ class HeadScan(BaseHeadModel):
     def register_mesh(self, surface_registrator: BaseSurfaceRegistrator) -> np.ndarray:
         transform_matrix = surface_registrator.register()  # type: ignore
         self.apply_texture()
+        self._registered = True
         return transform_matrix
 
     def undo_registration(self, surface_registrator: BaseSurfaceRegistrator) -> np.ndarray | None:
+        if not self._registered:
+            return
         transform_matrix = surface_registrator.undo()
         return transform_matrix
 

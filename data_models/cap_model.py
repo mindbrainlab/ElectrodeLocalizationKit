@@ -2,6 +2,7 @@ from PyQt6.QtCore import QModelIndex, Qt, QAbstractTableModel
 import numpy as np
 import vedo as vd
 from collections.abc import Iterable
+from queue import LifoQueue
 
 import copy
 
@@ -24,6 +25,7 @@ class CapModel(QAbstractTableModel):
 
         # define Electrode class attributes to display in the table
         self._display_keys = ("label", "modality")
+        self._data_snapshots = LifoQueue()
 
     def set_labels(self, labels: list) -> None:
         self._labels = labels
@@ -204,11 +206,11 @@ class CapModel(QAbstractTableModel):
         self.endResetModel()
 
     def make_data_snapshot(self) -> None:
-        self._data_snapshot = copy.deepcopy(self._data)
+        self._data_snapshots.put(copy.deepcopy(self._data))
 
     def restore_data_snapshot(self) -> None:
         self.beginResetModel()
-        self._data = copy.deepcopy(self._data_snapshot)
+        self._data = copy.deepcopy(self._data_snapshots.get())
         self.endResetModel()
 
     def setData(self, index, value, role) -> bool:

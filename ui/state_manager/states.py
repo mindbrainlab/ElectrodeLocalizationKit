@@ -343,6 +343,9 @@ def initialize_processing_states(self):
             lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
         )
         self.state_machine[state].add_callback(lambda: self.switch_tab(3))
+        self.state_machine[state].add_callback(
+            lambda: self.ui.display_secondary_mesh_checkbox.setChecked(False)
+        )
 
     state = States.QC_SURFACE_TEXTURE_WITH_MRI.value
     self.state_machine.add_state(State(state))
@@ -361,6 +364,9 @@ def initialize_processing_states(self):
         lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
     )
     self.state_machine[state].add_callback(lambda: self.switch_tab(3))
+    self.state_machine[state].add_callback(
+        lambda: self.ui.display_secondary_mesh_checkbox.setChecked(False)
+    )
 
     state = States.QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS.value
     self.state_machine.add_state(State(state))
@@ -378,6 +384,9 @@ def initialize_processing_states(self):
         lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=True, t4=False, t5=True)
     )
     self.state_machine[state].add_callback(lambda: self.switch_tab(3))
+    self.state_machine[state].add_callback(
+        lambda: self.ui.display_secondary_mesh_checkbox.setChecked(False)
+    )
 
     state = States.QC_SURFACE_WITH_MRI_NO_LOCS.value
     self.state_machine.add_state(State(state))

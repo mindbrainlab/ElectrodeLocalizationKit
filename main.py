@@ -30,7 +30,6 @@ from ui.state_manager.transitions import (
 from ui.callbacks.refresh import refresh_views_on_resize
 from ui.callbacks.connect.connect_fileio import connect_fileio_buttons
 from ui.callbacks.connect.connect_texture import connect_texture_buttons
-from ui.callbacks.connect.connect_display import connect_display_surface_buttons
 from ui.callbacks.connect.connect_configuration_boxes import connect_configuration_boxes
 from ui.callbacks.connect.connect_sliders import connect_alpha_sliders
 from ui.callbacks.connect.connect_model import connect_model
@@ -75,7 +74,6 @@ class StartQt6(QMainWindow):
         connect_model(self)
         connect_fileio_buttons(self)
         connect_texture_buttons(self)
-        connect_display_surface_buttons(self)
         connect_scan_mri_alignment_buttons(self)
         connect_display_secondary_mesh_checkbox(self)
         connect_configuration_boxes(self)
@@ -162,14 +160,12 @@ class StartQt6(QMainWindow):
     def on_window_resize(self, event: QResizeEvent):
         refresh_views_on_resize(
             self.views,
-            self.images,
             [
                 ("scan", self.ui.headmodel_frame),
                 ("mri", self.ui.mri_frame),
                 ("labeling_main", self.ui.labeling_main_frame),
                 ("labeling_reference", self.ui.labeling_reference_frame),
             ],
-            self.ui.texture_frame,
         )
 
     def on_close(self):

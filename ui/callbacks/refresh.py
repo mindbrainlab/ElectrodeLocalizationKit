@@ -1,3 +1,4 @@
+from email.mime import image
 from PyQt6.QtWidgets import QTabWidget, QLabel, QFrame
 from PyQt6.QtCore import Qt
 from ui.callbacks.display import display_surface
@@ -9,14 +10,16 @@ from view.surface_view import SurfaceView
 
 def refresh_views_on_tab_change(tab_widget: QTabWidget, views: dict):
     t = tab_widget.currentIndex()
-
-    if t == 2:
-        display_surface(views["scan"])
-    elif t == 3:
-        display_surface(views["mri"])
-    elif t == 4:
-        display_surface(views["labeling_main"])
-        display_surface(views["labeling_reference"])
+    match t:
+        case 2:
+            display_surface(views["scan"])
+        case 3:
+            display_surface(views["mri"])
+        case 4:
+            display_surface(views["labeling_main"])
+            display_surface(views["labeling_reference"])
+        case _:
+            pass
 
 
 def refresh_count_indicators(
@@ -49,31 +52,36 @@ def refresh_count_indicators(
 # def refresh_views_on_resize(self, event: QResizeEvent | None):
 def refresh_views_on_resize(
     views: dict,
-    images: dict,
     surface_frames: list[tuple[str, QFrame]],
-    texture_frame: QFrame,
 ):
     for label, frame in surface_frames:
         if views[label] is not None:
             views[label].resize_view(frame.size().width(), frame.size().height())
 
-    if images["dog"] is not None:
-        label_size = texture_frame.size()
-        images["dog"] = images["dog"].scaled(
-            label_size.width(),
-            label_size.height(),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.FastTransformation,
-        )
+    # very slow -> commented
+    # if images["dog"] is not None:
+    #     display_dog(
+    #         self.images,
+    #         self.ui.texture_frame,
+    #         self.ui.photo_label,
+    #         self.electrode_detector,
+    #         self.ui.kernel_size_spinbox.value(),
+    #         self.ui.sigma_spinbox.value(),
+    #         self.ui.diff_factor_spinbox.value(),
+    #     )
 
-    if images["hough"] is not None:
-        label_size = texture_frame.size()
-        images["hough"] = images["hough"].scaled(
-            label_size.width(),
-            label_size.height(),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.FastTransformation,
-        )
+    # if images["hough"] is not None:
+    #     display_hough(
+    #         self.images,
+    #         self.ui.texture_frame,
+    #         self.ui.photo_label,
+    #         self.electrode_detector,
+    #         self.ui.param1_spinbox.value(),
+    #         self.ui.param2_spinbox.value(),
+    #         self.ui.min_dist_spinbox.value(),
+    #         self.ui.min_radius_spinbox.value(),
+    #         self.ui.max_radius_spinbox.value(),
+    #     )
 
 
 def update_view_config(

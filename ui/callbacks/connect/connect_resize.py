@@ -14,13 +14,11 @@ def connect_splitter_moved(self):
     self.ui.splitter.splitterMoved.connect(
         lambda: refresh_views_on_resize(
             self.views,
-            self.images,
             [
                 ("scan", self.ui.headmodel_frame),
                 ("mri", self.ui.mri_frame),
                 ("labeling_main", self.ui.labeling_main_frame),
                 ("labeling_reference", self.ui.labeling_reference_frame),
             ],
-            self.ui.texture_frame,
-        )
+        ),
     )

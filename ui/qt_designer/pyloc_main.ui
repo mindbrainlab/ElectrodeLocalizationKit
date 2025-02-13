@@ -480,7 +480,7 @@ QCheckBox {
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab_7">
        <attribute name="title">
@@ -1255,33 +1255,6 @@ QCheckBox {
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QPushButton" name="display_head_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Display / Refresh</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QLabel" name="label_11">
              <property name="minimumSize">
               <size>
@@ -1610,33 +1583,6 @@ color: rgb(255, 255, 255);
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
-           <item>
-            <widget class="QPushButton" name="display_mri_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Display / Refresh</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QPushButton" name="align_scan_button">
              <property name="minimumSize">
@@ -2096,33 +2042,6 @@ color: rgb(255, 255, 255);
            </font>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
-            <widget class="QPushButton" name="label_display_button">
-             <property name="minimumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Display / Refresh</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QPushButton" name="label_register_button">
              <property name="minimumSize">

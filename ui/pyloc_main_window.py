@@ -14,114 +14,116 @@ class Ui_ELK(object):
         ELK.setObjectName("ELK")
         ELK.resize(1200, 880)
         ELK.setMinimumSize(QtCore.QSize(1200, 880))
-        ELK.setStyleSheet("QMainWindow {\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QGroupBox {\n"
-"    border: 1px solid gray;\n"
-"    border-color: #11356B;\n"
-"    margin-top: 0px;\n"
-"    border-radius: 15px;\n"
-"}\n"
-"\n"
-"QGroupBox::title {\n"
-"    border-top-left-radius: 9px;\n"
-"    border-top-right-radius: 9px;\n"
-"    background-color: #11356B;\n"
-"    color: rgb(255, 255, 255);\n"
-"}\n"
-"\n"
-"QPushButton {\n"
-"    color: #11356B;\n"
-"    border: 1px solid #11356B;\n"
-"    border-radius: 5px;\n"
-"    border-style: outset;\n"
-"    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,\n"
-"            radius: 1.35, stop: 0 #ffffff, stop: 1 #afc1db);\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,\n"
-"            radius: 1.35, stop: 0 #fff, stop: 1 #edf4ff);\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    border-style: inset;\n"
-"    background: qradialgradient(cx: 0.4, cy: -0.1, fx: 0.4, fy: -0.1,\n"
-"            radius: 1.35, stop: 0 #fff, stop: 1 #ddd);\n"
-"}\n"
-"\n"
-"QPushButton:disabled {\n"
-"    border-style: inset;\n"
-"    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,\n"
-"            radius: 1.35, stop: 0 #fff, stop: 1 #a5aab2);\n"
-"}\n"
-"\n"
-"QTabWidget::pane {\n"
-"    border: 1px solid #11356B;\n"
-"    ;\n"
-"    top: -1px;\n"
-"    background: rgb(245, 250, 255);\n"
-"    color: #11356B;\n"
-"}\n"
-"\n"
-"QTabBar::tab {\n"
-"    background: rgb(210, 230, 255);\n"
-"    border: 1px solid #11356B;\n"
-"    ;\n"
-"    padding: 5px;\n"
-"    color: #11356B;\n"
-"}\n"
-"\n"
-"QTabBar::tab:selected {\n"
-"    background: rgb(245, 250, 255);\n"
-"    margin-bottom: -1px;\n"
-"    color: #11356B;\n"
-"}\n"
-"\n"
-"QTabBar::tab:disabled {\n"
-"    background: rgb(245, 250, 255);\n"
-"    margin-bottom: -1px;\n"
-"    color: #B2C3E7;\n"
-"}\n"
-"\n"
-"QTableView {\n"
-"    color: #11356B;\n"
-"    border: 1px solid #11356B;\n"
-"    border-radius: 0px;\n"
-"    border-style: outset;\n"
-"    background-color: white;\n"
-"    margin: 0 0 0 0;\n"
-"    padding: 0 0 0 0;\n"
-"}\n"
-"\n"
-"QHeaderView:section {\n"
-"    color: white;\n"
-"    background-color: #11356B;\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"    color: #11356B;\n"
-"}\n"
-"\n"
-"QFrame {\n"
-"    color: #11356B;\n"
-"}\n"
-"\n"
-"QSpinBox {\n"
-"    background-color: white;\n"
-"    color: #11356B;\n"
-"}\n"
-"\n"
-"QDoubleSpinBox {\n"
-"    background-color: white;\n"
-"    color: #11356B;\n"
-"}\n"
-"\n"
-"QCheckBox {\n"
-"    color: #11356B;\n"
-"}")
+        ELK.setStyleSheet(
+            "QMainWindow {\n"
+            "    background-color: white;\n"
+            "}\n"
+            "\n"
+            "QGroupBox {\n"
+            "    border: 1px solid gray;\n"
+            "    border-color: #11356B;\n"
+            "    margin-top: 0px;\n"
+            "    border-radius: 15px;\n"
+            "}\n"
+            "\n"
+            "QGroupBox::title {\n"
+            "    border-top-left-radius: 9px;\n"
+            "    border-top-right-radius: 9px;\n"
+            "    background-color: #11356B;\n"
+            "    color: rgb(255, 255, 255);\n"
+            "}\n"
+            "\n"
+            "QPushButton {\n"
+            "    color: #11356B;\n"
+            "    border: 1px solid #11356B;\n"
+            "    border-radius: 5px;\n"
+            "    border-style: outset;\n"
+            "    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,\n"
+            "            radius: 1.35, stop: 0 #ffffff, stop: 1 #afc1db);\n"
+            "}\n"
+            "\n"
+            "QPushButton:hover {\n"
+            "    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,\n"
+            "            radius: 1.35, stop: 0 #fff, stop: 1 #edf4ff);\n"
+            "}\n"
+            "\n"
+            "QPushButton:pressed {\n"
+            "    border-style: inset;\n"
+            "    background: qradialgradient(cx: 0.4, cy: -0.1, fx: 0.4, fy: -0.1,\n"
+            "            radius: 1.35, stop: 0 #fff, stop: 1 #ddd);\n"
+            "}\n"
+            "\n"
+            "QPushButton:disabled {\n"
+            "    border-style: inset;\n"
+            "    background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,\n"
+            "            radius: 1.35, stop: 0 #fff, stop: 1 #a5aab2);\n"
+            "}\n"
+            "\n"
+            "QTabWidget::pane {\n"
+            "    border: 1px solid #11356B;\n"
+            "    ;\n"
+            "    top: -1px;\n"
+            "    background: rgb(245, 250, 255);\n"
+            "    color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QTabBar::tab {\n"
+            "    background: rgb(210, 230, 255);\n"
+            "    border: 1px solid #11356B;\n"
+            "    ;\n"
+            "    padding: 5px;\n"
+            "    color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QTabBar::tab:selected {\n"
+            "    background: rgb(245, 250, 255);\n"
+            "    margin-bottom: -1px;\n"
+            "    color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QTabBar::tab:disabled {\n"
+            "    background: rgb(245, 250, 255);\n"
+            "    margin-bottom: -1px;\n"
+            "    color: #B2C3E7;\n"
+            "}\n"
+            "\n"
+            "QTableView {\n"
+            "    color: #11356B;\n"
+            "    border: 1px solid #11356B;\n"
+            "    border-radius: 0px;\n"
+            "    border-style: outset;\n"
+            "    background-color: white;\n"
+            "    margin: 0 0 0 0;\n"
+            "    padding: 0 0 0 0;\n"
+            "}\n"
+            "\n"
+            "QHeaderView:section {\n"
+            "    color: white;\n"
+            "    background-color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QLabel {\n"
+            "    color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QFrame {\n"
+            "    color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QSpinBox {\n"
+            "    background-color: white;\n"
+            "    color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QDoubleSpinBox {\n"
+            "    background-color: white;\n"
+            "    color: #11356B;\n"
+            "}\n"
+            "\n"
+            "QCheckBox {\n"
+            "    color: #11356B;\n"
+            "}"
+        )
         self.centralwidget = QtWidgets.QWidget(parent=ELK)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -265,7 +267,9 @@ class Ui_ELK(object):
         self.tab_7.setObjectName("tab_7")
         self.load_locations_button = QtWidgets.QPushButton(parent=self.tab_7)
         self.load_locations_button.setGeometry(QtCore.QRect(20, 130, 190, 30))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.load_locations_button.sizePolicy().hasHeightForWidth())
@@ -279,7 +283,9 @@ class Ui_ELK(object):
         self.load_locations_button.setObjectName("load_locations_button")
         self.load_texture_button = QtWidgets.QPushButton(parent=self.tab_7)
         self.load_texture_button.setGeometry(QtCore.QRect(20, 55, 190, 30))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.load_texture_button.sizePolicy().hasHeightForWidth())
@@ -293,7 +299,9 @@ class Ui_ELK(object):
         self.load_texture_button.setObjectName("load_texture_button")
         self.load_surface_button = QtWidgets.QPushButton(parent=self.tab_7)
         self.load_surface_button.setGeometry(QtCore.QRect(20, 17, 190, 30))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.load_surface_button.sizePolicy().hasHeightForWidth())
@@ -307,7 +315,9 @@ class Ui_ELK(object):
         self.load_surface_button.setObjectName("load_surface_button")
         self.load_mri_button = QtWidgets.QPushButton(parent=self.tab_7)
         self.load_mri_button.setGeometry(QtCore.QRect(20, 92, 190, 30))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.load_mri_button.sizePolicy().hasHeightForWidth())
@@ -321,7 +331,9 @@ class Ui_ELK(object):
         self.load_mri_button.setObjectName("load_mri_button")
         self.restart_button_0 = QtWidgets.QPushButton(parent=self.tab_7)
         self.restart_button_0.setGeometry(QtCore.QRect(20, 170, 190, 30))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.restart_button_0.sizePolicy().hasHeightForWidth())
@@ -335,7 +347,9 @@ class Ui_ELK(object):
         self.restart_button_0.setObjectName("restart_button_0")
         self.proceed_button_0 = QtWidgets.QPushButton(parent=self.tab_7)
         self.proceed_button_0.setGeometry(QtCore.QRect(20, 210, 190, 30))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.proceed_button_0.sizePolicy().hasHeightForWidth())
@@ -494,7 +508,9 @@ class Ui_ELK(object):
         self.tabWidget_texture.addTab(self.tab_11, "")
         self.verticalLayout_7.addWidget(self.tabWidget_texture)
         self.proceed_button_1 = QtWidgets.QPushButton(parent=self.widget_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.proceed_button_1.sizePolicy().hasHeightForWidth())
@@ -534,15 +550,6 @@ class Ui_ELK(object):
         self.widget_2.setObjectName("widget_2")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget_2)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.display_head_button = QtWidgets.QPushButton(parent=self.widget_2)
-        self.display_head_button.setMinimumSize(QtCore.QSize(150, 30))
-        self.display_head_button.setMaximumSize(QtCore.QSize(150, 30))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.display_head_button.setFont(font)
-        self.display_head_button.setStyleSheet("")
-        self.display_head_button.setObjectName("display_head_button")
-        self.verticalLayout_2.addWidget(self.display_head_button)
         self.label_11 = QtWidgets.QLabel(parent=self.widget_2)
         self.label_11.setMinimumSize(QtCore.QSize(111, 16))
         self.label_11.setMaximumSize(QtCore.QSize(111, 16))
@@ -562,13 +569,15 @@ class Ui_ELK(object):
         self.groupBox_4 = QtWidgets.QGroupBox(parent=self.widget_2)
         self.groupBox_4.setMinimumSize(QtCore.QSize(150, 300))
         self.groupBox_4.setMaximumSize(QtCore.QSize(150, 300))
-        self.groupBox_4.setStyleSheet("QGroupBox::title {\n"
-"border-top-left-radius: 9px;\n"
-"border-top-right-radius: 9px;\n"
-"background-color: #11356B;\n"
-"padding: 2px 42px;\n"
-"color: rgb(255, 255, 255);\n"
-"}")
+        self.groupBox_4.setStyleSheet(
+            "QGroupBox::title {\n"
+            "border-top-left-radius: 9px;\n"
+            "border-top-right-radius: 9px;\n"
+            "background-color: #11356B;\n"
+            "padding: 2px 42px;\n"
+            "color: rgb(255, 255, 255);\n"
+            "}"
+        )
         self.groupBox_4.setObjectName("groupBox_4")
         self.verticalLayout_14 = QtWidgets.QVBoxLayout(self.groupBox_4)
         self.verticalLayout_14.setObjectName("verticalLayout_14")
@@ -616,7 +625,9 @@ class Ui_ELK(object):
         self.verticalLayout_14.addWidget(self.flagpost_height_spinbox)
         self.verticalLayout_2.addWidget(self.groupBox_4)
         self.restart_button_2 = QtWidgets.QPushButton(parent=self.widget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.restart_button_2.sizePolicy().hasHeightForWidth())
@@ -630,7 +641,9 @@ class Ui_ELK(object):
         self.restart_button_2.setObjectName("restart_button_2")
         self.verticalLayout_2.addWidget(self.restart_button_2)
         self.proceed_button_2 = QtWidgets.QPushButton(parent=self.widget_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.proceed_button_2.sizePolicy().hasHeightForWidth())
@@ -661,24 +674,13 @@ class Ui_ELK(object):
         self.widget_5.setObjectName("widget_5")
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.widget_5)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.display_mri_button = QtWidgets.QPushButton(parent=self.widget_5)
-        self.display_mri_button.setMinimumSize(QtCore.QSize(150, 30))
-        self.display_mri_button.setMaximumSize(QtCore.QSize(150, 30))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.display_mri_button.setFont(font)
-        self.display_mri_button.setStyleSheet("")
-        self.display_mri_button.setObjectName("display_mri_button")
-        self.verticalLayout_8.addWidget(self.display_mri_button)
         self.align_scan_button = QtWidgets.QPushButton(parent=self.widget_5)
         self.align_scan_button.setMinimumSize(QtCore.QSize(150, 60))
         self.align_scan_button.setMaximumSize(QtCore.QSize(150, 60))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.align_scan_button.setFont(font)
-        self.align_scan_button.setStyleSheet("QPushButton {\n"
-"    margin-top: 30px;\n"
-"    }")
+        self.align_scan_button.setStyleSheet("QPushButton {\n    margin-top: 30px;\n    }")
         self.align_scan_button.setObjectName("align_scan_button")
         self.verticalLayout_8.addWidget(self.align_scan_button)
         self.project_electrodes_button = QtWidgets.QPushButton(parent=self.widget_5)
@@ -707,13 +709,15 @@ class Ui_ELK(object):
         self.groupBox_3 = QtWidgets.QGroupBox(parent=self.widget_5)
         self.groupBox_3.setMinimumSize(QtCore.QSize(150, 300))
         self.groupBox_3.setMaximumSize(QtCore.QSize(150, 300))
-        self.groupBox_3.setStyleSheet("QGroupBox::title {\n"
-"border-top-left-radius: 9px;\n"
-"border-top-right-radius: 9px;\n"
-"background-color: #11356B;\n"
-"padding: 2px 42px;\n"
-"color: rgb(255, 255, 255);\n"
-"}")
+        self.groupBox_3.setStyleSheet(
+            "QGroupBox::title {\n"
+            "border-top-left-radius: 9px;\n"
+            "border-top-right-radius: 9px;\n"
+            "background-color: #11356B;\n"
+            "padding: 2px 42px;\n"
+            "color: rgb(255, 255, 255);\n"
+            "}"
+        )
         self.groupBox_3.setObjectName("groupBox_3")
         self.verticalLayout_11 = QtWidgets.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_11.setObjectName("verticalLayout_11")
@@ -763,13 +767,15 @@ class Ui_ELK(object):
         self.groupBox_5 = QtWidgets.QGroupBox(parent=self.widget_5)
         self.groupBox_5.setMinimumSize(QtCore.QSize(150, 120))
         self.groupBox_5.setMaximumSize(QtCore.QSize(150, 120))
-        self.groupBox_5.setStyleSheet("QGroupBox::title {\n"
-"border-top-left-radius: 9px;\n"
-"border-top-right-radius: 9px;\n"
-"background-color: #11356B;\n"
-"padding: 2px 40px;\n"
-"color: rgb(255, 255, 255);\n"
-"}")
+        self.groupBox_5.setStyleSheet(
+            "QGroupBox::title {\n"
+            "border-top-left-radius: 9px;\n"
+            "border-top-right-radius: 9px;\n"
+            "background-color: #11356B;\n"
+            "padding: 2px 40px;\n"
+            "color: rgb(255, 255, 255);\n"
+            "}"
+        )
         self.groupBox_5.setObjectName("groupBox_5")
         self.verticalLayout_13 = QtWidgets.QVBoxLayout(self.groupBox_5)
         self.verticalLayout_13.setObjectName("verticalLayout_13")
@@ -792,7 +798,9 @@ class Ui_ELK(object):
         self.verticalLayout_13.addWidget(self.mri_head_alpha_slider)
         self.verticalLayout_8.addWidget(self.groupBox_5)
         self.restart_button_3 = QtWidgets.QPushButton(parent=self.widget_5)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.restart_button_3.sizePolicy().hasHeightForWidth())
@@ -806,7 +814,9 @@ class Ui_ELK(object):
         self.restart_button_3.setObjectName("restart_button_3")
         self.verticalLayout_8.addWidget(self.restart_button_3)
         self.proceed_button_3 = QtWidgets.QPushButton(parent=self.widget_5)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.proceed_button_3.sizePolicy().hasHeightForWidth())
@@ -839,24 +849,13 @@ class Ui_ELK(object):
         self.widget_11.setObjectName("widget_11")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.widget_11)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.label_display_button = QtWidgets.QPushButton(parent=self.widget_11)
-        self.label_display_button.setMinimumSize(QtCore.QSize(150, 30))
-        self.label_display_button.setMaximumSize(QtCore.QSize(150, 30))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.label_display_button.setFont(font)
-        self.label_display_button.setStyleSheet("")
-        self.label_display_button.setObjectName("label_display_button")
-        self.verticalLayout_6.addWidget(self.label_display_button)
         self.label_register_button = QtWidgets.QPushButton(parent=self.widget_11)
         self.label_register_button.setMinimumSize(QtCore.QSize(150, 60))
         self.label_register_button.setMaximumSize(QtCore.QSize(150, 60))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.label_register_button.setFont(font)
-        self.label_register_button.setStyleSheet("QPushButton {\n"
-"    margin-top: 30px;\n"
-"    }")
+        self.label_register_button.setStyleSheet("QPushButton {\n    margin-top: 30px;\n    }")
         self.label_register_button.setObjectName("label_register_button")
         self.verticalLayout_6.addWidget(self.label_register_button)
         self.label_align_button = QtWidgets.QPushButton(parent=self.widget_11)
@@ -880,13 +879,15 @@ class Ui_ELK(object):
         self.groupBox_2 = QtWidgets.QGroupBox(parent=self.widget_11)
         self.groupBox_2.setMinimumSize(QtCore.QSize(150, 280))
         self.groupBox_2.setMaximumSize(QtCore.QSize(150, 280))
-        self.groupBox_2.setStyleSheet("QGroupBox::title {\n"
-"border-top-left-radius: 9px;\n"
-"border-top-right-radius: 9px;\n"
-"background-color: #11356B;\n"
-"padding: 2px 42px;\n"
-"color: rgb(255, 255, 255);\n"
-"}")
+        self.groupBox_2.setStyleSheet(
+            "QGroupBox::title {\n"
+            "border-top-left-radius: 9px;\n"
+            "border-top-right-radius: 9px;\n"
+            "background-color: #11356B;\n"
+            "padding: 2px 42px;\n"
+            "color: rgb(255, 255, 255);\n"
+            "}"
+        )
         self.groupBox_2.setObjectName("groupBox_2")
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.groupBox_2)
         self.verticalLayout_10.setObjectName("verticalLayout_10")
@@ -936,13 +937,15 @@ class Ui_ELK(object):
         self.groupBox = QtWidgets.QGroupBox(parent=self.widget_11)
         self.groupBox.setMinimumSize(QtCore.QSize(150, 130))
         self.groupBox.setMaximumSize(QtCore.QSize(130, 150))
-        self.groupBox.setStyleSheet("QGroupBox::title {\n"
-"border-top-left-radius: 9px;\n"
-"border-top-right-radius: 9px;\n"
-"background-color: #11356B;\n"
-"padding: 2px 24px;\n"
-"color: rgb(255, 255, 255);\n"
-"}")
+        self.groupBox.setStyleSheet(
+            "QGroupBox::title {\n"
+            "border-top-left-radius: 9px;\n"
+            "border-top-right-radius: 9px;\n"
+            "background-color: #11356B;\n"
+            "padding: 2px 24px;\n"
+            "color: rgb(255, 255, 255);\n"
+            "}"
+        )
         self.groupBox.setObjectName("groupBox")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.groupBox)
         self.gridLayout_2.setObjectName("gridLayout_2")
@@ -973,7 +976,9 @@ class Ui_ELK(object):
         font.setPointSize(12)
         self.label_visualize_correspondence_button.setFont(font)
         self.label_visualize_correspondence_button.setStyleSheet("")
-        self.label_visualize_correspondence_button.setObjectName("label_visualize_correspondence_button")
+        self.label_visualize_correspondence_button.setObjectName(
+            "label_visualize_correspondence_button"
+        )
         self.gridLayout_2.addWidget(self.label_visualize_correspondence_button, 2, 0, 1, 1)
         self.label_label_correspondence_button = QtWidgets.QPushButton(parent=self.groupBox)
         self.label_label_correspondence_button.setMinimumSize(QtCore.QSize(60, 30))
@@ -995,7 +1000,9 @@ class Ui_ELK(object):
         self.label_interpolate_button.setObjectName("label_interpolate_button")
         self.verticalLayout_6.addWidget(self.label_interpolate_button)
         self.restart_button_4 = QtWidgets.QPushButton(parent=self.widget_11)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.restart_button_4.sizePolicy().hasHeightForWidth())
@@ -1009,7 +1016,9 @@ class Ui_ELK(object):
         self.restart_button_4.setObjectName("restart_button_4")
         self.verticalLayout_6.addWidget(self.restart_button_4)
         self.proceed_button_4 = QtWidgets.QPushButton(parent=self.widget_11)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.proceed_button_4.sizePolicy().hasHeightForWidth())
@@ -1051,7 +1060,7 @@ class Ui_ELK(object):
         ELK.setStatusBar(self.statusbar)
 
         self.retranslateUi(ELK)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(5)
         self.tabWidget_texture.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(ELK)
 
@@ -1080,16 +1089,19 @@ class Ui_ELK(object):
         self.label_18.setText(_translate("ELK", "Sigma"))
         self.label_19.setText(_translate("ELK", "Diff. Factor"))
         self.display_dog_button.setText(_translate("ELK", "Display"))
-        self.tabWidget_texture.setTabText(self.tabWidget_texture.indexOf(self.tab_9), _translate("ELK", "DoG"))
+        self.tabWidget_texture.setTabText(
+            self.tabWidget_texture.indexOf(self.tab_9), _translate("ELK", "DoG")
+        )
         self.label_21.setText(_translate("ELK", "Param2"))
         self.label_22.setText(_translate("ELK", "Param1"))
         self.label_2.setText(_translate("ELK", "Min dist."))
         self.label_20.setText(_translate("ELK", "Radius Range"))
         self.display_hough_button.setText(_translate("ELK", "Display"))
-        self.tabWidget_texture.setTabText(self.tabWidget_texture.indexOf(self.tab_11), _translate("ELK", "Hough"))
+        self.tabWidget_texture.setTabText(
+            self.tabWidget_texture.indexOf(self.tab_11), _translate("ELK", "Hough")
+        )
         self.proceed_button_1.setText(_translate("ELK", "Proceed"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("ELK", "Texture"))
-        self.display_head_button.setText(_translate("ELK", "Display / Refresh"))
         self.label_11.setText(_translate("ELK", "Headmodel Alpha: "))
         self.groupBox_4.setTitle(_translate("ELK", "Electrodes"))
         self.label_3.setText(_translate("ELK", "Sphere Size"))
@@ -1098,8 +1110,9 @@ class Ui_ELK(object):
         self.label_7.setText(_translate("ELK", "Flagposts Height"))
         self.restart_button_2.setText(_translate("ELK", "Back"))
         self.proceed_button_2.setText(_translate("ELK", "Proceed"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("ELK", "Headmodel"))
-        self.display_mri_button.setText(_translate("ELK", "Display / Refresh"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_2), _translate("ELK", "Headmodel")
+        )
         self.align_scan_button.setText(_translate("ELK", "Align Scan"))
         self.project_electrodes_button.setText(_translate("ELK", "Project Electrodes"))
         self.label_12.setText(_translate("ELK", "MRI Alpha: "))
@@ -1114,7 +1127,6 @@ class Ui_ELK(object):
         self.restart_button_3.setText(_translate("ELK", "Back"))
         self.proceed_button_3.setText(_translate("ELK", "Proceed"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("ELK", "MRI"))
-        self.label_display_button.setText(_translate("ELK", "Display / Refresh"))
         self.label_register_button.setText(_translate("ELK", "Register Electrodes"))
         self.label_align_button.setText(_translate("ELK", "Align Labeled"))
         self.label_autolabel_button.setText(_translate("ELK", "Autolabel"))
@@ -1137,6 +1149,7 @@ class Ui_ELK(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     ELK = QtWidgets.QMainWindow()
     ui = Ui_ELK()

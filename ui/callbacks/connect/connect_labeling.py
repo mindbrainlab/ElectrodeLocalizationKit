@@ -14,6 +14,8 @@ def connect_labeling_buttons(self):
             self.views,
             self.model,
             self.electrode_registrator,
+            self.ui.label_register_button,
+            self.ui.label_align_button,
         )
     )
     self.ui.label_align_button.clicked.connect(
@@ -21,11 +23,20 @@ def connect_labeling_buttons(self):
             self.model,
             self.views,
             self.electrode_aligner,
+            self.ui.label_align_button,
+            self.ui.label_autolabel_button,
         )
     )
 
     self.ui.label_autolabel_button.clicked.connect(
-        lambda: autolabel_measured_electrodes(self.model, self.views, self.electrode_aligner)
+        lambda: autolabel_measured_electrodes(
+            self.model,
+            self.views,
+            self.electrode_aligner,
+            self.ui.label_align_button,
+            self.ui.label_interpolate_button,
+            self.ui.label_autolabel_button,
+        )
     )
 
     self.ui.label_label_correspondence_button.clicked.connect(
@@ -33,6 +44,8 @@ def connect_labeling_buttons(self):
             self.model,
             self.views,
             self.electrode_aligner,
+            self.ui.label_align_button,
+            self.ui.label_autolabel_button,
         )
     )
 

@@ -51,6 +51,7 @@ def align_scan_to_mri(
 
     if ui:
         ui.display_secondary_mesh_checkbox.setChecked(True)
+        ui.project_electrodes_button.setEnabled(True)
     views["mri"].show()
 
 
@@ -70,7 +71,11 @@ def undo_scan2mri_transformation(
 
 
 def project_electrodes_to_mri(headmodels: dict, model: CapModel, views: dict):
-    model.project_electrodes_to_mesh(headmodels["mri"].mesh, ModalitiesMapping.HEADSCAN)
+    model.project_electrodes_to_mesh(
+        mesh=headmodels["mri"].mesh,
+        modality_from=ModalitiesMapping.HEADSCAN,
+        modality_to=ModalitiesMapping.MRI,
+    )
     display_surface(views["mri"])
 
 

@@ -1,5 +1,6 @@
 from config.mappings import ModalitiesMapping
 from .state_machine import States, State
+from ui.callbacks.display import display_dog
 
 
 def initialize_fileio_states(self):
@@ -176,6 +177,17 @@ def initialize_processing_states(self):
         self.state_machine[state_name].add_callback(
             lambda: self.model.clear_electrodes_by_modality(ModalitiesMapping.HEADSCAN)
         )
+        self.state_machine[state_name].add_callback(
+            lambda: display_dog(
+                self.images,
+                self.ui.texture_frame,
+                self.ui.photo_label,
+                self.electrode_detector,
+                self.ui.kernel_size_spinbox.value(),
+                self.ui.sigma_spinbox.value(),
+                self.ui.diff_factor_spinbox.value(),
+            )
+        )
 
     # Texture Processing – HOUGH
     for state_name in [
@@ -279,18 +291,25 @@ def initialize_processing_states(self):
     )
 
     # Processing states (no locations) for surface texture processing
-    for state_name in [
-        States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value,
-        States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS.value,
-    ]:
-        self.state_machine.add_state(State(state_name))
-        self.state_machine[state_name].add_callback(
-            lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
-        )
-        self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
-        self.state_machine[state_name].add_callback(
-            lambda: self.update_button_states(proceed_button_2=True, restart_button_2=False)
-        )
+    state_name = States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(proceed_button_2=True, restart_button_2=True)
+    )
+
+    state_name = States.SURFACE_WITH_MRI_PROCESSING_NO_LOCS.value
+    self.state_machine.add_state(State(state_name))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
+    )
+    self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
+    self.state_machine[state_name].add_callback(
+        lambda: self.update_button_states(proceed_button_2=True, restart_button_2=False)
+    )
 
     # -------------------------------
     # Labeling States – update the labeling tab (tab index 4)
@@ -306,13 +325,20 @@ def initialize_processing_states(self):
             lambda: self.update_tab_states(t0=True, t1=False, t2=False, t3=False, t4=True, t5=True)
         )
         self.state_machine[state].add_callback(lambda: self.switch_tab(4))
+        self.state_machine[state].add_callback(
+            lambda: self.update_button_states(
+                label_register_button=True,
+                label_autolabel_button=False,
+                label_align_button=False,
+                label_interpolate_button=False,
+            )
+        )
 
     # -------------------------------
     # QC States for Surface – update the surface tab (tab index 2)
     for state in [
         States.QC_SURFACE.value,
         States.QC_SURFACE_TEXTURE.value,
-        States.QC_SURFACE_WITH_MRI.value,
     ]:
         self.state_machine.add_state(State(state))
         self.state_machine[state].add_callback(
@@ -346,16 +372,11 @@ def initialize_processing_states(self):
         self.state_machine[state].add_callback(
             lambda: self.ui.display_secondary_mesh_checkbox.setChecked(False)
         )
-
-    state = States.QC_SURFACE_TEXTURE_WITH_MRI.value
-    self.state_machine.add_state(State(state))
-    self.state_machine[state].add_callback(
-        lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
-    )
-    self.state_machine[state].add_callback(lambda: self.switch_tab(2))
-    self.state_machine[state].add_callback(
-        lambda: self.update_button_states(proceed_button_2=False)
-    )
+        self.state_machine[state].add_callback(
+            lambda: self.update_button_states(
+                project_electrodes_button=False, proceed_button_3=False
+            )
+        )
 
     # New Alignment & QC States for Texture with MRI (no locations)
     state = States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS.value
@@ -368,16 +389,6 @@ def initialize_processing_states(self):
         lambda: self.ui.display_secondary_mesh_checkbox.setChecked(False)
     )
 
-    state = States.QC_SURFACE_TEXTURE_WITH_MRI_NO_LOCS.value
-    self.state_machine.add_state(State(state))
-    self.state_machine[state].add_callback(
-        lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
-    )
-    self.state_machine[state].add_callback(lambda: self.switch_tab(2))
-    self.state_machine[state].add_callback(
-        lambda: self.update_button_states(proceed_button_2=False)
-    )
-
     state = States.SURFACE_TO_MRI_ALIGNMENT_NO_LOCS.value
     self.state_machine.add_state(State(state))
     self.state_machine[state].add_callback(
@@ -387,13 +398,6 @@ def initialize_processing_states(self):
     self.state_machine[state].add_callback(
         lambda: self.ui.display_secondary_mesh_checkbox.setChecked(False)
     )
-
-    state = States.QC_SURFACE_WITH_MRI_NO_LOCS.value
-    self.state_machine.add_state(State(state))
     self.state_machine[state].add_callback(
-        lambda: self.update_tab_states(t0=True, t1=False, t2=True, t3=False, t4=False, t5=True)
-    )
-    self.state_machine[state].add_callback(lambda: self.switch_tab(2))
-    self.state_machine[state].add_callback(
-        lambda: self.update_button_states(proceed_button_2=False, restart_button_2=True)
+        lambda: self.update_button_states(project_electrodes_button=False, proceed_button_3=False)
     )

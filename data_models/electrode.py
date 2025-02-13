@@ -107,6 +107,9 @@ class Electrode:
         if isinstance(closest_point, np.ndarray):
             self.coordinates = closest_point
 
+    def __hash__(self):
+        return id(self)
+
     def __eq__(self, other):
         return id(self) == id(other)
 

@@ -144,9 +144,9 @@ class CapModel(QAbstractTableModel):
         if len(measured_electrodes) > 0:
             export_electrodes_to_file(measured_electrodes, filename)
 
-    def remove_electrode_by_id(self, electrode_index: int, parent=QModelIndex()) -> None:
+    def remove_electrode(self, elecrode_hash: int, parent=QModelIndex()) -> None:
         self.beginRemoveRows(parent, self.rowCount(), self.rowCount())
-        self._data.pop(electrode_index)
+        self._data = [electrode for electrode in self._data if hash(electrode) != elecrode_hash]
         self.endRemoveRows()
 
     def get_electrode_id(self, electrode: Electrode) -> int:
@@ -157,10 +157,10 @@ class CapModel(QAbstractTableModel):
     ) -> list[tuple[int, float]]:
         """Calculates the distances between the given point and all points in the electrode cap."""
         distances = []
-        for idx, electrode in enumerate(self._data):
+        for electrode in self.get_electrodes_by_modality([modality]):
             point = np.array(electrode.coordinates)
             dist = np.linalg.norm(point - target_coordinates)
-            distances.append((idx, dist))
+            distances.append((hash(electrode), dist))
         return distances
 
     def remove_closest_electrode(self, target_coordinates: Iterable[float], modality: str) -> None:
@@ -170,7 +170,7 @@ class CapModel(QAbstractTableModel):
         # remove the point with the smallest distance
         if len(distances) > 0:
             min_distance = min(distances, key=lambda x: x[1])
-            self.remove_electrode_by_id(min_distance[0])
+            self.remove_electrode(min_distance[0])
 
     def label_closest_electrode(
         self, target_coordinates: Iterable[float], label: str, modality: str

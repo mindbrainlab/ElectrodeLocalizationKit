@@ -67,7 +67,7 @@ For help and support, please contact:
 
 ## Version
 
-The current version of the package is **0.3.1**.
+The current version of the package is **0.4.0**.
 
 ## License
 
@@ -77,13 +77,26 @@ This project is licensed under the GNU General Public License v3.0 (GPL-3.0). Se
 
 We would like to thank the University of Ljubljana, Faculty of Arts, and the Faculty of Computer and Information Science for their support in this project.
 
-## Developers
+## Citation
 
-### Code Formatting
+If you use ELK in your research, please cite our GitHub repository as follows:
+
+```
+@misc{ELK2023,
+  title={ELK: Electrode Localization Kit},
+  author={Aleksij Kraljič, Jure Demšar, Grega Repovš},
+  year={2023},
+  url={https://github.com/your-repo-link}
+}
+```
+
+# Developers
+
+## Code Formatting
 
 The codebase is formatted using **[Ruff](https://github.com/astral-sh/ruff)**, an extremely fast Python linter and code formatter written in Rust. Ruff ensures your code maintains a consistent style by automatically formatting it to be as readable and maintainable as possible.
 
-## Installation
+### Installation
 
 To format your code using Ruff, we recommend installing it with `uv`:
 
@@ -106,7 +119,7 @@ ruff format .
 
 For more configuration options and detailed usage, refer to the [Ruff documentation](https://docs.astral.sh/ruff/).
 
-## Setting Up Ruff with uv
+### Setting Up Ruff with uv
 
 1. **Install uv**:
 
@@ -143,7 +156,7 @@ For more configuration options and detailed usage, refer to the [Ruff documentat
 
    This sets the maximum line length to 100 characters.
 
-## Integrating Ruff with Visual Studio Code (VSCode)
+### Integrating Ruff with Visual Studio Code (VSCode)
 
 To enhance your development experience, integrate Ruff directly into VSCode:
 
@@ -175,11 +188,11 @@ To enhance your development experience, integrate Ruff directly into VSCode:
 
 For more configuration options and detailed usage, refer to the [Ruff documentation](https://docs.astral.sh/ruff/).
 
-### Versioning
+## Versioning
 
 We are using **Semantic Versioning** for this project. For details, see [Semantic Versioning](https://semver.org/).
 
-### Git Workflow
+## Git Workflow
 
 We follow the **[Gitflow](https://nvie.com/posts/a-successful-git-branching-model/)** workflow. This means our development process includes feature branches, release branches, and hotfix branches. Here's a basic overview:
 
@@ -255,19 +268,6 @@ Ensure your pull request includes:
 
 - A clear description of what the changes do and why they are necessary.
 - Any relevant issue numbers.
-
-## Citation
-
-If you use ELK in your research, please cite our GitHub repository as follows:
-
-```
-@misc{ELK2023,
-  title={ELK: Electrode Localization Kit},
-  author={Aleksij Kraljič, Jure Demšar, Grega Repovš},
-  year={2023},
-  url={https://github.com/your-repo-link}
-}
-```
 
 ---
 

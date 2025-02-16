@@ -6,6 +6,7 @@ from fileio.locations import load_locations, save_locations_to_file
 def connect_fileio_buttons(self):
     self.ui.load_surface_button.clicked.connect(
         lambda: load_surface(
+            self,
             self.files,
             self.views,
             self.headmodels,
@@ -19,6 +20,7 @@ def connect_fileio_buttons(self):
 
     self.ui.load_texture_button.clicked.connect(
         lambda: load_texture(
+            self,
             self.files,
             self.views,
             self.headmodels,
@@ -32,6 +34,7 @@ def connect_fileio_buttons(self):
     )
     self.ui.load_mri_button.clicked.connect(
         lambda: load_mri(
+            self,
             self.files,
             self.views,
             self.headmodels,
@@ -41,6 +44,7 @@ def connect_fileio_buttons(self):
     )
     self.ui.load_locations_button.clicked.connect(
         lambda: load_locations(
+            self,
             self.files,
             self.views,
             [("labeling_reference", self.ui.labeling_reference_frame)],

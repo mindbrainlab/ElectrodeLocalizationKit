@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QFrame, QFileDialog
 from ui.pyloc_main_window import Ui_ELK
 from config.sizes import ElectrodeSizes
 from view.surface_view import SurfaceView
@@ -10,22 +10,21 @@ from data_models.head_models import HeadScan
 
 # define slots (functions)
 def load_surface(
+    self: Ui_ELK,
     files: dict,
     views: dict,
     headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     None,
-    #     "Open Surface File",
-    #     "",
-    #     "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)",
-    # )
-    # if file_path:
-    #     files["scan"] = file_path
-
-    files["scan"] = "sample_data/model_mesh.obj"
+    file_path, _ = QFileDialog.getOpenFileName(
+        None,
+        "Open Surface File",
+        "",
+        "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)",
+    )
+    if file_path:
+        files["scan"] = file_path
 
     headmodels["scan"] = HeadScan(files["scan"], files["texture"])
 
@@ -38,6 +37,7 @@ def load_surface(
 
 
 def load_texture(
+    self: Ui_ELK,
     files: dict,
     views: dict,
     headmodels: dict,
@@ -45,16 +45,14 @@ def load_texture(
     model: CapModel,
     electrode_detector: BaseElectrodeDetector | None,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     self,
-    #     "Open Texture File",
-    #     "",
-    #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
-    #     )
-    # if file_path:
-    #     files["texture"] = file_path
-
-    files["texture"] = "sample_data/model_mesh.jpg"
+    file_path, _ = QFileDialog.getOpenFileName(
+        self,
+        "Open Texture File",
+        "",
+        "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)",
+    )
+    if file_path:
+        files["texture"] = file_path
 
     if electrode_detector:
         electrode_detector.apply_texture(files["texture"])

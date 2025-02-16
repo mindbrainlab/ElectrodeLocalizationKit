@@ -1,5 +1,5 @@
 [![Python](https://img.shields.io/badge/python-3.11-blue)]()
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
 # ELK: Electrode Localization Kit
 
@@ -22,26 +22,27 @@ To address these challenges, we present an open-source Python environment for el
 
 ## Installation
 
-**Note:** This package requires Python 3.11 and above.
+**Note:** This package requires **Python 3.11**.
 
-To install the required dependencies for ELK, use the following command:
+To install the required dependencies for ELK, we recommend using [uv](https://github.com/astral-sh/uv), an extremely fast Python package and project manager written in Rust. While users can choose their preferred tool, we suggest and support `uv` for its speed and reliability.
+
+First, install `uv`:
 
 ```sh
-pip install -r requirements.txt
+# Using curl
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Or using pip
+pip install uv
 ```
 
-The `requirements.txt` file includes the following packages and their versions:
+Once `uv` is installed, navigate to the project's root directory (where `uv.lock` is located) and run:
 
+```sh
+uv sync
 ```
-nibabel==5.2.1
-numpy==1.25.0
-opencv_python==4.8.1.78
-pandas==2.2.2
-PyQt6==6.7.0
-PyQt6_sip==13.6.0
-vedo==2023.4.6
-vtk==9.2.6
-```
+
+This command will create a virtual environment (if not already present) and install the exact dependencies specified in `uv.lock`.
 
 ## Supported Formats
 
@@ -70,7 +71,7 @@ The current version of the package is **0.3.1**.
 
 ## License
 
-This project is licensed under the GNU General Public License (GPL) - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
@@ -80,14 +81,99 @@ We would like to thank the University of Ljubljana, Faculty of Arts, and the Fac
 
 ### Code Formatting
 
-The code is formatted using **[Black](https://black.readthedocs.io/en/stable/)**. Black is an uncompromising Python code formatter that ensures your code has a consistent style by automatically formatting your Python code to be as readable and maintainable as possible. Black enforces a specific style guide, which saves developers time on formatting debates and keeps the codebase clean and uniform.
+The codebase is formatted using **[Ruff](https://github.com/astral-sh/ruff)**, an extremely fast Python linter and code formatter written in Rust. Ruff ensures your code maintains a consistent style by automatically formatting it to be as readable and maintainable as possible.
 
-To format your code using Black, you can install it via pip and then run it on your codebase:
+## Installation
+
+To format your code using Ruff, we recommend installing it with `uv`:
 
 ```sh
-pip install black
-black .
+uv add --dev ruff
 ```
+
+After installation, format your code with:
+
+```sh
+ruff format .
+```
+
+Alternatively, if you prefer using `pip`, you can install Ruff with:
+
+```sh
+pip install ruff
+ruff format .
+```
+
+For more configuration options and detailed usage, refer to the [Ruff documentation](https://docs.astral.sh/ruff/).
+
+## Setting Up Ruff with uv
+
+1. **Install uv**:
+
+   `uv` provides a standalone installer. Use `curl` to download the script and execute it with `sh`:
+
+   ```sh
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+   Alternatively, if your system doesn't have `curl`, you can use `wget`:
+
+   ```sh
+   wget -qO- https://astral.sh/uv/install.sh | sh
+   ```
+
+   For more installation options, refer to the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
+
+2. **Initialize the Project**:
+
+   Navigate to your project's root directory and initialize it with `uv`:
+
+   ```sh
+   uv init
+   ```
+
+3. **Configure Ruff**:
+
+   Create a `pyproject.toml` file in your project's root directory (if it doesn't exist) and add the following configuration:
+
+   ```toml
+   [tool.ruff]
+   line-length = 100
+   ```
+
+   This sets the maximum line length to 100 characters.
+
+## Integrating Ruff with Visual Studio Code (VSCode)
+
+To enhance your development experience, integrate Ruff directly into VSCode:
+
+1. **Install the Ruff Extension**:
+
+   - Open VSCode and navigate to the Extensions view by clicking on the Extensions icon in the Activity Bar or by pressing `Ctrl+Shift+X`.
+   - Search for "Ruff" and install the extension named "Ruff" by Charlie Marsh.
+
+2. **Configure the Extension**:
+
+   After installation, the extension should automatically detect your project's `pyproject.toml` configuration. To ensure proper integration:
+
+   - Open the Command Palette by pressing `Ctrl+Shift+P` and select "Preferences: Open Settings (JSON)".
+   - Add or update the following settings to enable formatting and import organization on save:
+
+     ```json
+     {
+       "[python]": {
+         "editor.formatOnSave": true,
+         "editor.codeActionsOnSave": {
+           "source.organizeImports.ruff": true,
+           "source.fixAll.ruff": true
+         }
+       }
+     }
+     ```
+
+   This configuration enables automatic formatting and import sorting each time you save a Python file.
+
+For more configuration options and detailed usage, refer to the [Ruff documentation](https://docs.astral.sh/ruff/).
 
 ### Versioning
 

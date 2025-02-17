@@ -88,7 +88,7 @@ If you use ELK in your research, please cite our GitHub repository as follows:
   title={ELK: Electrode Localization Kit},
   author={Aleksij Kraljič, Jure Demšar, Grega Repovš},
   year={2023},
-  url={https://github.com/your-repo-link}
+  url={[https://github.com/your-repo-link](https://github.com/mindbrainlab/ElectrodeLocalizationKit}
 }
 ```
 

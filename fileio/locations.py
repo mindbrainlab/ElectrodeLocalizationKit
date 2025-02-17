@@ -7,7 +7,6 @@ from data_models.head_models import UnitSphere
 
 
 def load_locations(
-    self: Ui_ELK,
     files: dict,
     views: dict,
     frames: list[tuple[str, QFrame]],
@@ -22,10 +21,10 @@ def load_locations(
                 model.remove_electrode_by_id(electrode_id)
 
     file_path, _ = QFileDialog.getOpenFileName(
-        self,  # type: ignore
+        None,
         "Open Locations File",
         "",
-        "All Files (*);;CSV Files (*.csv)",
+        "CSV/TSV/CED Files (*.csv *.tsv *.ced);;All Files (*)",
     )
 
     if file_path:
@@ -59,13 +58,11 @@ def load_locations(
 
 
 def save_locations_to_file(model: CapModel):
-    # file_path, _ = QFileDialog.getSaveFileName(
-    #     self,
-    #     "Save Locations File",
-    #     "",
-    #     "All Files (*);;CSV Files (*.csv)"
-    #     )
-    # if file_path:
-    #     self.model.save_electrodes(file_path)
-
-    model.save_electrodes_to_file("sample_data/measured_electrodes.ced")
+    file_path, _ = QFileDialog.getSaveFileName(
+        None,
+        "Save Locations File",
+        "",
+        "All Files (*);;CSV Files (*.csv)",
+    )
+    if file_path:
+        model.save_electrodes_to_file(file_path)

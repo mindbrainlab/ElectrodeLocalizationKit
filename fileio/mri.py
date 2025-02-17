@@ -7,7 +7,6 @@ from data_models.head_models import MRIScan
 
 
 def load_mri(
-    self: Ui_ELK,
     files: dict,
     views: dict,
     headmodels: dict,
@@ -15,10 +14,10 @@ def load_mri(
     model: CapModel,
 ):
     file_path, _ = QFileDialog.getOpenFileName(
-        self,
+        None,
         "Open MRI File",
         "",
-        "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)",
+        "GIfTI Files (*.gii)",
     )
     if file_path:
         files["mri"] = file_path

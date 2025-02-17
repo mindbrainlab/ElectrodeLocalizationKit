@@ -10,7 +10,6 @@ from data_models.head_models import HeadScan
 
 # define slots (functions)
 def load_surface(
-    self: Ui_ELK,
     files: dict,
     views: dict,
     headmodels: dict,
@@ -21,7 +20,7 @@ def load_surface(
         None,
         "Open Surface File",
         "",
-        "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)",
+        "OBJ Files (*.obj);;STL Files (*.stl)",
     )
     if file_path:
         files["scan"] = file_path
@@ -37,7 +36,6 @@ def load_surface(
 
 
 def load_texture(
-    self: Ui_ELK,
     files: dict,
     views: dict,
     headmodels: dict,
@@ -49,7 +47,7 @@ def load_texture(
         None,
         "Open Texture File",
         "",
-        "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)",
+        "Image Files (*.jpg *.jpeg *.bmp *.gif *.tiff)",
     )
     if file_path:
         files["texture"] = file_path

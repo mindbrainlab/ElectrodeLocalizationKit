@@ -36,13 +36,15 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 pip install uv
 ```
 
-Once `uv` is installed, navigate to the project's root directory (where `uv.lock` is located) and run:
+## Running the App
+
+Once `uv` is installed, navigate to the project's root directory and run:
 
 ```sh
-uv sync
+uv run main.py
 ```
 
-This command will create a virtual environment (if not already present) and install the exact dependencies specified in `uv.lock`.
+On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.
 
 ## Supported Formats
 
@@ -67,7 +69,7 @@ For help and support, please contact:
 
 ## Version
 
-The current version of the package is **0.4.0**.
+The current version of the package is **0.4.1**.
 
 ## License
 
@@ -86,7 +88,7 @@ If you use ELK in your research, please cite our GitHub repository as follows:
   title={ELK: Electrode Localization Kit},
   author={Aleksij Kraljič, Jure Demšar, Grega Repovš},
   year={2023},
-  url={https://github.com/your-repo-link}
+  url={https://github.com/mindbrainlab/ElectrodeLocalizationKit}
 }
 ```
 
@@ -118,43 +120,6 @@ ruff format .
 ```
 
 For more configuration options and detailed usage, refer to the [Ruff documentation](https://docs.astral.sh/ruff/).
-
-### Setting Up Ruff with uv
-
-1. **Install uv**:
-
-   `uv` provides a standalone installer. Use `curl` to download the script and execute it with `sh`:
-
-   ```sh
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-
-   Alternatively, if your system doesn't have `curl`, you can use `wget`:
-
-   ```sh
-   wget -qO- https://astral.sh/uv/install.sh | sh
-   ```
-
-   For more installation options, refer to the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
-
-2. **Initialize the Project**:
-
-   Navigate to your project's root directory and initialize it with `uv`:
-
-   ```sh
-   uv init
-   ```
-
-3. **Configure Ruff**:
-
-   Create a `pyproject.toml` file in your project's root directory (if it doesn't exist) and add the following configuration:
-
-   ```toml
-   [tool.ruff]
-   line-length = 100
-   ```
-
-   This sets the maximum line length to 100 characters.
 
 ### Integrating Ruff with Visual Studio Code (VSCode)
 

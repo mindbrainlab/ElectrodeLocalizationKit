@@ -36,13 +36,15 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 pip install uv
 ```
 
-Once `uv` is installed, navigate to the project's root directory (where `uv.lock` is located) and run:
+## Running the App
+
+Once `uv` is installed, navigate to the project's root directory and run:
 
 ```sh
-uv sync
+uv run main.py
 ```
 
-This command will create a virtual environment (if not already present) and install the exact dependencies specified in `uv.lock`.
+On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.
 
 ## Supported Formats
 

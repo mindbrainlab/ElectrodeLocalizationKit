@@ -178,10 +178,12 @@ class CapModel(QAbstractTableModel):
         """Labels the point in the electrode cap closest to the given point."""
         distances = self._calculate_distances(target_coordinates, modality)
 
-        # label the point with the smallest distance
         if len(distances) > 0:
             min_distance = min(distances, key=lambda x: x[1])
-            self._data[min_distance[0]].label = label
+            for electrode in self._data:
+                if hash(electrode) == min_distance[0]:
+                    electrode.label = label
+                    electrode.labeled = True
 
     def transform_electrodes(self, modality: str, A: np.ndarray) -> None:
         """Applies a transformation to all electrodes in the cap."""

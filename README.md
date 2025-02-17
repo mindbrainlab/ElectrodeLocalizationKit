@@ -121,43 +121,6 @@ ruff format .
 
 For more configuration options and detailed usage, refer to the [Ruff documentation](https://docs.astral.sh/ruff/).
 
-### Setting Up Ruff with uv
-
-1. **Install uv**:
-
-   `uv` provides a standalone installer. Use `curl` to download the script and execute it with `sh`:
-
-   ```sh
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-
-   Alternatively, if your system doesn't have `curl`, you can use `wget`:
-
-   ```sh
-   wget -qO- https://astral.sh/uv/install.sh | sh
-   ```
-
-   For more installation options, refer to the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
-
-2. **Initialize the Project**:
-
-   Navigate to your project's root directory and initialize it with `uv`:
-
-   ```sh
-   uv init
-   ```
-
-3. **Configure Ruff**:
-
-   Create a `pyproject.toml` file in your project's root directory (if it doesn't exist) and add the following configuration:
-
-   ```toml
-   [tool.ruff]
-   line-length = 100
-   ```
-
-   This sets the maximum line length to 100 characters.
-
 ### Integrating Ruff with Visual Studio Code (VSCode)
 
 To enhance your development experience, integrate Ruff directly into VSCode:

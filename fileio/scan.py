@@ -46,7 +46,7 @@ def load_texture(
     electrode_detector: BaseElectrodeDetector | None,
 ):
     file_path, _ = QFileDialog.getOpenFileName(
-        self,
+        None,
         "Open Texture File",
         "",
         "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)",

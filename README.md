@@ -69,7 +69,7 @@ For help and support, please contact:
 
 ## Version
 
-The current version of the package is **0.4.1**.
+The current version of the package is **0.4.3**.
 
 ## License
 

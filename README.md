@@ -39,11 +39,16 @@ pip install uv
 ## Running the App
 
 Once `uv` is installed, navigate to the project's root directory and run:
+## Running the App
+
+Once `uv` is installed, navigate to the project's root directory and run:
 
 ```sh
 uv run main.py
+uv run main.py
 ```
 
+On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.
 On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.
 
 ## Supported Formats
@@ -88,6 +93,7 @@ If you use ELK in your research, please cite our GitHub repository as follows:
   title={ELK: Electrode Localization Kit},
   author={Aleksij Kraljič, Jure Demšar, Grega Repovš},
   year={2023},
+  url={https://github.com/mindbrainlab/ElectrodeLocalizationKit}
   url={https://github.com/mindbrainlab/ElectrodeLocalizationKit}
 }
 ```

@@ -166,7 +166,7 @@ def label_corresponding_electrodes(
     )
 
 
-def interpolate_missing_electrodes(model: CapModel, views: dict):
+def interpolate_missing_electrodes(model: CapModel, views: dict, interpolate_button: QPushButton):
     measured_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.HEADSCAN])
     reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
@@ -208,3 +208,4 @@ def interpolate_missing_electrodes(model: CapModel, views: dict):
         )
         model.insert_electrode(electrode)
     display_surface(views["labeling_reference"])
+    interpolate_button.setEnabled(False)

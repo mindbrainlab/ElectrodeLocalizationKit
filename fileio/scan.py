@@ -1,11 +1,13 @@
-from PyQt6.QtWidgets import QFrame
-from ui.pyloc_main_window import Ui_ELK
+from PyQt6.QtWidgets import QFrame, QFileDialog
 from config.sizes import ElectrodeSizes
 from view.surface_view import SurfaceView
 from view.interactive_surface_view import InteractiveSurfaceView
 from processing_models.electrode_detector import BaseElectrodeDetector
 from data_models.cap_model import CapModel
 from data_models.head_models import HeadScan
+import os
+
+ENV = os.getenv("ELK_ENV", "production")
 
 
 # define slots (functions)
@@ -16,16 +18,17 @@ def load_surface(
     frames: list[tuple[str, QFrame]],
     model: CapModel,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     None,
-    #     "Open Surface File",
-    #     "",
-    #     "All Files (*);;STL Files (*.stl);;OBJ Files (*.obj)",
-    # )
-    # if file_path:
-    #     files["scan"] = file_path
-
-    files["scan"] = "sample_data/model_mesh.obj"
+    if ENV == "development":
+        files["scan"] = "sample_data/model_mesh.obj"
+    else:
+        file_path, _ = QFileDialog.getOpenFileName(
+            None,
+            "Open Surface File",
+            "",
+            "OBJ Files (*.obj);;STL Files (*.stl)",
+        )
+        if file_path:
+            files["scan"] = file_path
 
     headmodels["scan"] = HeadScan(files["scan"], files["texture"])
 
@@ -45,16 +48,17 @@ def load_texture(
     model: CapModel,
     electrode_detector: BaseElectrodeDetector | None,
 ):
-    # file_path, _ = QFileDialog.getOpenFileName(
-    #     self,
-    #     "Open Texture File",
-    #     "",
-    #     "All Files (*);;Image Files (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)"
-    #     )
-    # if file_path:
-    #     files["texture"] = file_path
-
-    files["texture"] = "sample_data/model_mesh.jpg"
+    if ENV == "development":
+        files["texture"] = "sample_data/model_mesh.jpg"
+    else:
+        file_path, _ = QFileDialog.getOpenFileName(
+            None,
+            "Open Texture File",
+            "",
+            "Image Files (*.jpg *.jpeg *.bmp *.gif *.tiff)",
+        )
+        if file_path:
+            files["texture"] = file_path
 
     if electrode_detector:
         electrode_detector.apply_texture(files["texture"])

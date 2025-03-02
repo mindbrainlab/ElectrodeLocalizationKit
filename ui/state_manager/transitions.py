@@ -325,6 +325,16 @@ def setup_texture_processing_transitions(self):
         self.ui.proceed_button_4.clicked, self.state_machine[States.QC_SURFACE_TEXTURE.value]
     )
 
+    # skip texture
+    self.state_machine[States.TEXTURE_DOG.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+    self.state_machine[States.TEXTURE_HOUGH.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+
     # Reverse transitions:
     self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value].add_transition(
         self.ui.restart_button_2.clicked, self.state_machine[States.TEXTURE_DOG.value]
@@ -366,6 +376,16 @@ def setup_texture_with_mri_processing_transitions(self):
         self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT.value],
     )
 
+    # skip texture
+    self.state_machine[States.TEXTURE_WITH_MRI_DOG.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+    self.state_machine[States.TEXTURE_WITH_MRI_HOUGH.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+
     # Reverse transitions:
     self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING.value].add_transition(
         self.ui.restart_button_2.clicked,
@@ -401,6 +421,16 @@ def setup_texture_processing_no_locs_transitions(self):
         self.state_machine[States.SURFACE_TEXTURE_PROCESSING_NO_LOCS.value],
     )
 
+    # skip texture
+    self.state_machine[States.TEXTURE_DOG_NO_LOCS.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+    self.state_machine[States.TEXTURE_HOUGH_NO_LOCS.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+
     # Reverse transitions:
     self.state_machine[States.SURFACE_TEXTURE_PROCESSING_NO_LOCS.value].add_transition(
         self.ui.restart_button_2.clicked,
@@ -430,6 +460,16 @@ def setup_texture_with_mri_processing_no_locs_transitions(self):
     self.state_machine[States.SURFACE_TEXTURE_WITH_MRI_PROCESSING_NO_LOCS.value].add_transition(
         self.ui.proceed_button_2.clicked,
         self.state_machine[States.SURFACE_TEXTURE_TO_MRI_ALIGNMENT_NO_LOCS.value],
+    )
+
+    # skip texture
+    self.state_machine[States.TEXTURE_WITH_MRI_DOG_NO_LOCS.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
+    )
+    self.state_machine[States.TEXTURE_WITH_MRI_HOUGH_NO_LOCS.value].add_transition(
+        self.ui.skip_button_1.clicked,
+        self.state_machine[States.SURFACE_TEXTURE_PROCESSING.value],
     )
 
     # Reverse transitions:

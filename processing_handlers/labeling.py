@@ -46,6 +46,7 @@ def register_reference_electrodes_to_measured(
     display_surface(views["labeling_reference"])
     ui.label_register_button.setEnabled(False)
     ui.label_align_button.setEnabled(True)
+    ui.label_interpolate_button.setEnabled(True)
 
     refresh_count_indicators(
         model,
@@ -82,7 +83,6 @@ def align_reference_electrodes_to_measured(
             electrode_aligner.align(electrode)
 
     display_surface(views["labeling_reference"])
-    ui.label_align_button.setEnabled(False)
     ui.label_autolabel_button.setEnabled(True)
 
     refresh_count_indicators(
@@ -115,7 +115,6 @@ def autolabel_measured_electrodes(
     display_surface(views["labeling_main"])
     display_surface(views["labeling_reference"])
 
-    ui.label_interpolate_button.setEnabled(True)
     ui.label_autolabel_button.setEnabled(False)
 
     refresh_count_indicators(

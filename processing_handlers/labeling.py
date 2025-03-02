@@ -8,6 +8,7 @@ from processing_models.electrode_aligner import (
     BaseElectrodeLabelingAligner,
     compute_electrode_correspondence,
 )
+from ui.callbacks.refresh import refresh_count_indicators
 
 from PyQt6.QtWidgets import QPushButton
 
@@ -23,11 +24,7 @@ from utils.warnings import throw_electrode_registration_warning
 
 
 def register_reference_electrodes_to_measured(
-    views: dict,
-    model: CapModel,
-    electrode_registrator: BaseElectrodeRegistrator,
-    register_button: QPushButton,
-    align_button: QPushButton,
+    views: dict, model: CapModel, electrode_registrator: BaseElectrodeRegistrator, ui
 ):
     model.compute_centroid()
 
@@ -47,16 +44,20 @@ def register_reference_electrodes_to_measured(
     )
 
     display_surface(views["labeling_reference"])
-    register_button.setEnabled(False)
-    align_button.setEnabled(True)
+    ui.label_register_button.setEnabled(False)
+    ui.label_align_button.setEnabled(True)
+
+    refresh_count_indicators(
+        model,
+        ui.measured_electrodes_label,
+        ui.labeled_electrodes_label,
+        ui.reference_electrodes_label,
+        ui.interpolated_electrodes_label,
+    )
 
 
 def align_reference_electrodes_to_measured(
-    model: CapModel,
-    views: dict,
-    electrode_aligner: BaseElectrodeLabelingAligner,
-    align_button: QPushButton,
-    autolabel_button: QPushButton,
+    model: CapModel, views: dict, electrode_aligner: BaseElectrodeLabelingAligner, ui
 ):
     labeled_measured_electrodes = model.get_labeled_electrodes(
         [ModalitiesMapping.MRI, ModalitiesMapping.HEADSCAN]
@@ -81,17 +82,20 @@ def align_reference_electrodes_to_measured(
             electrode_aligner.align(electrode)
 
     display_surface(views["labeling_reference"])
-    align_button.setEnabled(False)
-    autolabel_button.setEnabled(True)
+    ui.label_align_button.setEnabled(False)
+    ui.label_autolabel_button.setEnabled(True)
+
+    refresh_count_indicators(
+        model,
+        ui.measured_electrodes_label,
+        ui.labeled_electrodes_label,
+        ui.reference_electrodes_label,
+        ui.interpolated_electrodes_label,
+    )
 
 
 def autolabel_measured_electrodes(
-    model: CapModel,
-    views: dict,
-    electrode_aligner: BaseElectrodeLabelingAligner,
-    align_button: QPushButton,
-    interpolate_button: QPushButton,
-    autolabel_button: QPushButton,
+    model: CapModel, views: dict, electrode_aligner: BaseElectrodeLabelingAligner, ui
 ):
     thresholds = np.arange(0.1, 0.5, 0.05)
 
@@ -106,23 +110,30 @@ def autolabel_measured_electrodes(
             factor_threshold=threshold,
         )
 
-        label_corresponding_electrodes(
-            model, views, electrode_aligner, align_button, autolabel_button
-        )
+        label_corresponding_electrodes(model, views, electrode_aligner, ui)
 
-    interpolate_button.setEnabled(True)
-    autolabel_button.setEnabled(False)
+    display_surface(views["labeling_main"])
+    display_surface(views["labeling_reference"])
+
+    ui.label_interpolate_button.setEnabled(True)
+    ui.label_autolabel_button.setEnabled(False)
+
+    refresh_count_indicators(
+        model,
+        ui.measured_electrodes_label,
+        ui.labeled_electrodes_label,
+        ui.reference_electrodes_label,
+        ui.interpolated_electrodes_label,
+    )
 
 
-def visualize_labeling_correspondence(
-    model: CapModel, views: dict, slider: QSlider, slider_label: QLabel
-):
+def visualize_labeling_correspondence(model: CapModel, views: dict, ui):
     def f(x: float, k: float = 0.0088, n: float = 0.05):
         return k * x + n
 
-    x = slider.value()
+    x = ui.correspondence_slider.value()
     correspondence_value = f(x)
-    slider_label.setText(f"Value: {correspondence_value:.2f}")
+    ui.correspondence_slider_label.setText(f"Value: {correspondence_value:.2f}")
 
     model.correspondence = compute_electrode_correspondence(
         labeled_reference_electrodes=model.get_unaligned_electrodes([ModalitiesMapping.REFERENCE]),
@@ -146,11 +157,7 @@ def visualize_labeling_correspondence(
 
 
 def label_corresponding_electrodes(
-    model: CapModel,
-    views: dict,
-    electrode_aligner: BaseElectrodeLabelingAligner,
-    align_button: QPushButton,
-    autolabel_button: QPushButton,
+    model: CapModel, views: dict, electrode_aligner: BaseElectrodeLabelingAligner, ui
 ):
     for entry in model.correspondence:
         unlabeled_electrode = entry["electrode"]
@@ -161,12 +168,18 @@ def label_corresponding_electrodes(
             unlabeled_electrode.label = reference_electrode.label
             unlabeled_electrode.labeled = True
 
-    align_reference_electrodes_to_measured(
-        model, views, electrode_aligner, align_button, autolabel_button
+    align_reference_electrodes_to_measured(model, views, electrode_aligner, ui)
+
+    refresh_count_indicators(
+        model,
+        ui.measured_electrodes_label,
+        ui.labeled_electrodes_label,
+        ui.reference_electrodes_label,
+        ui.interpolated_electrodes_label,
     )
 
 
-def interpolate_missing_electrodes(model: CapModel, views: dict, interpolate_button: QPushButton):
+def interpolate_missing_electrodes(model: CapModel, views: dict, ui):
     measured_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.HEADSCAN])
     reference_electrodes = model.get_electrodes_by_modality([ModalitiesMapping.REFERENCE])
 
@@ -207,5 +220,14 @@ def interpolate_missing_electrodes(model: CapModel, views: dict, interpolate_but
             reference_electrode.unit_sphere_cartesian_coordinates  # type: ignore
         )
         model.insert_electrode(electrode)
+    display_surface(views["labeling_main"])
     display_surface(views["labeling_reference"])
-    interpolate_button.setEnabled(False)
+    ui.label_interpolate_button.setEnabled(False)
+
+    refresh_count_indicators(
+        model,
+        ui.measured_electrodes_label,
+        ui.labeled_electrodes_label,
+        ui.reference_electrodes_label,
+        ui.interpolated_electrodes_label,
+    )

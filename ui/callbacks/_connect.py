@@ -7,8 +7,6 @@ from config.sizes import ElectrodeSizes
 
 from callbacks.display import (
     display_surface,
-    display_dog,
-    display_hough,
     set_surface_alpha,
 )
 

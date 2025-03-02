@@ -11,6 +11,7 @@ from data.exporter import export_electrodes_to_file
 
 from .electrode import Electrode
 from config.mappings import ModalitiesMapping
+from config.sizes import ElectrodeSizes
 
 
 class CapModel(QAbstractTableModel):
@@ -110,6 +111,23 @@ class CapModel(QAbstractTableModel):
         return super().headerData(section, orientation, role)
 
     def insert_electrode(self, electrode: Electrode, parent=QModelIndex()) -> None:
+        distances = self._calculate_distances(
+            electrode.coordinates, electrode.modality, include_fiducials=True
+        )
+
+        too_close_electrodes = [
+            d[0]
+            for d in distances
+            if (
+                d[1] <= ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE / 2
+                or d[1] <= ElectrodeSizes.MRI_ELECTRODE_SIZE / 2
+                or d[1] <= ElectrodeSizes.LABEL_ELECTRODE_SIZE / 2
+            )
+        ]
+
+        if len(too_close_electrodes) > 0:
+            return
+
         self.beginInsertRows(parent, self.rowCount(), self.rowCount())
         self._data.append(electrode)
         self.endInsertRows()
@@ -163,7 +181,7 @@ class CapModel(QAbstractTableModel):
             point = np.array(electrode.coordinates)
             dist = np.linalg.norm(point - target_coordinates)
             distances.append((hash(electrode), dist))
-        return distances
+        return sorted(distances, key=lambda x: x[0])
 
     def remove_closest_electrode(
         self, target_coordinates: Iterable[float], modality: str, include_fiducials: bool = False

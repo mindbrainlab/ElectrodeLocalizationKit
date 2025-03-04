@@ -22,10 +22,7 @@ def load_surface(
         files["scan"] = "sample_data/model_mesh.obj"
     else:
         file_path, _ = QFileDialog.getOpenFileName(
-            None,
-            "Open Surface File",
-            "",
-            "OBJ Files (*.obj);;STL Files (*.stl)",
+            None, "Open Surface File", "", "OBJ/PLY Files (*.obj *.ply);;All Files (*)"
         )
         if file_path:
             files["scan"] = file_path

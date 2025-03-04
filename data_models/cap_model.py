@@ -11,6 +11,7 @@ from data.exporter import export_electrodes_to_file
 
 from .electrode import Electrode
 from config.mappings import ModalitiesMapping
+from config.sizes import ElectrodeSizes
 
 
 class CapModel(QAbstractTableModel):
@@ -63,11 +64,13 @@ class CapModel(QAbstractTableModel):
             if not electrode.aligned and electrode.modality in modality and ~electrode.fiducial
         ]
 
-    def get_electrodes_by_modality(self, modality: list[str]) -> list[Electrode]:
+    def get_electrodes_by_modality(
+        self, modality: list[str], include_fiducials: bool = False
+    ) -> list[Electrode]:
         return [
             electrode
             for electrode in self._data
-            if electrode.modality in modality and not electrode.fiducial
+            if electrode.modality in modality and (not electrode.fiducial or include_fiducials)
         ]
 
     def get_fiducials(self, modality: str) -> list[Electrode]:
@@ -108,6 +111,23 @@ class CapModel(QAbstractTableModel):
         return super().headerData(section, orientation, role)
 
     def insert_electrode(self, electrode: Electrode, parent=QModelIndex()) -> None:
+        distances = self._calculate_distances(
+            electrode.coordinates, electrode.modality, include_fiducials=True
+        )
+
+        too_close_electrodes = [
+            d[0]
+            for d in distances
+            if (
+                d[1] <= ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE / 2
+                or d[1] <= ElectrodeSizes.MRI_ELECTRODE_SIZE / 2
+                or d[1] <= ElectrodeSizes.LABEL_ELECTRODE_SIZE / 2
+            )
+        ]
+
+        if len(too_close_electrodes) > 0:
+            return
+
         self.beginInsertRows(parent, self.rowCount(), self.rowCount())
         self._data.append(electrode)
         self.endInsertRows()
@@ -153,19 +173,21 @@ class CapModel(QAbstractTableModel):
         return self._data.index(electrode)
 
     def _calculate_distances(
-        self, target_coordinates: Iterable[float], modality
+        self, target_coordinates: Iterable[float], modality, include_fiducials: bool = False
     ) -> list[tuple[int, float]]:
         """Calculates the distances between the given point and all points in the electrode cap."""
         distances = []
-        for electrode in self.get_electrodes_by_modality([modality]):
+        for electrode in self.get_electrodes_by_modality([modality], include_fiducials):
             point = np.array(electrode.coordinates)
             dist = np.linalg.norm(point - target_coordinates)
             distances.append((hash(electrode), dist))
-        return distances
+        return sorted(distances, key=lambda x: x[0])
 
-    def remove_closest_electrode(self, target_coordinates: Iterable[float], modality: str) -> None:
+    def remove_closest_electrode(
+        self, target_coordinates: Iterable[float], modality: str, include_fiducials: bool = False
+    ) -> None:
         """Removes the point in the electrode cap closest to the given point."""
-        distances = self._calculate_distances(target_coordinates, modality)
+        distances = self._calculate_distances(target_coordinates, modality, include_fiducials)
 
         # remove the point with the smallest distance
         if len(distances) > 0:

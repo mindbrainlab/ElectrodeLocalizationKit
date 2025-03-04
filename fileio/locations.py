@@ -59,7 +59,7 @@ def save_locations_to_file(model: CapModel):
         None,
         "Save Locations File",
         "",
-        "All Files (*);;CSV Files (*.csv)",
+        "CED Files (*.ced);;CSV Files (*.csv);;All Files (*)",
     )
     if file_path:
         model.save_electrodes_to_file(file_path)

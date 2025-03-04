@@ -119,7 +119,7 @@ class InteractiveSurfaceView(SurfaceView):
                 electrode = Electrode(point, modality=self.modality[0], label="None")
                 self.model.insert_electrode(electrode)
             elif self._interaction_state == "d":
-                self.model.remove_closest_electrode(point, self.modality[0])
+                self.model.remove_closest_electrode(point, self.modality[0], include_fiducials=True)
             elif self._interaction_state == "a":
                 labels = [
                     electrode.label

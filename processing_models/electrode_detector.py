@@ -124,7 +124,12 @@ class DogHoughElectrodeDetector(BaseElectrodeDetector):
         vertices = mesh.points()
 
         # extract the uv coordinates from the mesh
-        uv = mesh.pointdata["material_0"]
+        if "material_0" in mesh.pointdata.keys():
+            uv = mesh.pointdata["material_0"]
+        elif "TCoords" in mesh.pointdata.keys():
+            uv = mesh.pointdata["TCoords"]
+        else:
+            raise Exception("No UV coordinates found in mesh.")
 
         # convert pixels to uv coordinates
         uv_image = [

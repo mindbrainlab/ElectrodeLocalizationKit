@@ -1,6 +1,7 @@
 from config.mappings import ModalitiesMapping
 from .state_machine import States, State
 from ui.callbacks.display import display_dog
+from ui.callbacks.refresh import refresh_count_indicators
 
 
 def initialize_fileio_states(self):
@@ -21,6 +22,15 @@ def initialize_fileio_states(self):
     )
     self.state_machine[state_name].add_callback(lambda: self.set_data_containers())
     self.state_machine[state_name].add_callback(lambda: self.model.clear())
+    self.state_machine[state_name].add_callback(
+        lambda: refresh_count_indicators(
+            self.model,
+            self.ui.measured_electrodes_label,
+            self.ui.labeled_electrodes_label,
+            self.ui.reference_electrodes_label,
+            self.ui.interpolated_electrodes_label,
+        )
+    )
 
     # LOCATIONS_LOADED state
     state_name = States.LOCATIONS_LOADED.value

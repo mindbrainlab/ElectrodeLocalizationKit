@@ -46,7 +46,7 @@ def load_texture(
     electrode_detector: BaseElectrodeDetector | None,
 ):
     if ENV == "development":
-        files["texture"] = "sample_data/model_mesh.jpg"
+        files["texture"] = "sample_data/model_texture.jpg"
     else:
         file_path, _ = QFileDialog.getOpenFileName(
             None,

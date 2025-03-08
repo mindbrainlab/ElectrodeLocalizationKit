@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 settings.json
-sample_data/*
+_data/*
 .DS_Store
 *.egg
 *.egg-info/

@@ -12,7 +12,7 @@ class DogParameters:
 
 class HoughParameters:
     PARAM1 = 5
-    PARAM2 = 7.5
-    MIN_DISTANCE = 100
-    MIN_RADIUS = 12
-    MAX_RADIUS = 20
+    PARAM2 = 7
+    MIN_DISTANCE = 68
+    MIN_RADIUS = 13
+    MAX_RADIUS = 16

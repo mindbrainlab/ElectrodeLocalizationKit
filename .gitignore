@@ -7,3 +7,4 @@ _data/*
 *.egg
 *.egg-info/
 uv.lock
+logs/*

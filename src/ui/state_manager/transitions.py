@@ -1,7 +1,5 @@
 from .state_machine import States
 
-from .state_machine import States
-
 
 def initialize_fileio_transitions(self):
     # Transitions from INITIAL state

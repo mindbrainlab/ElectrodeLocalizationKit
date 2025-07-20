@@ -1,9 +1,14 @@
+from multiprocessing import Value
 from PyQt6.QtWidgets import QFrame, QFileDialog
 from config.sizes import ElectrodeSizes
 from view.labeling_surface_view import LabelingSurfaceView
 from data_models.cap_model import CapModel
 from data_models.head_models import UnitSphere
+
 import os
+from pathlib import Path
+
+from timing.timer import stage_timer
 
 ENV = os.getenv("ELK_ENV", "production")
 
@@ -62,4 +67,6 @@ def save_locations_to_file(model: CapModel):
         "CED Files (*.ced);;CSV Files (*.csv);;All Files (*)",
     )
     if file_path:
+        stage_timer.log("FINAL STATE")
+        stage_timer.save(filepath=Path(f"{Path(file_path).with_suffix('')}_timing.csv"))
         model.save_electrodes_to_file(file_path)

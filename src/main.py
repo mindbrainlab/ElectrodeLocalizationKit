@@ -48,6 +48,13 @@ from ui.callbacks.connect.connect_scan_mri_alignment import (
     connect_display_secondary_mesh_checkbox,
 )
 
+import logging
+from config.logger_config import setup_logger
+
+setup_logger(logging.INFO)
+
+logger = logging.getLogger(__name__)
+
 
 class StartQt6(QMainWindow):
     def __init__(self, parent=None):
@@ -138,17 +145,17 @@ class StartQt6(QMainWindow):
         for button_name, enabled_state in kwargs.items():
             button = self.findChild(QPushButton, button_name)
             if button:
-                print(f"Setting {button_name} to {enabled_state}")
+                logger.info(f"Setting {button_name} to {enabled_state}")
                 button.setEnabled(enabled_state)
 
     def update_tab_states(self, **kwargs):
         for tab_index, enabled_state in kwargs.items():
-            print(f"Setting tab {tab_index} to {enabled_state}")
+            logger.info(f"Setting tab {tab_index} to {enabled_state}")
             self.ui.tabWidget.setTabEnabled(int(tab_index[1]), enabled_state)
 
     def update_texture_tab_states(self, **kwargs):
         for tab_index, enabled_state in kwargs.items():
-            print(f"Setting texture tab {tab_index} to {enabled_state}")
+            logger.info(f"Setting texture tab {tab_index} to {enabled_state}")
             self.ui.tabWidget_texture.setTabEnabled(int(tab_index[1]), enabled_state)
 
     def switch_tab(self, tab_index):

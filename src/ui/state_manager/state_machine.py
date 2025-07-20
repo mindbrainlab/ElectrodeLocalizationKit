@@ -1,5 +1,11 @@
 from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject
 from enum import Enum
+import logging
+
+from timing.timer import stage_timer
+
+
+logger = logging.getLogger(__name__)
 
 
 class States(Enum):
@@ -78,7 +84,7 @@ class State(QObject):
 
     def apply_callbacks(self):
         for callback in self.callbacks:
-            print(f"Applying callback {callback}")
+            logger.info(f"Applying callback {callback}")
             callback()
 
 
@@ -113,22 +119,24 @@ class StateMachine(QObject):
     def transition_to(self, state=None):
         if self.sender() is not None and hasattr(self.sender(), "clicked"):
             if self.sender().clicked in self.current_state.transitions.keys():  # type: ignore
+                if self.current_state is not None:
+                    stage_timer.log(self.current_state.name)
                 self.current_state = self.current_state.transitions[  # type: ignore
                     self.sender().clicked  # type: ignore
                 ]
                 self.current_state.apply_callbacks()
-                print(f"Transitioning to {self.current_state.name} as callback.")
+                logger.info(f"Transitioning to {self.current_state.name} as callback.")
                 self.statusbar.showMessage(f"State: {self.current_state.name}")
         elif state:
             self.current_state = state
             self.current_state.apply_callbacks()
-            print(f"Transitioning to {self.current_state.name} from argument.")
+            logger.info(f"Transitioning to {self.current_state.name} from argument.")
             self.statusbar.showMessage(f"State: {self.current_state.name}")
 
     def connect_signals(self):
         for state in self.states.values():
             for signal, next_state in state.transitions.items():
-                print(f"Connecting signal {signal} to {next_state.name}")
+                logger.info(f"Connecting signal {signal} to {next_state.name}")
                 signal.connect(lambda: self.transition_to(next_state))
 
     def disconnect_signals(self, state):

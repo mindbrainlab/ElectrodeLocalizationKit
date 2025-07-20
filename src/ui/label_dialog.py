@@ -7,6 +7,10 @@ from PyQt6.QtWidgets import (
     QComboBox,
 )
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class LabelingDialog(QDialog):
     def __init__(self, possible_labels: list[str] | None = None):
@@ -57,7 +61,7 @@ class LabelingDialog(QDialog):
         else:  # If we have a line edit
             self.electrode_label = self.line_edit.text()
 
-        print(
+        logger.info(
             f"Selected Electrode: {self.electrode_label}"
         )  # Placeholder for actual selection logic
         self.accept()  # Close the dialog with accepted status

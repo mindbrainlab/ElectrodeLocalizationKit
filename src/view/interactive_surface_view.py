@@ -9,7 +9,7 @@ from data_models.cap_model import CapModel
 from config.colors import ElectrodeColors
 from config.mappings import ModalitiesMapping
 
-from label_dialog import LabelingDialog
+from ui.label_dialog import LabelingDialog
 
 
 class InteractiveSurfaceView(SurfaceView):

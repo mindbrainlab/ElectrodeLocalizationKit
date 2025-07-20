@@ -54,7 +54,7 @@ class StartQt6(QMainWindow):
         QMainWindow.__init__(self, parent)
         self.ui = Ui_ELK()
         self.ui.setupUi(self)
-        self.ui.label.setPixmap(QPixmap("ui/qt_designer/images/MainLogo.png"))
+        self.ui.label.setPixmap(QPixmap("src/ui/qt_designer/images/MainLogo.png"))
 
         # main data containers
         self.set_data_containers()

@@ -3,7 +3,7 @@
 
 # ELK: Electrode Localization Kit
 
-![Program Logo](ui/qt_designer/images/MainLogo.png)
+![Program Logo](src/ui/qt_designer/images/MainLogo.png)
 
 ## Overview
 
@@ -11,7 +11,7 @@ Accurate localization of EEG scalp electrodes is crucial for precisely estimatin
 
 To address these challenges, we present an open-source Python environment for electrode localization. Our approach utilizes surface models of the human head generated from data acquired by affordable IR stereo structured light projection cameras and/or structural MRI head scans. Our primary objective was to streamline the electrode localization process, reducing both acquisition and processing time. We achieved automated electrode detection from head texture images and electrode labeling from template location files, reducing the acquisition and processing time together to under 5 minutes. Our environment enhances efficiency and accuracy in EEG electrode localization, facilitating seamless integration into neuroimaging workflows.
 
-![Toolbox Image](ui/qt_designer/images/App.png)  
+![Toolbox Image](src/ui/qt_designer/images/App.png)  
 
 ## Key Features
 
@@ -44,8 +44,8 @@ Once `uv` is installed, navigate to the project's root directory and run:
 Once `uv` is installed, navigate to the project's root directory and run:
 
 ```sh
-uv run main.py
-uv run main.py
+uv run src/main.py
+uv run src/main.py
 ```
 
 On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.

@@ -20,12 +20,12 @@ def load_locations(
     model: CapModel,
 ):
     # remove existing reference electrodes
-    reference_electrode = model.get_electrodes_by_modality(["reference"])
-    if len(reference_electrode) > 0:
-        for electrode in reference_electrode:
-            electrode_id = model.get_electrode_id(electrode)
-            if electrode_id is not None:
-                model.remove_electrode_by_id(electrode_id)
+    # reference_electrode = model.get_electrodes_by_modality(["reference"])
+    # if len(reference_electrode) > 0:
+    #     for electrode in reference_electrode:
+    #         electrode_id = model.get_electrode_id(electrode)
+    #         if electrode_id is not None:
+    #             model.remove_electrode_by_id(electrode_id)
 
     if ENV == "development":
         files["locations"] = "sample_data/measured_electrodes.ced"

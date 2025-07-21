@@ -47,21 +47,21 @@ class CapModel(QAbstractTableModel):
         return [
             electrode
             for electrode in self._data
-            if electrode.labeled and electrode.modality in modality and ~electrode.fiducial
+            if electrode.labeled and electrode.modality in modality and not electrode.fiducial
         ]
 
     def get_unlabeled_electrodes(self, modality: list[str]) -> list[Electrode]:
         return [
             electrode
             for electrode in self._data
-            if not electrode.labeled and electrode.modality in modality and ~electrode.fiducial
+            if not electrode.labeled and electrode.modality in modality and not electrode.fiducial
         ]
 
     def get_unaligned_electrodes(self, modality: list[str]) -> list[Electrode]:
         return [
             electrode
             for electrode in self._data
-            if not electrode.aligned and electrode.modality in modality and ~electrode.fiducial
+            if not electrode.aligned and electrode.modality in modality and not electrode.fiducial
         ]
 
     def get_electrodes_by_modality(
@@ -93,7 +93,9 @@ class CapModel(QAbstractTableModel):
         electrodes = [
             electrode
             for electrode in self._data
-            if electrode.label == label and electrode.modality == modality and ~electrode.fiducial
+            if electrode.label == label
+            and electrode.modality == modality
+            and not electrode.fiducial
         ]
         if len(electrodes) == 1:
             return electrodes[0]

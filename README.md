@@ -74,7 +74,7 @@ For help and support, please contact:
 
 ## Version
 
-The current version of the package is **0.5.0**.
+The current version of the package is **0.7.0**.
 
 ## License
 

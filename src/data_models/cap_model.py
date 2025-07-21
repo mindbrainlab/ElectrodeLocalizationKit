@@ -73,11 +73,11 @@ class CapModel(QAbstractTableModel):
             if electrode.modality in modality and (not electrode.fiducial or include_fiducials)
         ]
 
-    def get_fiducials(self, modality: str) -> list[Electrode]:
+    def get_fiducials(self, modality: list[str]) -> list[Electrode]:
         return [
             electrode
             for electrode in self._data
-            if electrode.modality == modality and electrode.fiducial
+            if electrode.modality in modality and electrode.fiducial
         ]
 
     def get_interpolated_electrodes(self) -> list[Electrode]:
@@ -160,6 +160,10 @@ class CapModel(QAbstractTableModel):
         measured_electrodes = self.get_electrodes_by_modality(
             [ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI]
         )
+
+        fiducials = self.get_fiducials([ModalitiesMapping.HEADSCAN, ModalitiesMapping.MRI])
+
+        measured_electrodes += fiducials
 
         if len(measured_electrodes) > 0:
             export_electrodes_to_file(measured_electrodes, filename)

@@ -1,4 +1,3 @@
-from math import e
 import pandas as pd
 from data_models.electrode import Electrode
 from config.mappings import ElectrodesFileMapping

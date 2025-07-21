@@ -18,8 +18,8 @@ def align_scan_to_mri(
     surface_registrator: LandmarkSurfaceRegistrator,
     ui: Ui_ELK | None,
 ):
-    scan_fiducials = model.get_fiducials(ModalitiesMapping.HEADSCAN)
-    mri_fiducials = model.get_fiducials(ModalitiesMapping.MRI)
+    scan_fiducials = model.get_fiducials([ModalitiesMapping.HEADSCAN])
+    mri_fiducials = model.get_fiducials([ModalitiesMapping.MRI])
 
     scan_fiducials_labels = [fid.label for fid in scan_fiducials]
     mri_fiducials_labels = [fid.label for fid in mri_fiducials]

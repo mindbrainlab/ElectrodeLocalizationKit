@@ -39,6 +39,7 @@ pip install uv
 ## Running the App
 
 Once `uv` is installed, navigate to the project's root directory and run:
+
 ## Running the App
 
 Once `uv` is installed, navigate to the project's root directory and run:
@@ -74,7 +75,7 @@ For help and support, please contact:
 
 ## Version
 
-The current version of the package is **0.7.0**.
+The current version of the package is **0.7.1**.
 
 ## License
 

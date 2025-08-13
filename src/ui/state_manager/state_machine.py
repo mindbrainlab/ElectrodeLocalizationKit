@@ -1,5 +1,5 @@
 from PyQt6.QtCore import pyqtSignal, pyqtSlot, QObject
-from enum import Enum
+from enum import StrEnum
 import logging
 
 from timing.timer import stage_timer
@@ -8,7 +8,7 @@ from timing.timer import stage_timer
 logger = logging.getLogger(__name__)
 
 
-class States(Enum):
+class States(StrEnum):
     # File I/O states
     INITIAL = "INITIAL"
     LOCATIONS_LOADED = "LOCATIONS_LOADED"

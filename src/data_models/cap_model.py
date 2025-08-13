@@ -9,7 +9,7 @@ import copy
 from data.loader import load_electrodes_from_file
 from data.exporter import export_electrodes_to_file
 
-from .electrode import Electrode
+from data_models.electrode import Electrode
 from config.mappings import ModalitiesMapping
 from config.sizes import ElectrodeSizes
 

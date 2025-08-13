@@ -1,4 +1,4 @@
-from .state_machine import States
+from ui.state_manager.state_machine import States
 
 
 def initialize_fileio_transitions(self):

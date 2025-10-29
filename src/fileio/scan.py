@@ -6,6 +6,7 @@ from processing_models.electrode_detector import BaseElectrodeDetector
 from data_models.cap_model import CapModel
 from data_models.head_models import HeadScan
 import os
+from ui.pyloc_main_window import Ui_ELK
 
 ENV = os.getenv("ELK_ENV", "production")
 
@@ -17,6 +18,7 @@ def load_surface(
     headmodels: dict,
     frames: list[tuple[str, QFrame]],
     model: CapModel,
+    ui: Ui_ELK = None,
 ):
     if ENV == "development":
         files["scan"] = "sample_data/model_mesh.obj"
@@ -34,6 +36,7 @@ def load_surface(
             headmodels["scan"],
             frame,
             model,
+            ui,
         )
 
 
@@ -44,6 +47,7 @@ def load_texture(
     frames: list[tuple[str, QFrame]],
     model: CapModel,
     electrode_detector: BaseElectrodeDetector | None,
+    ui: Ui_ELK = None,
 ):
     if ENV == "development":
         files["texture"] = "sample_data/model_texture.jpg"
@@ -60,13 +64,17 @@ def load_texture(
     if electrode_detector:
         electrode_detector.apply_texture(files["texture"])
 
-    headmodels["scan"] = HeadScan(files["scan"], files["texture"])
+    if headmodels.get("scan") is not None:
+        headmodels["scan"].apply_texture(files["texture"])
+    else:
+        headmodels["scan"] = HeadScan(files["scan"], files["texture"])
 
     for label, frame in frames:
         views[label] = create_surface_view(
             headmodels["scan"],
             frame,
             model,
+            ui,
         )
 
 
@@ -74,6 +82,7 @@ def create_surface_view(
     head_scan: HeadScan,
     frame: QFrame,
     model: CapModel,
+    ui: Ui_ELK = None,
 ) -> SurfaceView | None:
     config = {
         "sphere_size": ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE,
@@ -88,6 +97,7 @@ def create_surface_view(
         [head_scan.modality],
         config,
         model,
+        ui=ui,
     )
 
     return surface_view

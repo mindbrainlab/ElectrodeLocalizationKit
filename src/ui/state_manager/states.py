@@ -239,7 +239,12 @@ def initialize_processing_states(self):
         )
         self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
         self.state_machine[state_name].add_callback(
-            lambda: self.update_button_states(restart_button_2=True, proceed_button_2=True)
+            lambda: self.update_button_states(
+                restart_button_2=True,
+                proceed_button_2=True,
+                process_button=False,
+                detect_button=False,
+            )
         )
 
     for state_name in [
@@ -252,7 +257,12 @@ def initialize_processing_states(self):
         )
         self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
         self.state_machine[state_name].add_callback(
-            lambda: self.update_button_states(restart_button_2=False, proceed_button_2=True)
+            lambda: self.update_button_states(
+                restart_button_2=False,
+                proceed_button_2=True,
+                process_button=False,
+                detect_button=False,
+            )
         )
 
     # Surface Processing (no locations)
@@ -263,7 +273,12 @@ def initialize_processing_states(self):
     )
     self.state_machine[state_name].add_callback(lambda: self.switch_tab(2))
     self.state_machine[state_name].add_callback(
-        lambda: self.update_button_states(restart_button_2=False, proceed_button_2=False)
+        lambda: self.update_button_states(
+            restart_button_2=False,
+            proceed_button_2=False,
+            process_button=False,
+            detect_button=False,
+        )
     )
 
     # -------------------------------

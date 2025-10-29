@@ -1401,13 +1401,13 @@ color: rgb(255, 255, 255);
                  </size>
                 </property>
                 <property name="decimals">
-                 <number>3</number>
+                 <number>1</number>
                 </property>
                 <property name="singleStep">
-                 <double>0.005000000000000</double>
+                 <double>0.500000000000000</double>
                 </property>
                 <property name="value">
-                 <double>0.020000000000000</double>
+                 <double>3.500000000000000</double>
                 </property>
                </widget>
               </item>
@@ -1496,14 +1496,80 @@ color: rgb(255, 255, 255);
                  </size>
                 </property>
                 <property name="singleStep">
-                 <double>0.010000000000000</double>
+                 <double>0.500000000000000</double>
                 </property>
                 <property name="value">
-                 <double>0.050000000000000</double>
+                 <double>5.000000000000000</double>
                 </property>
                </widget>
               </item>
              </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="process_button">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Process</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="detect_button">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Detect</string>
+             </property>
             </widget>
            </item>
            <item>

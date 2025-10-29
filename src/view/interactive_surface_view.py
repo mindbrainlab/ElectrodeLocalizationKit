@@ -11,8 +11,16 @@ from config.mappings import ModalitiesMapping
 
 from ui.label_dialog import LabelingDialog
 
+import os
+from ui.pyloc_main_window import Ui_ELK
+
+ENV = os.getenv("ELK_ENV", "production")
+
 
 class InteractiveSurfaceView(SurfaceView):
+
+    required_fiducials = {"NAS", "INI", "LPA", "RPA", "VTX"}
+
     def __init__(
         self,
         frame,
@@ -21,8 +29,10 @@ class InteractiveSurfaceView(SurfaceView):
         config={},
         model: CapModel | None = None,
         parent=None,
+        ui: Ui_ELK = None,
     ):
         super().__init__(frame, mesh, modality, config, model, parent)
+        self.ui = ui
 
         self._interaction_state = "x"
 
@@ -160,7 +170,12 @@ class InteractiveSurfaceView(SurfaceView):
                 electrode = Electrode(point, modality=self.modality[0], label=label)
                 self.model.insert_electrode(electrode)
             elif self._interaction_state == "E":
-                dialog = LabelingDialog()
+                fiducials = [
+                    fiducial.label for fiducial in self.model.get_fiducials([self.modality[0]])
+                ]
+                unlabeled = list(self.required_fiducials - set(fiducials))
+                unlabeled.sort()
+                dialog = LabelingDialog(unlabeled)
                 dialog.exec()
                 label = dialog.get_electrode_label()
                 electrode = Electrode(point, modality=self.modality[0], label=label, fiducial=True)
@@ -188,6 +203,15 @@ class InteractiveSurfaceView(SurfaceView):
                     pos="top-left",
                 )
                 self._plotter.add(self.text_state)
+
+                # Check for all required fiducials
+                if self.ui:
+                    fiducials = [
+                        fiducial.label for fiducial in self.model.get_fiducials([self.modality[0]])
+                    ]
+                    unlabeled = list(self.required_fiducials - set(fiducials))
+                    if ENV == "development" or not unlabeled:
+                        self.ui.process_button.setEnabled(True)
             elif evt.keyPressed == "s":
                 self._interaction_state = "s"
                 self._plotter.background(c1="#b1fcb3", c2="white")

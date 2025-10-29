@@ -14,6 +14,7 @@ def connect_fileio_buttons(self):
                 ("labeling_main", self.ui.labeling_main_frame),
             ],
             self.model,
+            self.ui,
         )
     )
 
@@ -28,6 +29,7 @@ def connect_fileio_buttons(self):
             ],
             self.model,
             self.electrode_detector,
+            self.ui,
         )
     )
     self.ui.load_mri_button.clicked.connect(

@@ -28,7 +28,7 @@ def load_locations(
     #             model.remove_electrode_by_id(electrode_id)
 
     if ENV == "development":
-        files["locations"] = "sample_data/measured_electrodes.ced"
+        files["locations"] = "sample_data/electrode_locations.ced"
     else:
         file_path, _ = QFileDialog.getOpenFileName(
             None,

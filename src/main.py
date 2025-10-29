@@ -30,6 +30,7 @@ from ui.state_manager.transitions import (
 from ui.callbacks.refresh import refresh_views_on_resize
 from ui.callbacks.connect.connect_fileio import connect_fileio_buttons
 from ui.callbacks.connect.connect_texture import connect_texture_buttons
+from ui.callbacks.connect.connect_detection import connect_detection_buttons
 from ui.callbacks.connect.connect_configuration_boxes import connect_configuration_boxes
 from ui.callbacks.connect.connect_sliders import connect_alpha_sliders
 from ui.callbacks.connect.connect_model import connect_model
@@ -81,10 +82,10 @@ class StartQt6(QMainWindow):
         connect_model(self)
         connect_fileio_buttons(self)
         connect_texture_buttons(self)
+        connect_detection_buttons(self)
         connect_scan_mri_alignment_buttons(self)
         connect_display_secondary_mesh_checkbox(self)
         connect_configuration_boxes(self)
-        connect_texture_buttons(self)
         connect_alpha_sliders(self)
         connect_tab_changed(self)
         connect_splitter_moved(self)
@@ -137,6 +138,10 @@ class StartQt6(QMainWindow):
         self.headmodels = {
             "scan": None,
             "mri": None,
+        }
+        self.loaders = {
+            "mesh": None,
+            "view": None,
         }
 
         self.images = {"dog": None, "hough": None}

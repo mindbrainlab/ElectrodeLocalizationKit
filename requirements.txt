@@ -8,42 +8,60 @@ deprecated==1.2.18
     # via vedo
 fonttools==4.56.0
     # via matplotlib
+imageio==2.37.0
+    # via scikit-image
+joblib==1.5.2
+    # via scikit-learn
 kiwisolver==1.4.8
     # via matplotlib
+lazy-loader==0.4
+    # via scikit-image
 matplotlib==3.10.0
     # via vtk
+networkx==3.5
+    # via scikit-image
 nibabel==5.2.1
-    # via electrodelocalizationkit (pyproject.toml)
+    # via electrode-localization-kit (pyproject.toml)
 numpy==1.25.0
     # via
-    #   electrodelocalizationkit (pyproject.toml)
+    #   electrode-localization-kit (pyproject.toml)
     #   contourpy
+    #   imageio
     #   matplotlib
     #   nibabel
     #   opencv-python
     #   pandas
+    #   scikit-image
+    #   scikit-learn
+    #   scipy
+    #   tifffile
     #   vedo
 opencv-python==4.8.1.78
-    # via electrodelocalizationkit (pyproject.toml)
+    # via electrode-localization-kit (pyproject.toml)
 packaging==24.2
     # via
+    #   lazy-loader
     #   matplotlib
     #   nibabel
+    #   scikit-image
 pandas==2.2.2
-    # via electrodelocalizationkit (pyproject.toml)
+    # via electrode-localization-kit (pyproject.toml)
 pillow==11.1.0
-    # via matplotlib
+    # via
+    #   imageio
+    #   matplotlib
+    #   scikit-image
 pygments==2.19.1
     # via vedo
 pyparsing==3.2.1
     # via matplotlib
 pyqt6==6.7.0
-    # via electrodelocalizationkit (pyproject.toml)
+    # via electrode-localization-kit (pyproject.toml)
 pyqt6-qt6==6.7.3
     # via pyqt6
 pyqt6-sip==13.6.0
     # via
-    #   electrodelocalizationkit (pyproject.toml)
+    #   electrode-localization-kit (pyproject.toml)
     #   pyqt6
 python-dateutil==2.9.0.post0
     # via
@@ -51,15 +69,28 @@ python-dateutil==2.9.0.post0
     #   pandas
 pytz==2025.1
     # via pandas
+scikit-image==0.25.2
+    # via electrode-localization-kit (pyproject.toml)
+scikit-learn==1.7.1
+    # via electrode-localization-kit (pyproject.toml)
+scipy==1.15.3
+    # via
+    #   electrode-localization-kit (pyproject.toml)
+    #   scikit-image
+    #   scikit-learn
 six==1.17.0
     # via python-dateutil
+threadpoolctl==3.6.0
+    # via scikit-learn
+tifffile==2025.10.16
+    # via scikit-image
 tzdata==2025.1
     # via pandas
 vedo==2023.4.6
-    # via electrodelocalizationkit (pyproject.toml)
+    # via electrode-localization-kit (pyproject.toml)
 vtk==9.2.6
     # via
-    #   electrodelocalizationkit (pyproject.toml)
+    #   electrode-localization-kit (pyproject.toml)
     #   vedo
 wrapt==1.17.2
     # via deprecated

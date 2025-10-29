@@ -6,10 +6,13 @@ import numpy as np
 import vedo as vd
 import nibabel as nib
 
+from processing_models.mesh.mesh_loader import MeshLoader
 
-def load_head_surface_mesh_from_file(filename: str) -> vd.Mesh:
+
+def load_head_surface_mesh_from_file(surface_file: str, texture_file: str = None) -> vd.Mesh:
     """Loads a head surface mesh from a file."""
-    return vd.Mesh(filename)
+    mesh_loader = MeshLoader(surface_file, texture_file)
+    return mesh_loader.mesh_preprocessed.clone()
 
 
 def load_mri_surface_mesh_from_file(filename: str) -> vd.Mesh:

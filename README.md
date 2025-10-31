@@ -38,15 +38,18 @@ pip install uv
 
 ## Running the App
 
-Once `uv` is installed, navigate to the project's root directory and run:
-
-## Running the App
-
-Once `uv` is installed, navigate to the project's root directory and run:
+Once the project is set up, navigate to the project root directory and use the provided Makefile to run the app:
 
 ```sh
-uv run src/main.py
-uv run src/main.py
+# Run with the default environment (production)
+make run
+
+# Run in development environment
+make run ELK_ENV=development
+
+### Optional:
+make venv  # Creates/ensures the virtual environment exists
+make clean  # Clean the virtual environment
 ```
 
 On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.
@@ -75,7 +78,7 @@ For help and support, please contact:
 
 ## Version
 
-The current version of the package is **0.7.1**.
+The current version of the package is **0.8.0**.
 
 ## License
 
@@ -240,7 +243,3 @@ Ensure your pull request includes:
 
 - A clear description of what the changes do and why they are necessary.
 - Any relevant issue numbers.
-
----
-
-This `README.md` provides an overview of the ELK package, including its key features, installation instructions, supported formats, authorship, contact information, current version, and license details. For any additional information or assistance, please reach out to the provided contact emails.

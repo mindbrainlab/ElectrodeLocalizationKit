@@ -37,16 +37,16 @@ class HeadScan(BaseHeadModel):
         self.texture_file = texture_file
 
         self.mesh = None
-        self.mesh = load_head_surface_mesh_from_file(surface_file)
+        self.mesh = load_head_surface_mesh_from_file(surface_file, texture_file)
 
         self.modality = ModalitiesMapping.HEADSCAN
         self.fiducials = []
 
-        self.normalization_scale = 1
+        self.normalization_scale = 1000
 
         self._registered = False
 
-        self.normalize()
+        # self.normalize()
 
         self.apply_texture()
 
@@ -56,9 +56,12 @@ class HeadScan(BaseHeadModel):
     def rescale_to_original_size(self):
         self.normalization_scale = rescale_to_original_size(self.mesh, self.normalization_scale)  # type: ignore
 
-    def apply_texture(self):
+    def apply_texture(self, texture_file: str | None = None):
         if self.texture_file is not None:
             self.mesh = self.mesh.texture(self.texture_file)  # type: ignore
+        elif texture_file is not None:
+            self.texture_file = texture_file
+            self.mesh = self.mesh.texture(texture_file)
 
     def register_mesh(self, surface_registrator: BaseSurfaceRegistrator) -> np.ndarray:
         transform_matrix = surface_registrator.register()  # type: ignore

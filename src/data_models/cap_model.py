@@ -117,15 +117,15 @@ class CapModel(QAbstractTableModel):
             electrode.coordinates, electrode.modality, include_fiducials=True
         )
 
-        too_close_electrodes = [
-            d[0]
-            for d in distances
-            if (
-                d[1] <= ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE / 2
-                or d[1] <= ElectrodeSizes.MRI_ELECTRODE_SIZE / 2
-                or d[1] <= ElectrodeSizes.LABEL_ELECTRODE_SIZE / 2
-            )
-        ]
+        min_distance = -1
+        if electrode.modality == ModalitiesMapping.HEADSCAN:
+            min_distance = ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE / 2
+        elif electrode.modality == ModalitiesMapping.MRI:
+            min_distance = ElectrodeSizes.MRI_ELECTRODE_SIZE / 2
+        elif electrode.modality == ModalitiesMapping.REFERENCE:
+            min_distance = ElectrodeSizes.LABEL_ELECTRODE_SIZE / 2
+
+        too_close_electrodes = [d[0] for d in distances if (d[1] <= min_distance)]
 
         if len(too_close_electrodes) > 0:
             return

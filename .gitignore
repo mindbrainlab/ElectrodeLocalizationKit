@@ -1,10 +1,21 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-settings.json
-_data/*
-.DS_Store
+
+# Distribution / packaging
 *.egg
 *.egg-info/
 uv.lock
+
+# IDE / editor settings
+settings.json
+
+# macOS system files
+.DS_Store
+
+# Data directories
+_data/*
+
+# Logs and temporary files
 logs/*
+temp/*

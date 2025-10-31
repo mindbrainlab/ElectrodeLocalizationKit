@@ -1,9 +1,7 @@
 import numpy as np
 
 
-def compute_distance_between_coordinates(
-    coordinates_1: np.ndarray, coordinates_2: np.ndarray
-):
+def compute_distance_between_coordinates(coordinates_1: np.ndarray, coordinates_2: np.ndarray):
     """Returns the distance between two electrodes."""
     return np.linalg.norm(coordinates_1 - coordinates_2)
 
@@ -25,7 +23,7 @@ def compute_unit_spherical_coordinates_from_cartesian(
 
 
 def compute_cartesian_coordinates_from_unit_spherical(
-    spherical_coordinates: list[float] | tuple[float, float]
+    spherical_coordinates: list[float] | tuple[float, float],
 ) -> tuple[float, float, float]:
     """
     Computes the cartesian coordinates from the spherical coordinates.
@@ -88,9 +86,7 @@ def compute_angular_distance(vector_a: np.ndarray, vector_b: np.ndarray) -> floa
     Computes the angular distance between two vectors in cartesian coordinates.
     TODO: Implement the function to compute the angular distance between two vectors in spherical coordinates.
     """
-    val = np.dot(vector_a, vector_b) / (
-        np.linalg.norm(vector_a) * np.linalg.norm(vector_b)
-    )
+    val = np.dot(vector_a, vector_b) / (np.linalg.norm(vector_a) * np.linalg.norm(vector_b))
     if abs(val) > 1:
         val = 1 if val > 0 else -1
 
@@ -131,9 +127,7 @@ def align_vectors(
     return output_vector
 
 
-def convert_quaternion_to_rotation_matrix(
-    Q: tuple[float, float, float, float]
-) -> np.ndarray:
+def convert_quaternion_to_rotation_matrix(Q: tuple[float, float, float, float]) -> np.ndarray:
     # w, x, y, z - quaternion components
     w = Q[0]
     x = Q[1]

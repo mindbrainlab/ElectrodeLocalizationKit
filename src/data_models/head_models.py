@@ -1,17 +1,16 @@
-import vedo as vd
 from abc import ABC, abstractmethod
-import vedo as vd
+
 import numpy as np
+import vedo as vd
 
 from config.colors import HeadModelColors
 from config.mappings import ModalitiesMapping
-
-from processing_models.surface_registrator import BaseSurfaceRegistrator
-from utils.mesh import normalize_mesh, rescale_to_original_size
 from data.loader import (
     load_head_surface_mesh_from_file,
     load_mri_surface_mesh_from_file,
 )
+from processing_models.surface_registrator import BaseSurfaceRegistrator
+from utils.mesh import normalize_mesh, rescale_to_original_size
 
 try:
     import vedo.vtkclasses as vtk
@@ -77,7 +76,7 @@ class MRIScan(BaseHeadModel):
     def __init__(self, mri_file: str):
         self.mesh = load_mri_surface_mesh_from_file(mri_file)
 
-        self.normalize()
+        # self.normalize()
 
         self.mesh.color(HeadModelColors.MRI_SURFACE_COLOR)  # type: ignore
 

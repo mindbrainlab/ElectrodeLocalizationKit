@@ -1,17 +1,17 @@
-from PyQt6.QtCore import QModelIndex, Qt, QAbstractTableModel
-import numpy as np
-import vedo as vd
+import copy
 from collections.abc import Iterable
 from queue import LifoQueue
 
-import copy
+import numpy as np
+import vedo as vd
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, Qt
 
-from data.loader import load_electrodes_from_file
-from data.exporter import export_electrodes_to_file
-
-from .electrode import Electrode
 from config.mappings import ModalitiesMapping
 from config.sizes import ElectrodeSizes
+from data.exporter import export_electrodes_to_file
+from data.loader import load_electrodes_from_file
+
+from .electrode import Electrode
 
 
 class CapModel(QAbstractTableModel):
@@ -117,15 +117,13 @@ class CapModel(QAbstractTableModel):
             electrode.coordinates, electrode.modality, include_fiducials=True
         )
 
-        too_close_electrodes = [
-            d[0]
-            for d in distances
-            if (
-                d[1] <= ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE / 2
-                or d[1] <= ElectrodeSizes.MRI_ELECTRODE_SIZE / 2
-                or d[1] <= ElectrodeSizes.LABEL_ELECTRODE_SIZE / 2
-            )
-        ]
+        minimal_size = ElectrodeSizes.HEADSCAN_ELECTRODE_SIZE / 2
+        if electrode.modality == ModalitiesMapping.MRI:
+            minimal_size = ElectrodeSizes.MRI_ELECTRODE_SIZE / 2
+        elif electrode.modality == ModalitiesMapping.REFERENCE:
+            minimal_size = ElectrodeSizes.LABEL_ELECTRODE_SIZE / 2
+
+        too_close_electrodes = [d[0] for d in distances if (d[1] < minimal_size)]
 
         if len(too_close_electrodes) > 0:
             return

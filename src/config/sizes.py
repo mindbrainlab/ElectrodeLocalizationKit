@@ -5,7 +5,7 @@ Size configuration for the electrodes and flagposts.
 
 class ElectrodeSizes:
     HEADSCAN_ELECTRODE_SIZE = 0.02
-    MRI_ELECTRODE_SIZE = 6
+    MRI_ELECTRODE_SIZE = 4
     LABEL_ELECTRODE_SIZE = 0.04
 
     HEADSCAN_FLAGPOST_SIZE = 0.6

@@ -1,5 +1,5 @@
 from config.mappings import ModalitiesMapping
-from .state_machine import States, State
+from ui.state_manager.state_machine import States, State
 from ui.callbacks.display import display_dog
 from ui.callbacks.refresh import refresh_count_indicators
 

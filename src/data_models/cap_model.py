@@ -10,8 +10,7 @@ from config.mappings import ModalitiesMapping
 from config.sizes import ElectrodeSizes
 from data.exporter import export_electrodes_to_file
 from data.loader import load_electrodes_from_file
-
-from .electrode import Electrode
+from data_models.electrode import Electrode
 
 
 class CapModel(QAbstractTableModel):

@@ -40,7 +40,7 @@ Pull the repository:
 
 ```sh
 git clone git@github.com:mindbrainlab/ElectrodeLocalizationKit.git
-cd <repo>
+cd ElectrodeLocalizationKit
 ```
 
 ## Running the App

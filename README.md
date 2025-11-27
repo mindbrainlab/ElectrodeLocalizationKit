@@ -36,9 +36,12 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 pip install uv
 ```
 
-## Running the App
+Pull the repository:
 
-Once `uv` is installed, navigate to the project's root directory and run:
+```sh
+git clone git@github.com:mindbrainlab/ElectrodeLocalizationKit.git
+cd <repo>
+```
 
 ## Running the App
 

@@ -49,10 +49,8 @@ Once `uv` is installed, navigate to the project's root directory and run:
 
 ```sh
 uv run src/main.py
-uv run src/main.py
 ```
 
-On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.
 On the first run, this command creates a virtual environment, installs all dependencies, and starts the app. This may take a moment but only happens the first time.
 
 ## Supported Formats

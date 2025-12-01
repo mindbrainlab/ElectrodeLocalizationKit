@@ -36,7 +36,7 @@ def get_platform_stylesheet_adjustments():
     if system == "Windows":
         # Windows-specific adjustments
         adjustments = """
-        /* Windows-specific padding adjustments */
+        /* Windows-specific font size adjustments */
         * {
             font-size: 10pt;
         }
@@ -47,17 +47,23 @@ def get_platform_stylesheet_adjustments():
             font-size: 10pt;
         }
         
+        /* Fix GroupBox excessive top padding and title styling on Windows */
         QGroupBox {
-            padding-top: 20px;
-            margin-top: 10px;
+            padding-top: 18px;
+            margin-top: 2px;
             font-size: 10pt;
+            border: 1px solid #11356B;
+            border-radius: 10px;
         }
         
         QGroupBox::title {
             subcontrol-origin: margin;
-            subcontrol-position: top left;
-            padding: 5px 10px;
-            left: 10px;
+            subcontrol-position: top center;
+            padding: 3px 15px;
+            background-color: #11356B;
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
             font-size: 10pt;
         }
         

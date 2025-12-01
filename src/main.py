@@ -69,6 +69,13 @@ class StartQt6(QMainWindow):
         platform_adjustments = get_platform_stylesheet_adjustments()
         self.setStyleSheet(current_stylesheet + platform_adjustments)
         
+        # Override inline GroupBox styles on Windows
+        import platform
+        if platform.system() == "Windows":
+            for groupbox in [self.ui.groupBox, self.ui.groupBox_2, self.ui.groupBox_3, 
+                           self.ui.groupBox_4, self.ui.groupBox_5]:
+                groupbox.setStyleSheet("")
+        
         self.ui.label.setPixmap(QPixmap("src/ui/qt_designer/images/MainLogo.png"))
 
         # main data containers

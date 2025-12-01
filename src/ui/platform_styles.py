@@ -66,22 +66,22 @@ def get_platform_stylesheet_adjustments():
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
             font-size: 9pt;
-            min-width: 148px;
+            min-width: 150px;
         }
         
         /* Target specific GroupBox widths */
         QGroupBox#groupBox_2::title,
         QGroupBox#groupBox_3::title,
         QGroupBox#groupBox_4::title {
-            min-width: 148px;
+            min-width: 150px;
         }
         
         QGroupBox#groupBox_5::title {
-            min-width: 148px;
+            min-width: 150px;
         }
         
         QGroupBox#groupBox::title {
-            min-width: 128px;
+            min-width: 130px;
         }
         
         QSpinBox, QDoubleSpinBox {

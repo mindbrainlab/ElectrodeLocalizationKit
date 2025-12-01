@@ -78,6 +78,9 @@ class StartQt6(QMainWindow):
                 groupbox.setStyleSheet("")
                 # Force title to be flat/full width by removing the typical title bar look
                 groupbox.setFlat(False)
+            
+            # Fix table view to prevent Windows theme interference
+            self.ui.electrodes_table.setAlternatingRowColors(False)
         
         self.ui.label.setPixmap(QPixmap("src/ui/qt_designer/images/MainLogo.png"))
 

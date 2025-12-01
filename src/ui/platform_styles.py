@@ -106,6 +106,41 @@ def get_platform_stylesheet_adjustments():
         
         QCheckBox {
             font-size: 8pt;
+            background-color: transparent;
+        }
+        
+        QCheckBox::indicator {
+            width: 13px;
+            height: 13px;
+            background-color: white;
+            border: 1px solid #11356B;
+        }
+        
+        QCheckBox::indicator:checked {
+            background-color: #11356B;
+            border: 1px solid #11356B;
+        }
+        
+        /* Fix table alternating row colors on Windows */
+        QTableView {
+            alternate-background-color: white;
+            background-color: white;
+            color: #11356B;
+        }
+        
+        QTableView::item {
+            background-color: white;
+            color: #11356B;
+        }
+        
+        QTableView::item:alternate {
+            background-color: white;
+            color: #11356B;
+        }
+        
+        QTableView::item:selected {
+            background-color: #afc1db;
+            color: #11356B;
         }
         
         QSlider::groove:horizontal {

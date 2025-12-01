@@ -38,20 +38,20 @@ def get_platform_stylesheet_adjustments():
         adjustments = """
         /* Windows-specific font size adjustments */
         * {
-            font-size: 9pt;
+            font-size: 8pt;
         }
         
         QPushButton {
             padding: 3px 8px;
             min-height: 20px;
-            font-size: 9pt;
+            font-size: 8pt;
         }
         
         /* Fix GroupBox excessive top padding and title styling on Windows */
         QGroupBox {
             padding-top: 10px;
             margin-top: 0px;
-            font-size: 9pt;
+            font-size: 8pt;
             border: 1px solid #11356B;
             border-radius: 5px;
         }
@@ -65,7 +65,7 @@ def get_platform_stylesheet_adjustments():
             color: white;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
-            font-size: 9pt;
+            font-size: 8pt;
             min-width: 150px;
         }
         
@@ -81,31 +81,31 @@ def get_platform_stylesheet_adjustments():
         }
         
         QGroupBox#groupBox::title {
-            min-width: 130px;
+            min-width: 150px;
         }
         
         QSpinBox, QDoubleSpinBox {
             padding: 2px;
             min-height: 20px;
-            font-size: 9pt;
+            font-size: 8pt;
         }
         
         QTabBar::tab {
             padding: 6px 10px;
             min-width: 50px;
-            font-size: 9pt;
+            font-size: 8pt;
         }
         
         QLabel {
-            font-size: 9pt;
+            font-size: 8pt;
         }
         
         QTableView {
-            font-size: 9pt;
+            font-size: 8pt;
         }
         
         QCheckBox {
-            font-size: 9pt;
+            font-size: 8pt;
         }
         
         QSlider::groove:horizontal {

@@ -42,8 +42,8 @@ def get_platform_stylesheet_adjustments():
         }
         
         QPushButton {
-            padding: 3px 8px;
-            min-height: 20px;
+            padding: 4px 6px;
+            min-height: 22px;
             font-size: 8pt;
         }
         

@@ -37,14 +37,20 @@ def get_platform_stylesheet_adjustments():
         # Windows-specific adjustments
         adjustments = """
         /* Windows-specific padding adjustments */
+        * {
+            font-size: 10pt;
+        }
+        
         QPushButton {
             padding: 3px 8px;
             min-height: 20px;
+            font-size: 10pt;
         }
         
         QGroupBox {
             padding-top: 20px;
             margin-top: 10px;
+            font-size: 10pt;
         }
         
         QGroupBox::title {
@@ -52,16 +58,31 @@ def get_platform_stylesheet_adjustments():
             subcontrol-position: top left;
             padding: 5px 10px;
             left: 10px;
+            font-size: 10pt;
         }
         
         QSpinBox, QDoubleSpinBox {
             padding: 2px;
             min-height: 20px;
+            font-size: 10pt;
         }
         
         QTabBar::tab {
             padding: 6px 10px;
             min-width: 50px;
+            font-size: 10pt;
+        }
+        
+        QLabel {
+            font-size: 10pt;
+        }
+        
+        QTableView {
+            font-size: 10pt;
+        }
+        
+        QCheckBox {
+            font-size: 10pt;
         }
         
         QSlider::groove:horizontal {

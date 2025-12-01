@@ -58,27 +58,18 @@ def get_platform_stylesheet_adjustments():
         
         QGroupBox::title {
             subcontrol-origin: border;
-            subcontrol-position: top left;
-            padding: 2px 0px !important;
-            margin: 0px;
-            left: 0px;
-            top: 0px;
+            subcontrol-position: top center;
+            padding: 4px 10px;
+            margin-left: 0px;
+            margin-right: 0px;
+            min-width: 100%;
+            width: 100%;
             background-color: #11356B;
             color: white;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius: 0px;
             font-size: 9pt;
-        }
-        
-        /* Override inline styles that add excessive horizontal padding */
-        QGroupBox#groupBox::title,
-        QGroupBox#groupBox_2::title,
-        QGroupBox#groupBox_3::title,
-        QGroupBox#groupBox_4::title,
-        QGroupBox#groupBox_5::title {
-            padding: 2px 0px !important;
+            text-align: center;
         }
         
         QSpinBox, QDoubleSpinBox {

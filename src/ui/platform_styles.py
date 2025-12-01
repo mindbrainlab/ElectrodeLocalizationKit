@@ -49,21 +49,23 @@ def get_platform_stylesheet_adjustments():
         
         /* Fix GroupBox excessive top padding and title styling on Windows */
         QGroupBox {
-            padding-top: 18px;
-            margin-top: 2px;
+            padding-top: 10px;
+            margin-top: 0px;
             font-size: 10pt;
             border: 1px solid #11356B;
-            border-radius: 10px;
+            border-radius: 5px;
         }
         
         QGroupBox::title {
             subcontrol-origin: margin;
             subcontrol-position: top center;
-            padding: 3px 15px;
+            padding: 2px 15px;
             background-color: #11356B;
             color: white;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
             font-size: 10pt;
         }
         

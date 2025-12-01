@@ -1,7 +1,9 @@
 import sys
 from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton
 from PyQt6.QtGui import QPixmap, QResizeEvent
+from PyQt6.QtCore import Qt
 from ui.pyloc_main_window import Ui_ELK
+from ui.platform_styles import apply_platform_specific_styles, get_platform_stylesheet_adjustments
 
 from data_models.cap_model import CapModel
 
@@ -61,6 +63,12 @@ class StartQt6(QMainWindow):
         QMainWindow.__init__(self, parent)
         self.ui = Ui_ELK()
         self.ui.setupUi(self)
+        
+        # Apply platform-specific stylesheet adjustments
+        current_stylesheet = self.styleSheet()
+        platform_adjustments = get_platform_stylesheet_adjustments()
+        self.setStyleSheet(current_stylesheet + platform_adjustments)
+        
         self.ui.label.setPixmap(QPixmap("src/ui/qt_designer/images/MainLogo.png"))
 
         # main data containers
@@ -184,7 +192,14 @@ class StartQt6(QMainWindow):
 
 
 if __name__ == "__main__":
+    # Enable high DPI support before creating QApplication
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+    )
+    
     app = QApplication(sys.argv)
+    apply_platform_specific_styles(app)
+    
     myapp = StartQt6()
     myapp.show()
     sys.exit(app.exec())

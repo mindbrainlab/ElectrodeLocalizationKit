@@ -5,11 +5,17 @@ QMainWindow {
 QGroupBox {
     border: 1px solid gray;
     border-color: #11356B;
-    margin-top: 0px;
+    margin-top: 10px;
     border-radius: 15px;
+    padding-top: 15px;
 }
 
 QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 4px 10px;
+    left: 10px;
+    top: 0px;
     border-top-left-radius: 9px;
     border-top-right-radius: 9px;
     background-color: #11356B;
@@ -21,6 +27,8 @@ QPushButton {
     border: 1px solid #11356B;
     border-radius: 5px;
     border-style: outset;
+    padding: 4px 8px;
+    min-height: 22px;
     background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
             radius: 1.35, stop: 0 #ffffff, stop: 1 #afc1db);
 }
@@ -90,11 +98,15 @@ QFrame {
 QSpinBox {
     background-color: white;
     color: #11356B;
+    padding: 2px;
+    min-height: 22px;
 }
 
 QDoubleSpinBox {
     background-color: white;
     color: #11356B;
+    padding: 2px;
+    min-height: 22px;
 }
 
 QCheckBox {

@@ -72,9 +72,25 @@ class StartQt6(QMainWindow):
         # Override inline GroupBox styles on Windows
         import platform
         if platform.system() == "Windows":
+            groupbox_override = """
+                QGroupBox::title {
+                    subcontrol-origin: border;
+                    subcontrol-position: top center;
+                    padding: 4px;
+                    margin: 0px;
+                    background-color: #11356B;
+                    color: white;
+                    border-top-left-radius: 4px;
+                    border-top-right-radius: 4px;
+                    font-size: 9pt;
+                    text-align: center;
+                    width: 100%;
+                    max-width: 100%;
+                }
+            """
             for groupbox in [self.ui.groupBox, self.ui.groupBox_2, self.ui.groupBox_3, 
                            self.ui.groupBox_4, self.ui.groupBox_5]:
-                groupbox.setStyleSheet("")
+                groupbox.setStyleSheet(groupbox_override)
         
         self.ui.label.setPixmap(QPixmap("src/ui/qt_designer/images/MainLogo.png"))
 

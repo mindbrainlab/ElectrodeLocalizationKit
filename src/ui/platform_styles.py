@@ -58,18 +58,19 @@ def get_platform_stylesheet_adjustments():
         
         QGroupBox::title {
             subcontrol-origin: border;
-            subcontrol-position: top center;
-            padding: 4px 10px;
-            margin-left: 0px;
-            margin-right: 0px;
-            min-width: 100%;
-            width: 100%;
+            subcontrol-position: top left;
+            padding-left: 0px;
+            padding-right: 0px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            margin: 0px;
+            left: -1px;
+            right: -1px;
             background-color: #11356B;
             color: white;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
             font-size: 9pt;
-            text-align: center;
         }
         
         QSpinBox, QDoubleSpinBox {

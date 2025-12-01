@@ -69,28 +69,15 @@ class StartQt6(QMainWindow):
         platform_adjustments = get_platform_stylesheet_adjustments()
         self.setStyleSheet(current_stylesheet + platform_adjustments)
         
-        # Override inline GroupBox styles on Windows
+        # Override inline GroupBox styles on Windows - force title to span full width
         import platform
         if platform.system() == "Windows":
-            groupbox_override = """
-                QGroupBox::title {
-                    subcontrol-origin: border;
-                    subcontrol-position: top center;
-                    padding: 4px;
-                    margin: 0px;
-                    background-color: #11356B;
-                    color: white;
-                    border-top-left-radius: 4px;
-                    border-top-right-radius: 4px;
-                    font-size: 9pt;
-                    text-align: center;
-                    width: 100%;
-                    max-width: 100%;
-                }
-            """
+            # Clear inline styles and let global stylesheet handle it
             for groupbox in [self.ui.groupBox, self.ui.groupBox_2, self.ui.groupBox_3, 
                            self.ui.groupBox_4, self.ui.groupBox_5]:
-                groupbox.setStyleSheet(groupbox_override)
+                groupbox.setStyleSheet("")
+                # Force title to be flat/full width by removing the typical title bar look
+                groupbox.setFlat(False)
         
         self.ui.label.setPixmap(QPixmap("src/ui/qt_designer/images/MainLogo.png"))
 

@@ -59,18 +59,29 @@ def get_platform_stylesheet_adjustments():
         QGroupBox::title {
             subcontrol-origin: border;
             subcontrol-position: top left;
-            padding-left: 0px;
-            padding-right: 0px;
-            padding-top: 4px;
-            padding-bottom: 4px;
+            padding: 4px;
             margin: 0px;
-            left: -1px;
-            right: -1px;
             background-color: #11356B;
             color: white;
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
             font-size: 9pt;
+            min-width: 148px;
+        }
+        
+        /* Target specific GroupBox widths */
+        QGroupBox#groupBox_2::title,
+        QGroupBox#groupBox_3::title,
+        QGroupBox#groupBox_4::title {
+            min-width: 148px;
+        }
+        
+        QGroupBox#groupBox_5::title {
+            min-width: 148px;
+        }
+        
+        QGroupBox#groupBox::title {
+            min-width: 128px;
         }
         
         QSpinBox, QDoubleSpinBox {

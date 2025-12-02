@@ -1,7 +1,9 @@
 import sys
 from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton
 from PyQt6.QtGui import QPixmap, QResizeEvent
+from PyQt6.QtCore import Qt
 from ui.pyloc_main_window import Ui_ELK
+from ui.platform_styles import apply_platform_specific_styles, get_platform_stylesheet_adjustments
 
 from data_models.cap_model import CapModel
 
@@ -61,6 +63,25 @@ class StartQt6(QMainWindow):
         QMainWindow.__init__(self, parent)
         self.ui = Ui_ELK()
         self.ui.setupUi(self)
+        
+        # Apply platform-specific stylesheet adjustments
+        current_stylesheet = self.styleSheet()
+        platform_adjustments = get_platform_stylesheet_adjustments()
+        self.setStyleSheet(current_stylesheet + platform_adjustments)
+        
+        # Override inline GroupBox styles on Windows - force title to span full width
+        import platform
+        if platform.system() == "Windows":
+            # Clear inline styles and let global stylesheet handle it
+            for groupbox in [self.ui.groupBox, self.ui.groupBox_2, self.ui.groupBox_3, 
+                           self.ui.groupBox_4, self.ui.groupBox_5]:
+                groupbox.setStyleSheet("")
+                # Force title to be flat/full width by removing the typical title bar look
+                groupbox.setFlat(False)
+            
+            # Fix table view to prevent Windows theme interference
+            self.ui.electrodes_table.setAlternatingRowColors(False)
+        
         self.ui.label.setPixmap(QPixmap("src/ui/qt_designer/images/MainLogo.png"))
 
         # main data containers
@@ -184,7 +205,14 @@ class StartQt6(QMainWindow):
 
 
 if __name__ == "__main__":
+    # Enable high DPI support before creating QApplication
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+    )
+    
     app = QApplication(sys.argv)
+    apply_platform_specific_styles(app)
+    
     myapp = StartQt6()
     myapp.show()
     sys.exit(app.exec())
